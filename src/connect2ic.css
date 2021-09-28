@@ -1,0 +1,122 @@
+.connect-2-ic {
+    font-size: 55px;
+    text-align: center;
+    margin-top: 20px;
+    background: transparent;
+    border: none;
+    color: white;
+    padding: 20px;
+    width: 100%;
+    margin-bottom: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+}
+
+.img-styles {
+    height: 40px;
+    width: 40px;
+    margin-left: -1em;
+    margin-right: 0.7em;
+}
+
+.dialog-styles {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: rgb(0 0 0 / 85%);
+    animation: fade-in 0.2s;
+    backdrop-filter: blur(5px);
+    cursor: pointer;
+}
+
+@keyframes fade-in {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@-webkit-keyframes fade-out {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+.button-styles {
+    color: white;
+    width: 100%;
+    padding: 10px 35px;
+    border: none;
+    border-radius: 10px;
+    font-size: 20px;
+    font-weight: 600;
+    background: transparent;
+    outline: 0;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.button-styles:hover {
+    background: white;
+    color: black;
+    transform: scale(1.02);
+    transition: all 0.2s;
+}
+
+.plug-styles {
+    border: none;
+    background: linear-gradient(93.07deg, #FFD719 0.61%, #F754D4 33.98%, #1FD1EC 65.84%, #48FA6B 97.7%);
+}
+
+.button-styles > div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background: white;
+    padding: 5px 12px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+.stoic-styles {
+    background: #003240;
+}
+
+.ii-styles {
+    background: black;
+}
+
+.close-styles {
+    cursor: pointer;
+    text-align: center;
+    margin-top: 20px;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 20px;
+    padding: 20px;
+    width: 100%;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+    sans-serif;
+}
+
+.close-styles:hover {
+    transform: scale(1.04);
+    transition: all 0.2s;
+}
