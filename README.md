@@ -1,6 +1,6 @@
-# Connect 2 IC
+# Connect2IC
 
-A button to solve all your (auth) problems
+One button to solve all your (auth) problems
 ```
 npm i -S connect2ic
 ```
@@ -13,26 +13,30 @@ Supports:
 - [Plug](https://plugwallet.ooo/)
 
 
-Gives you an unstyled Button by default
+Gives you an unstyled button by default.
+Style it however you want
 
-<img src="https://i.imgur.com/v4H1twj.png" />
+<img height=30 src="https://i.imgur.com/7tlLD7D.png" />
 
-This pops up a dialog
+This pops up a dialog (See advanced usage for more control)
 <img src="https://i.imgur.com/iPdytgJ.png" />
 
 Use same button to sign out
 
-<img src="https://i.imgur.com/EFr6EXq.png" />
+<img height=30 src="https://i.imgur.com/gHLZ76C.png" />
 
-### React:
+## React
 ```jsx
 import { Connect2IC } from "connect2ic/react"
 
 function App() {
   const [signedIn, setSignedIn] = useState(false)
 
-  const onConnect = ({ provider, identity, principal }) => {
-    // Now pass in identity to HttpAgent, or whatever you need to do
+  const onConnect = ({ 
+    provider, // "ii" | "plug" | "stoic"
+    identity, // Pass it to HttpAgent. Most of the meat is here
+    principal // Principal ID as string
+  }) => {
     setSignedIn(true)
   }
 
@@ -45,3 +49,55 @@ function App() {
   )
 }
 ```
+
+## Vue
+```jsx
+import { Connect2IC } from "connect2ic/react"
+
+function App() {
+  const [signedIn, setSignedIn] = useState(false)
+
+  const onConnect = ({ 
+    provider, // "ii" | "plug" | "stoic"
+    identity, // Pass this to HttpAgent, or whatever you need to do
+    principal // Principal as string
+  }) => {
+    setSignedIn(true)
+  }
+
+  const onDisconnect = () => {
+    setSignedIn(false)
+  }
+  
+  return (
+    <Connect2IC onDisconnect={onDisconnect} onConnect={onConnect} />
+  )
+}
+```
+
+## Svelte
+```jsx
+import { Connect2IC } from "connect2ic/react"
+
+function App() {
+  const [signedIn, setSignedIn] = useState(false)
+
+  const onConnect = ({ 
+    provider, // "ii" | "plug" | "stoic"
+    identity, // Pass this to HttpAgent, or whatever you need to do
+    principal // Principal as string
+  }) => {
+    setSignedIn(true)
+  }
+
+  const onDisconnect = () => {
+    setSignedIn(false)
+  }
+  
+  return (
+    <Connect2IC onDisconnect={onDisconnect} onConnect={onConnect} />
+  )
+}
+```
+
+# API
