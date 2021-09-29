@@ -8,13 +8,17 @@ A toolkit to solve your (auth) problems
 npm i -S connect2ic
 ```
 
-Custom hooks / stores for all identity providers, logos & ready-to-use buttons.
-For React, Vue & Svelte.
-
 Sign in with:
 - [Internet Identity](https://identity.ic0.app/)
 - [Stoic Wallet](https://plugwallet.ooo/)
 - [Plug](https://plugwallet.ooo/)
+ 
+For React, Vue & Svelte.
+- Custom hooks / stores for all identity providers
+- logos
+- ready-to-use branded buttons
+
+
 
 ## Simple mode
 Import just 1 component and get fully working auth. For the lazy.
