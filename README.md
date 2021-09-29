@@ -1,3 +1,6 @@
+
+<img height=240 src="https://i.imgur.com/iPdytgJ.png" />
+
 # Connect2IC
 
 A toolkit to solve your (auth) problems
@@ -13,21 +16,16 @@ Sign in with:
 - [Stoic Wallet](https://plugwallet.ooo/)
 - [Plug](https://plugwallet.ooo/)
 
-## Simple mode (Scroll down for custom usage)
+## Simple mode
 Import just 1 component and get fully working auth. For the lazy.
 
 Gives you an unstyled button by default.
 Style it however you want
 
-<img height=30 src="https://i.imgur.com/7tlLD7D.png" />
-
-This pops up a dialog (See advanced usage for more control)
-
-<img height=300 src="https://i.imgur.com/iPdytgJ.png" />
-
-Use same button to sign out
-
+<img height=30 src="https://i.imgur.com/7tlLD7D.png" /> / 
 <img height=30 src="https://i.imgur.com/gHLZ76C.png" />
+
+This pops up the selection dialog in the screenshot
 
 ### React
 ```jsx
