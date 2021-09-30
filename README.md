@@ -12,6 +12,7 @@ Sign in with:
 - [Internet Identity](https://identity.ic0.app/)
 - [Stoic Wallet](https://plugwallet.ooo/)
 - [Plug](https://plugwallet.ooo/)
+- *...request more*
  
 For React, Vue & Svelte.
 - Custom hooks / stores for all identity providers
@@ -20,28 +21,25 @@ For React, Vue & Svelte.
 
 
 
-## Simple mode
-Import just 1 component and get fully working auth. For the lazy.
-
-Gives you an unstyled button by default.
-Style it however you want
+## Magic mode
+Import just 1 magic button and get fully working auth. For the lazy.
+Clicking it pops up the dialog in the screenshot.
 
 <img height=30 src="https://i.imgur.com/7tlLD7D.png" /> / 
 <img height=30 src="https://i.imgur.com/gHLZ76C.png" />
 
-This pops up the selection dialog in the screenshot
 
 ### React
 ```jsx
-import { Connect2IC } from "connect2ic/react"
+import { MagicButton } from "connect2ic/react"
 
 function App() {
-  const onConnect = ({ 
-    provider, // "ii" | "plug" | "stoic"
-    identity, // Pass it to HttpAgent. Most of the meat is here
-    principal // Principal ID as string
-  }) => {
-    // Signed in
+  const onConnect = ({ ii, plug, stoic, error }) => {
+     // Signed in
+    if (ii) //...
+    if (plug) //...
+    if (stoic) //...
+    if (error) // Something went wrong
   }
 
   const onDisconnect = () => {
@@ -49,7 +47,7 @@ function App() {
   }
 
   return (
-    <Connect2IC onDisconnect={onDisconnect} onConnect={onConnect} />
+    <MagicButton onConnect={onConnect} onDisconnect={onDisconnect} style={{/* pls style it */}} />
   )
 }
 ```
@@ -59,12 +57,11 @@ function App() {
 import { Connect2IC } from "connect2ic/react"
 
 function App() {
-  const onConnect = ({ 
-    provider, // "ii" | "plug" | "stoic"
-    identity, // Pass it to HttpAgent. Most of the meat is here
-    principal // Principal ID as string
-  }) => {
+  const onConnect = ({ ii, plug, stoic }) => {
     // Signed in
+    if (ii) //...
+    if (plug) //...
+    if (stoic) //...
   }
 
   const onDisconnect = () => {
@@ -72,32 +69,54 @@ function App() {
   }
 
   return (
-    <Connect2IC onDisconnect={onDisconnect} onConnect={onConnect} />
+    <Connect2IC onConnect={onConnect} onDisconnect={onDisconnect} />
   )
 }
 ```
 
 ### Svelte
-```jsx
-import { Connect2IC } from "connect2ic/react"
+```svelte
+<script>
+  import { MagicButton } from "connect2ic/svelte"
 
-function App() {
-  const onConnect = ({ 
-    provider, // "ii" | "plug" | "stoic"
-    identity, // Pass it to HttpAgent. Most of the meat is here
-    principal // Principal ID as string
-  }) => {
-    // Signed in
+  const onConnect = ({ plug, stoic, ii }) => {
+    if (plug) //...
+    if (stoic) // ...
+    if (ii) // ...
   }
-
+  
   const onDisconnect = () => {
     // Signed out
   }
+</script>
 
-  return (
-    <Connect2IC onDisconnect={onDisconnect} onConnect={onConnect} />
-  )
-}
+<MagicButton onConnect={onConnect} onDisconnect={onDisconnect} style={{/* pls style it */}} />
 ```
 
-## Custom usage
+## Hooks / Stores
+
+Unified apis to interact with all identity providers
+
+### React
+```jsx
+useConnect2IC()
+useII()
+usePlug()
+useStoic()
+```
+
+### Vue
+```jsx
+useConnect2IC()
+useII()
+usePlug()
+useStoic()
+```
+
+### Svelte
+```jsx
+useConnect2IC()
+useII()
+usePlug()
+useStoic()
+```
