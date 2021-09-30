@@ -1,5 +1,6 @@
 import React, { useState } from "react"
-import { Connect2IC } from "../src/Connect2IC"
+// import { Connect2IC } from "../../src/react"
+import { Connect2IC } from "react"
 import { Intro } from "./Intro"
 
 function App() {

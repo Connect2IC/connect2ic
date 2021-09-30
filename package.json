@@ -1,10 +1,17 @@
 {
-  "name": "connect-ic",
+  "name": "connect2ic",
   "version": "0.0.0",
+  "main": "dist/index.js",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "directories": {
+    "react": "react",
+    "svelte": "svelte",
+    "vue": "vue"
+  },
   "scripts": {
-    "dev": "vite",
-    "build": "mitosis compile --to=react --out-dir build -- ./src/Connect2IC.tsx",
-    "serve": "vite preview"
+    "ts-types": " tsc --emitDeclarationOnly --outDir lib",
+    "build": "rimraf lib && node ./esbuild.mjs && npm run ts-types"
   },
   "dependencies": {
     "@dfinity/agent": "0.10.0",
@@ -13,17 +20,14 @@
     "@dfinity/candid": "^0.10.0",
     "@dfinity/identity": "^0.10.0",
     "@dfinity/principal": "^0.10.0",
-    "ic-stoic-identity": "^2.0.0",
-    "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "ic-stoic-identity": "^2.0.0"
   },
   "devDependencies": {
-    "@builder.io/mitosis": "^0.0.44",
-    "@types/react": "^17.0.20",
-    "@types/react-dom": "^17.0.9",
-    "@vitejs/plugin-react-refresh": "^1.3.6",
     "buffer": "^6.0.3",
-    "typescript": "^4.4.3",
-    "vite": "^2.5.7"
+    "esbuild": "^0.12.1",
+    "esbuild-svelte": "^0.5.6",
+    "rimraf": "^3.0.2",
+    "svelte-preprocess": "^4.9.5",
+    "typescript": "^4.4.3"
   }
 }

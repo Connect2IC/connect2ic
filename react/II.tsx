@@ -1,7 +1,7 @@
-import dfinityLogo from "./assets/dfinity.svg"
+import dfinityLogo from "../assets/dfinity.svg"
 import React, { useEffect, useState } from "react"
 import { AuthClient } from "@dfinity/auth-client"
-import "./connect2ic.css"
+import "../connect2ic.css"
 
 const useII = ({ onConnect }) => {
   const [client, setClient] = useState<any>()

@@ -1,6 +1,6 @@
-import plugLight from "./assets/plugLight.svg"
+import plugLight from "../assets/plugLight.svg"
 import React, { useEffect } from "react"
-import "./connect2ic.css"
+import "../connect2ic.css"
 
 const buttonStyles = {
   color: "white",

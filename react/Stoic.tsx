@@ -1,8 +1,8 @@
 import React, { useEffect } from "react"
 // @ts-ignore
 import { StoicIdentity } from "ic-stoic-identity"
-import stoicLogo from "./assets/stoic.png"
-import "./connect2ic.css"
+import stoicLogo from "../assets/stoic.png"
+import "../connect2ic.css"
 
 const buttonStyles = {
   color: "white",

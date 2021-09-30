@@ -1,0 +1,27 @@
+{
+  "name": "example-svelte",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "@dfinity/agent": "0.10.0",
+    "@dfinity/auth-client": "^0.10.0",
+    "@dfinity/authentication": "0.10.0",
+    "@dfinity/candid": "^0.10.0",
+    "@dfinity/identity": "^0.10.0",
+    "@dfinity/principal": "^0.10.0",
+    "connect2ic": "file:../",
+    "ic-stoic-identity": "^2.0.0"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "next",
+    "buffer": "^6.0.3",
+    "svelte": "^3.42.5",
+    "svelte-preprocess": "^4.9.4",
+    "typescript": "^4.4.3",
+    "vite": "^2.5.7"
+  }
+}
