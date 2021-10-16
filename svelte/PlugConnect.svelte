@@ -1,48 +1,20 @@
 <script lang="ts">
-  import plugLight from "../assets/plugLight.svg"
-  import "../connect2ic.css"
-  import { usePlug } from "./Plug.store"
+  import PlugButton from "./buttons/PlugButton.svelte"
+  import createPlug from "./stores/Plug.store"
 
-  export let onConnect = () => {}
-
-  const plug = usePlug({
-    whitelist: ["qvhpv-4qaaa-aaaaa-aaagq-cai"],
-    host: window.location.origin,
-  })
-
-  const buttonStyles = {
-    color: "white",
-    width: "100%",
-    padding: "15px 25px",
-    border: "none",
-    borderRadius: "10px",
-    fontSize: "20px",
-    fontWeight: 600,
-    background: "transparent",
-    outline: 0,
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
+  export let darkMode = false
+  export let onConnect = () => {
+  }
+  export let onDisconnect = () => {
   }
 
-  const imgStyles = {
-    height: "40px",
-    marginLeft: "-1em",
-    marginRight: "0.7em",
-  }
+  let plug = createPlug({})
 
-  const onClick = async () => {
-    let res = await plug.connect()
-    onConnect(res)
-  }
+  $: onConnect($plug)
 
+  let onClick = () => {
+    plug.connect()
+  }
 </script>
 
-<button on:click={onClick} class={"button-styles plug-styles"}>
-  <img
-    class={"img-styles"}
-    src={plugLight}
-    alt="Plug logo"
-  />
-  Plug
-</button>
+<PlugButton darkMode={darkMode} on:click={onClick} />

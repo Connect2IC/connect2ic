@@ -13,7 +13,7 @@
     "@dfinity/candid": "^0.10.0",
     "@dfinity/identity": "^0.10.0",
     "@dfinity/principal": "^0.10.0",
-    "connect2ic": "file:../",
+    "connect2ic": "file:../../",
     "ic-stoic-identity": "^2.0.0"
   },
   "devDependencies": {

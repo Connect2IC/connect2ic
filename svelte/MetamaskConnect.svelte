@@ -1,9 +1,9 @@
 <script lang="ts">
   import dfinityLogo from "../assets/dfinity.svg"
-  import IIButton from "./buttons/IIButton.svelte"
+  import MetamaskButton from "./buttons/MetamaskButton.svelte"
   import createII from "./stores/II.store"
-  export let darkMode = false
 
+  export let darkMode = false
   export let onConnect = () => {
   }
   export let onDisconnect = () => {
@@ -18,4 +18,4 @@
   }
 </script>
 
-<IIButton darkMode={darkMode} on:click={onClick} />
+<MetamaskButton darkMode={darkMode} on:click={onClick} />
