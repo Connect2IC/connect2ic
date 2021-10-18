@@ -28,10 +28,14 @@
   }
 </script>
 
-<button on:click class={"button-styles stoic-styles"} style={darkMode ? `` : `background: white; color: black;`}>
+<button on:click class={"button-styles stoic-styles"} style={darkMode ? `` : `background: #f4f4f4; color: black;`}>
   <img class={"img-styles"} src={stoicLogo} alt="" />
+  <div>
   <span class="button-label">
   Stoic Wallet
   </span>
-  Connect with your Stoic Wallet
+    <span>
+    Connect with your Stoic Wallet
+    </span>
+  </div>
 </button>

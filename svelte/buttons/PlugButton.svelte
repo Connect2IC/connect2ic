@@ -26,14 +26,18 @@
   }
 </script>
 
-<button on:click class={"button-styles plug-styles"} style={darkMode ? `` : `background: white; color: black;`}>
+<button on:click class={"button-styles plug-styles"} style={darkMode ? `` : `background: #f4f4f4; color: black;`}>
   <img
     class={"img-styles"}
     src={darkMode ? plugDark : plugLight}
     alt="Plug logo"
   />
+  <div>
   <span class="button-label">
   Plug
   </span>
-  Connect to your Plug wallet
+    <span>
+    Connect with your Plug wallet
+    </span>
+  </div>
 </button>

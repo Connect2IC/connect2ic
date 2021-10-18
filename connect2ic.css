@@ -1,21 +1,11 @@
-.connect-2-ic {
-    font-size: 55px;
-    text-align: center;
-    margin-top: 20px;
-    background: transparent;
-    border: none;
-    color: white;
-    padding: 20px;
-    width: 100%;
-    margin-bottom: 20px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+.dialog-styles span {
+    font-family: -apple-system, BlinkMacSystemFont, "Arial", "Helvetica Neue", sans-serif;
 }
 
 .img-styles {
-    height: 90px;
-    width: 90px;
+    height: 55px;
+    width: 55px;
+    padding: 10px;
 }
 
 .dialog-styles {
@@ -39,8 +29,9 @@
 .dialog-container {
     display: grid;
     grid-gap: 10px;
-    grid-template-columns: 1fr 1fr 1fr 1fr;
-    grid-template-columns: 1fr 1fr;
+    /*grid-template-columns: 1fr 1fr 1fr 1fr;*/
+    /*grid-template-columns: 1fr 1fr;*/
+    grid-template-columns: 1fr;
     color: white;
     cursor: initial;
 }
@@ -66,12 +57,13 @@
 .button-styles {
     color: white;
     max-width: 100%;
-    width: 300px;
-    height: 200px;
-    padding: 20px;
+    width: 420px;
+    height: 95px;
+    padding: 10px;
     border: none;
-    border-radius: 20px;
+    border-radius: 15px;
     background: transparent;
+    /*background: #f4f4f4 !important*/
     /*background: rgb(255 255 255 / 10%);*/
     outline: 0;
     /*display: flex;*/
@@ -83,16 +75,17 @@
     transition: transform 0.15s;
     /*border: 2px solid rgb(255 255 255 / 40%);*/
     /*border: 2px solid white;*/
-    display: grid;
-    grid-template-rows: 4fr 1fr;
-    justify-items: center;
+    /*display: grid;*/
+    display: flex;
+    /*grid-template-rows: 4fr 1fr;*/
+    /*justify-items: center;*/
     align-items: center;
 }
 
 .button-label {
     margin-top: 10px;
     margin-bottom: 10px;
-    font-size: 25px;
+    font-size: 21px;
     font-weight: 600;
 }
 
@@ -104,23 +97,25 @@
 
 .button-styles > div {
     display: flex;
-    flex-direction: row;
-    align-items: center;
-    background: white;
-    padding: 5px 12px;
+    padding: 0 15px;
     border-radius: 10px;
-    font-size: 16px;
-    font-weight: 600;
+    /*font-size: 16px;*/
+    font-weight: 400;
+    height: 100%;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
 .stoic-styles {
     /*background: #003240;*/
-    background: rgb(0 50 64 / 100%);
+    /*background: rgb(0 50 64 / 100%);*/
+    background: rgb(35 35 39);
 }
 
 .ii-styles {
     /*background: black;*/
-    background-color: rgb(35 35 39);
+    /*background-color: rgb(35 35 39);*/
+    background: rgb(35 35 39);
     /*background-color: #050132;*/
     /*background-image: url(data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgY2xpcC1wYXRoPSJ1cmwoI2NsaXAwKSI+CjxsaW5lIHkxPSIxOS41IiB4Mj0iNDAiIHkyPSIxOS41IiBzdHJva2U9IiNFQ0VDRUMxOSIvPgo8bGluZSB5MT0iMC41IiB4Mj0iNDAiIHkyPSIwLjUiIHN0cm9rZT0iI0VDRUNFQzE5Ii8+CjxsaW5lIHgxPSIyMC41IiB5MT0iMi4xODU1N2UtMDgiIHgyPSIyMC41IiB5Mj0iNDAiIHN0cm9rZT0iI0VDRUNFQzE5Ii8+CjxsaW5lIHgxPSIwLjUiIHkxPSIyLjE4NTU3ZS0wOCIgeDI9IjAuNDk5OTk4IiB5Mj0iNDAiIHN0cm9rZT0iI0VDRUNFQzE5Ii8+CjwvZz4KPGRlZnM+CjxjbGlwUGF0aCBpZD0iY2xpcDAiPgo8cmVjdCB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIGZpbGw9IndoaXRlIi8+CjwvY2xpcFBhdGg+CjwvZGVmcz4KPC9zdmc+Cg==);*/
     /*background: rgb(0 0 0 / 100%);*/
@@ -131,13 +126,15 @@
     /*background: linear-gradient(93.07deg, #FFD719 0.61%, #F754D4 33.98%, #1FD1EC 65.84%, #48FA6B 97.7%);*/
     /*border-width: 2px;*/
     /*background: black;*/
-    background: rgb(0 0 0 / 100%);
+    /*background: rgb(0 0 0 / 100%);*/
+    background: rgb(35 35 39);
 }
 
 .metamask-styles {
     /*background: #24292e;*/
     /*background: rgb(36 41 46 / 100%);*/
-    background: #441607;
+    /*background: #441607;*/
+    background: rgb(35 35 39);
 }
 
 @media all and (max-width: 640px) {
