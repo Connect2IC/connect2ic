@@ -1,7 +1,7 @@
 <script lang="ts">
   import stoicLogo from "../../assets/stoic.png"
   import "../../connect2ic.css"
-  export let darkMode = false
+  export let dark = false
 
   const buttonStyles = {
     color: "white",
@@ -28,7 +28,7 @@
   }
 </script>
 
-<button on:click class={"button-styles stoic-styles"} style={darkMode ? `` : `background: #f4f4f4; color: black;`}>
+<button on:click class={"button-styles stoic-styles"} style={dark ? `` : `background: #f4f4f4; color: black;`}>
   <img class={"img-styles"} src={stoicLogo} alt="" />
   <div>
   <span class="button-label">

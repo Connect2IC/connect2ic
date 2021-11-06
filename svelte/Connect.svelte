@@ -1,79 +1,74 @@
 <script lang="ts">
-  import createAuth from "./stores/Connect2IC.store"
-  import Dialog from "./Dialog.svelte"
+  import { setContext } from "svelte"
+  import {
+    Dialog,
+    IIConnect,
+    StoicConnect,
+    PlugConnect,
+    MetamaskConnect,
+    createII,
+    createPlug,
+    createStoic,
+    createMetamask,
+    contextKey,
+  } from "./"
 
-  export let plug = { whitelist: [], host: window.location.origin }
-  export let stoic = {}
-  export let ii = {}
-
-  export let onConnect = () => {
+  export let onConnect = (connection) => {
   }
   export let onDisconnect = () => {
   }
+  export let dark = false
+  export let style = ""
+  let status = "idle"
 
-  let auth = createAuth({ plug, ii, stoic })
+  // let connection = createConnection()
 
-  $: onConnect($auth)
+  let ii = createII()
+  let plug = createPlug()
+  let metamask = createMetamask()
+  let stoic = createStoic()
 
-  export let providers = ["ii", "stoic", "plug"]
-  export let signInText = "Sign in"
-  export let signOutText = "Sign out"
+  setContext(contextKey, {
+    // TODO: just connection?
+    ii,
+    plug,
+    metamask,
+    stoic,
+    dark,
+  })
 
-  const signOutStyles = {
-    padding: "8px 25px",
-    borderRadius: "10px",
-    border: "3px solid black",
-    fontSize: "20px",
-    fontWeight: 600,
-    color: "black",
-    background: "transparent",
-    outline: 0,
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-  }
-
-  const selectStyles = {
-    padding: "8px 25px",
-    borderRadius: "10px",
-    border: "3px solid black",
-    fontSize: "20px",
-    fontWeight: 600,
-    background: "transparent",
-    outline: 0,
-    cursor: "pointer",
-    display: "flex",
-    alignItems: "center",
-  }
-
-  const onSelect = (args) => {
-    auth.connect(args)
-  }
-
-  const onSignOut = (args) => {
-    auth.disconnect(args)
-  }
-
-  let showSelection = false
-
-  const onSignIn = () => {
-    showSelection = true
-  }
-
-  const onClose = () => {
-    showSelection = false
+  $: {
+    const connection = $ii || $plug || $stoic || $metamask
+    if (status === "disconnect") {
+      status = "idle"
+      // provider disconnect
+      connection.disconnect()
+      onDisconnect()
+    } else if (connection) {
+      status = "connected"
+      onConnect(connection)
+    }
   }
 </script>
 
-{#if $auth.status !== "signed_in"}
-  <button on:click={onSignIn}>{signInText}</button>
+{#if status === "connected"}
+  <button style={style} class="connect-button"
+          on:click={() => status = "disconnect"}>Disconnect
+  </button>
 {/if}
 
-{#if $auth.status === "signed_in"}
-  <button style={signOutStyles} on:click={onSignOut} class="auth-button">{signOutText}</button>
+{#if status !== "connected"}
+  <button style={style} class="connect-button"
+          on:click={() => status = "selection"}>
+    Connect
+  </button>
 {/if}
 
-{#if showSelection}
-  <Dialog onSelect={onSelect} onClose={onClose} />
+{#if status === "selection"}
+  <Dialog onClose={() => status = "idle"}>
+    <IIConnect />
+    <StoicConnect />
+    <PlugConnect />
+    <MetamaskConnect />
+  </Dialog>
 {/if}
-

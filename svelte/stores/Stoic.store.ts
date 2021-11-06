@@ -1,26 +1,43 @@
 import { StoicIdentity } from "ic-stoic-identity"
 import { writable, derived } from "svelte/store"
 
-const createStore = (config) => {
+const provider = "stoic"
+
+const createStore = (config = {}) => {
   const status = writable("idle")
   const opts = writable({})
   const state = derived([opts, status], async ([$opts, $status], set) => {
     if ($status === "disconnect") {
-      set({})
+      console.log("disconnect!")
       await StoicIdentity.disconnect()
+      set()
       return
     }
-    if ($status === "connect") {
-      let identity = await StoicIdentity.load()
 
-      if (identity) {
-        let res = { stoic: { identity, principal: identity.getPrincipal().toText(), stoic: StoicIdentity } }
-        set(res)
-        return
+    let identity = await StoicIdentity.load()
+
+    if (identity) {
+      let res = {
+        identity,
+        principal: identity.getPrincipal().toText(),
+        identity: StoicIdentity,
+        provider,
+        disconnect: () => status.set("disconnect"),
       }
+      // connected not working?
+      set(res)
+      return
+    }
 
+    if ($status === "connect") {
       identity = await StoicIdentity.connect()
-      let res = { stoic: { identity, principal: identity.getPrincipal().toText(), stoic: StoicIdentity } }
+      let res = {
+        identity,
+        principal: identity.getPrincipal().toText(),
+        identity: StoicIdentity,
+        provider,
+        disconnect: () => status.set("disconnect"),
+      }
       set(res)
     }
   })

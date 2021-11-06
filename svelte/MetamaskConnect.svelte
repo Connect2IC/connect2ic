@@ -1,21 +1,26 @@
 <script lang="ts">
+  import { getContext } from "svelte"
+  import { contextKey } from "./index"
   import dfinityLogo from "../assets/dfinity.svg"
   import MetamaskButton from "./buttons/MetamaskButton.svelte"
-  import createII from "./stores/II.store"
+  import createMetamask from "./stores/Metamask.store"
 
-  export let darkMode = false
+  export let dark = false
   export let onConnect = () => {
   }
   export let onDisconnect = () => {
   }
+  let { metamask, dark: ctxDark } = getContext(contextKey)
 
-  let ii = createII({})
-
-  $: onConnect($ii)
+  $: {
+    if ($metamask) {
+      onConnect($metamask)
+    }
+  }
 
   let onClick = () => {
-    ii.connect()
+    metamask.connect()
   }
 </script>
 
-<MetamaskButton darkMode={darkMode} on:click={onClick} />
+<MetamaskButton dark={dark || ctxDark} on:click={onClick} />

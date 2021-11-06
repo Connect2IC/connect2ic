@@ -10,7 +10,7 @@ let canisterIds
 try {
   canisterIds = JSON.parse(fs.readFileSync(isDev ? ".dfx/local/canister_ids.json" : "./canister_ids.json"))
 } catch (e) {
-
+	console.error("\n⚠️  Please run: dfx deploy \nbefore starting the dev server\n\n")
 }
 
 // List of all aliases for canisters
@@ -62,7 +62,7 @@ export default defineConfig({
     proxy: {
       // This proxies all http requests made to /api to our running dfx instance
       "/api": {
-        target: `http://localhost:${DFX_PORT}`,
+        target: `http://${dfxJson.networks.local.bind}`,
         changeOrigin: true,
         rewrite: path => path.replace(/^\/api/, "/api"),
       },

@@ -1,13 +1,28 @@
 import Connect from "./Connect.svelte"
-import plug from "./stores/Plug.store"
+import createPlug from "./stores/Plug.store"
 import createConnect2IC from "./stores/Connect2IC.store"
 import PlugConnect from "./PlugConnect.svelte"
-import ii from "./stores/II.store"
+import createII from "./stores/II.store"
 import IIConnect from "./IIConnect.svelte"
-import stoic from "./stores/Stoic.store"
+import createStoic from "./stores/Stoic.store"
 import StoicConnect from "./StoicConnect.svelte"
 import MetamaskConnect from "./MetamaskConnect.svelte"
-import metamask from "./stores/Metamask.store"
+import createMetamask from "./stores/Metamask.store"
 import Dialog from "./Dialog.svelte"
 
-export { Connect as ConnectButton, Dialog, plug, PlugConnect, ii, IIConnect, MetamaskConnect, metamask, stoic, StoicConnect, createConnect2IC }
+const contextKey = "connect2ic"
+
+export {
+  Connect,
+  Dialog,
+  createPlug,
+  PlugConnect,
+  createII,
+  IIConnect,
+  MetamaskConnect,
+  createMetamask,
+  createStoic,
+  StoicConnect,
+  createConnect2IC,
+  contextKey,
+}

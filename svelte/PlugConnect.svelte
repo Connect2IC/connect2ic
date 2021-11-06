@@ -1,20 +1,25 @@
 <script lang="ts">
+  import { getContext } from "svelte"
+  import { contextKey } from "./index"
   import PlugButton from "./buttons/PlugButton.svelte"
   import createPlug from "./stores/Plug.store"
 
-  export let darkMode = false
+  export let dark = false
   export let onConnect = () => {
   }
   export let onDisconnect = () => {
   }
+  let { plug, dark: ctxDark } = getContext(contextKey)
 
-  let plug = createPlug({})
-
-  $: onConnect($plug)
+  $: {
+    if ($plug) {
+      onConnect($plug)
+    }
+  }
 
   let onClick = () => {
     plug.connect()
   }
 </script>
 
-<PlugButton darkMode={darkMode} on:click={onClick} />
+<PlugButton dark={dark || ctxDark} on:click={onClick} />

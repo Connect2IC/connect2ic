@@ -1,38 +1,52 @@
 import { writable, derived } from "svelte/store"
 
-function createStore(config) {
+const provider = "plug"
+
+function createStore(config = {}) {
   const status = writable("idle")
   const opts = writable({
     whitelist: [],
     host: window.location.origin,
   })
   const state = derived([opts, status], async ([$opts, $status], set) => {
-    if ($status === "disconnect" || $status === "idle") {
-      set({})
+    if ($status === "disconnect") {
+      set()
       return
     }
 
-    if (!(window as any).ic?.plug) {
+    if (!window.ic?.plug) {
       window.open("https://plugwallet.ooo/", "_blank")
       return
     }
 
-    const connected = await window.ic.plug.isConnected()
+    if ($status !== "connect") {
+      return
+    }
+    let connected = false
+    try {
+      connected = await (window as any)?.ic?.plug?.requestConnect($opts)
+    } catch (e) {
+      status.set("disconnect")
+      return
+    }
 
     if (!connected) return
 
     if (!window.ic.plug.agent) {
       try {
-        let a = await window.ic.plug.createAgent($opts)
+        await window.ic.plug.createAgent($opts)
         // TODO: never finishes if user doesnt login back
+        let principal = await (await window.ic?.plug?.agent.getPrincipal()).toString()
+        let res = {
+          principal,
+          plug: window.ic.plug, provider,
+          disconnect: () => status.set("disconnect"),
+        }
+        set(res)
       } catch (e) {
         console.error(e)
       }
     }
-
-    let principal = (await window.ic.plug.agent.getPrincipal()).toString()
-    let res = { plug: { principal, plug: window.ic.plug } }
-    set(res)
   })
 
   return {
