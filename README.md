@@ -1,67 +1,36 @@
-
-<img height=240 src="https://i.imgur.com/iPdytgJ.png" />
+<img height=240 src="https://i.imgur.com/gjyJF4g.png" />
 
 # Connect2IC
 
 A toolkit to solve your (auth) problems
+
 ```
 npm i -S connect2ic
 ```
 
 Sign in with:
+
 - [Internet Identity](https://identity.ic0.app/)
 - [Stoic Wallet](https://plugwallet.ooo/)
 - [Plug](https://plugwallet.ooo/)
 - *...request more*
- 
+
 For React, Vue & Svelte.
-- Custom hooks / stores for all identity providers
-- logos
-- ready-to-use branded buttons
 
+- Dialog with selection
+- Custom hooks / stores
+- Assets & branded buttons
 
+## React
 
-## Magic mode
-Import just 1 magic button and get fully working auth. For the lazy.
-Clicking it pops up the dialog in the screenshot.
-
-<img height=30 src="https://i.imgur.com/7tlLD7D.png" /> / 
-<img height=30 src="https://i.imgur.com/gHLZ76C.png" />
-
-
-### React
+### Quick start
+Fully working auth by importing 1 component. For the lazy.
 ```jsx
-import { MagicButton } from "connect2ic/react"
+import { Connect } from "connect2ic/react"
 
 function App() {
-  const onConnect = ({ ii, plug, stoic, error }) => {
-     // Signed in
-    if (ii) //...
-    if (plug) //...
-    if (stoic) //...
-    if (error) // Something went wrong
-  }
-
-  const onDisconnect = () => {
-    // Signed out
-  }
-
-  return (
-    <MagicButton onConnect={onConnect} onDisconnect={onDisconnect} style={{/* pls style it */}} />
-  )
-}
-```
-
-### Vue
-```jsx
-import { Connect2IC } from "connect2ic/react"
-
-function App() {
-  const onConnect = ({ ii, plug, stoic }) => {
+  const onConnect = ({ provider, identity, principal }) => {
     // Signed in
-    if (ii) //...
-    if (plug) //...
-    if (stoic) //...
   }
 
   const onDisconnect = () => {
@@ -69,54 +38,119 @@ function App() {
   }
 
   return (
-    <Connect2IC onConnect={onConnect} onDisconnect={onDisconnect} />
+    <Connect dark={false} onConnect={onConnect} onDisconnect={onDisconnect} style={{/* custom styles */ }} />
   )
 }
 ```
 
-### Svelte
-```svelte
-<script>
-  import { MagicButton } from "connect2ic/svelte"
+### Hooks
+When you need more control
+```jsx
+import { II, Plug, Stoic, Metamask, useAuth } from "connect2ic/react"
 
-  const onConnect = ({ plug, stoic, ii }) => {
-    if (plug) //...
-    if (stoic) // ...
-    if (ii) // ...
+let auth = useAuth({
+  providers: [II(), Plug(), Stoic(), Metamask()],
+  onConnect: ({ provider, identity, principal }) => {
+  },
+  onDisconnect: () => {
+  },
+})
+
+// connect
+auth.connect()
+
+// disconnect
+auth.disconnect()
+
+// read
+auth.status
+```
+
+## Vue
+### Quick start
+Fully working auth by importing 1 component. For the lazy.
+
+```jsx
+import { Connect } from "connect2ic/react"
+
+function App() {
+  const onConnect = ({ provider, identity, principal }) => {
+    // Signed in
   }
-  
+
+  const onDisconnect = () => {
+    // Signed out
+  }
+
+  return (
+    <Connect dark={false} onConnect={onConnect} onDisconnect={onDisconnect} style={{/* custom styles */ }} />
+  )
+}
+```
+
+### Composition API
+When you need more control
+```jsx
+import { II, Plug, Stoic, Metamask, createAuth } from "connect2ic/vue"
+
+let auth = createAuth({
+  providers: [II(), Plug(), Stoic(), Metamask()],
+  onConnect: ({ provider, identity, principal }) => {
+  },
+  onDisconnect: () => {
+  },
+})
+
+// connect
+auth.connect()
+
+// disconnect
+auth.disconnect()
+
+// read
+$auth.status
+```
+
+## Svelte
+### Quick start
+Fully working auth by importing 1 component. For the lazy.
+
+```html
+
+<script>
+  import { Connect } from "connect2ic/svelte"
+
+  const onConnect = ({ provider, identity, principal }) => {
+    // Signed in
+  }
+
   const onDisconnect = () => {
     // Signed out
   }
 </script>
 
-<MagicButton onConnect={onConnect} onDisconnect={onDisconnect} style={{/* pls style it */}} />
+<Connect dark={false} onConnect={onConnect} onDisconnect={onDisconnect} style={{/* custom styles */ }} />
 ```
 
-## Hooks / Stores
-
-Unified apis to interact with all identity providers
-
-### React
+### Stores
+When you need more control
 ```jsx
-useConnect2IC()
-useII()
-usePlug()
-useStoic()
-```
+import { II, Plug, Stoic, Metamask, createAuth } from "connect2ic/svelte"
 
-### Vue
-```jsx
-useConnect2IC()
-useII()
-usePlug()
-useStoic()
-```
+let auth = createAuth({
+  providers: [II(), Plug(), Stoic(), Metamask()],
+  onConnect: ({ provider, identity, principal }) => {
+  },
+  onDisconnect: () => {
+  },
+})
 
-### Svelte
-```jsx
-useConnect2IC()
-useII()
-usePlug()
-useStoic()
+// connect
+auth.connect()
+
+// disconnect
+auth.disconnect()
+
+// read
+$auth.status
 ```

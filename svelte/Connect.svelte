@@ -1,16 +1,11 @@
-<script lang="ts">
-  import { setContext } from "svelte"
+<script>
   import {
     Dialog,
-    IIConnect,
-    StoicConnect,
-    PlugConnect,
-    MetamaskConnect,
-    createII,
-    createPlug,
-    createStoic,
-    createMetamask,
-    contextKey,
+    IIButton,
+    StoicButton,
+    PlugButton,
+    MetamaskButton,
+    createAuth,
   } from "./"
 
   export let onConnect = (connection) => {
@@ -19,56 +14,42 @@
   }
   export let dark = false
   export let style = ""
-  let status = "idle"
+  export let config = {
+    ii: {},
+    plug: {},
+    stoic: {},
+    metamask: {},
+  }
 
-  // let connection = createConnection()
-
-  let ii = createII()
-  let plug = createPlug()
-  let metamask = createMetamask()
-  let stoic = createStoic()
-
-  setContext(contextKey, {
-    // TODO: just connection?
-    ii,
-    plug,
-    metamask,
-    stoic,
-    dark,
+  let auth = createAuth({
+    // providers,
+    onConnect,
+    onDisconnect,
   })
 
-  $: {
-    const connection = $ii || $plug || $stoic || $metamask
-    if (status === "disconnect") {
-      status = "idle"
-      // provider disconnect
-      connection.disconnect()
-      onDisconnect()
-    } else if (connection) {
-      status = "connected"
-      onConnect(connection)
-    }
+  let showDialog = false
+  $: if ($auth.status === "connected") {
+    showDialog = false
   }
 </script>
 
-{#if status === "connected"}
-  <button style={style} class="connect-button"
-          on:click={() => status = "disconnect"}>Disconnect
+{#if $auth.status === "connected"}
+  <button style={style} class="connect-button" on:click={() => auth.disconnect()}>
+    Disconnect
   </button>
 {/if}
 
-{#if status !== "connected"}
-  <button style={style} class="connect-button"
-          on:click={() => status = "selection"}>
+{#if $auth.status !== "connected"}
+  <button style={style} class="connect-button" on:click={() => showDialog = true}>
     Connect
   </button>
 {/if}
 
-{#if status === "selection"}
-  <Dialog onClose={() => status = "idle"}>
-    <IIConnect />
-    <StoicConnect />
-    <PlugConnect />
-    <MetamaskConnect />
+{#if showDialog}
+  <Dialog onClose={() => showDialog = false}>
+    <IIButton on:click={() => auth.connect("ii")} dark={dark} />
+    <StoicButton on:click={() => auth.connect("stoic")} dark={dark} />
+    <PlugButton on:click={() => auth.connect("plug")} dark={dark} />
+    <MetamaskButton on:click={() => auth.connect("metamask")} dark={dark} />
   </Dialog>
 {/if}

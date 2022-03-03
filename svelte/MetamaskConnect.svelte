@@ -3,14 +3,14 @@
   import { contextKey } from "./index"
   import dfinityLogo from "../assets/dfinity.svg"
   import MetamaskButton from "./buttons/MetamaskButton.svelte"
-  import createMetamask from "./stores/Metamask.store"
+  import createMetamask from "../providers/Metamask"
 
   export let dark = false
   export let onConnect = () => {
   }
   export let onDisconnect = () => {
   }
-  let { metamask, dark: ctxDark } = getContext(contextKey)
+  let metamask = createMetamask()
 
   $: {
     if ($metamask) {
@@ -23,4 +23,4 @@
   }
 </script>
 
-<MetamaskButton dark={dark || ctxDark} on:click={onClick} />
+<MetamaskButton dark={dark} on:click={onClick} />

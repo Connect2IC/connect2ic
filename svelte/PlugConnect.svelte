@@ -2,14 +2,14 @@
   import { getContext } from "svelte"
   import { contextKey } from "./index"
   import PlugButton from "./buttons/PlugButton.svelte"
-  import createPlug from "./stores/Plug.store"
+  import createPlug from "../providers/Plug"
 
   export let dark = false
   export let onConnect = () => {
   }
   export let onDisconnect = () => {
   }
-  let { plug, dark: ctxDark } = getContext(contextKey)
+  let plug = createPlug()
 
   $: {
     if ($plug) {
@@ -22,4 +22,4 @@
   }
 </script>
 
-<PlugButton dark={dark || ctxDark} on:click={onClick} />
+<PlugButton dark={dark} on:click={onClick} />

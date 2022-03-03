@@ -2,14 +2,14 @@
   import { getContext } from "svelte"
   import { contextKey } from "./index"
   import StoicButton from "./buttons/StoicButton.svelte"
-  import createStoic from "./stores/Stoic.store"
+  import createStoic from "../providers/Stoic"
 
   export let dark = false
   export let onConnect = () => {
   }
   export let onDisconnect = () => {
   }
-  let { stoic, dark: ctxDark } = getContext(contextKey)
+  let stoic = createStoic()
 
   $: {
     if ($stoic) {
@@ -22,4 +22,4 @@
   }
 </script>
 
-<StoicButton dark={dark || ctxDark} on:click={onClick} />
+<StoicButton dark={dark} on:click={onClick} />

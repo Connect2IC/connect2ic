@@ -4,7 +4,6 @@
   const onConnect = ({ provider, principal, identity }) => {
     console.log("connected with ", provider, principal, identity)
   }
-
   const onDisconnect = () => {
   }
 </script>
