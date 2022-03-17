@@ -46,10 +46,9 @@ function App() {
 ### Hooks
 When you need more control
 ```jsx
-import { II, Plug, Stoic, Metamask, useAuth } from "connect2ic/react"
+import { useAuth } from "connect2ic/react"
 
 let auth = useAuth({
-  providers: [II(), Plug(), Stoic(), Metamask()],
   onConnect: ({ provider, identity, principal }) => {
   },
   onDisconnect: () => {
@@ -91,10 +90,9 @@ function App() {
 ### Composition API
 When you need more control
 ```jsx
-import { II, Plug, Stoic, Metamask, createAuth } from "connect2ic/vue"
+import { createAuth } from "connect2ic/vue"
 
 let auth = createAuth({
-  providers: [II(), Plug(), Stoic(), Metamask()],
   onConnect: ({ provider, identity, principal }) => {
   },
   onDisconnect: () => {
@@ -135,10 +133,9 @@ Fully working auth by importing 1 component. For the lazy.
 ### Stores
 When you need more control
 ```jsx
-import { II, Plug, Stoic, Metamask, createAuth } from "connect2ic/svelte"
+import { createAuth } from "connect2ic/svelte"
 
 let auth = createAuth({
-  providers: [II(), Plug(), Stoic(), Metamask()],
   onConnect: ({ provider, identity, principal }) => {
   },
   onDisconnect: () => {
