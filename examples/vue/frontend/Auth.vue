@@ -1,70 +1,21 @@
-<template>
-
-  <div class="auth-section">
-    <button v-if="!signedIn && clientReady" @click="signIn()" class="auth-button">
-      Sign In
-      <img alt="" style="width: 33px; margin-right: -1em; margin-left: 0.7em;" src="./assets/dfinity.svg" />
-    </button>
-
-    <template v-if="signedIn">
-      <p>Signed in as: {{ principal }}</p>
-      <button @click="signOut()" class="auth-button">Sign out</button>
-    </template>
-  </div>
-</template>
-
-<script lang="ts">
+<script setup lang="ts">
 import { ref, onMounted } from "vue"
-import { AuthClient } from "@dfinity/auth-client"
+import { Connect } from "connect2ic/vue"
 
-let signedIn = ref(false)
-let client
-let clientReady = ref(false)
-let principal = ref("")
+const onConnect = () => {
 
-const initAuth = async () => {
-  client = await AuthClient.create()
-  clientReady.value = true
-  const isAuthenticated = await client.isAuthenticated()
-
-  if (isAuthenticated) {
-    const identity = client.getIdentity()
-    principal.value = identity.getPrincipal().toString()
-    signedIn.value = true
-  }
 }
 
-export default {
-  name: "Auth",
-  setup: () => {
-    const signIn = async () => {
-      const result: any = await new Promise((resolve, reject) => {
-        client.login({
-          identityProvider: "https://identity.ic0.app",
-          onSuccess: () => {
-            const identity = client.getIdentity()
-            const principal = identity.getPrincipal().toString()
-            resolve({ identity, principal })
-          },
-          onError: reject,
-        })
-      })
-      principal.value = result.principal
-      signedIn.value = true
-    }
+const onDisconnect = () => {
 
-    const signOut = async () => {
-      await client.logout()
-      signedIn.value = false
-      principal.value = ""
-    }
-
-    onMounted(initAuth)
-
-    return { clientReady, principal, signedIn, signOut, signIn }
-  },
 }
 </script>
+
+<template>
+  <div class="auth-section">
+    <Connect :dark="false" @on-connect="onConnect" @on-disconnect="onDisconnect" />
+  </div>
+</template>
 
 <style scoped>
 .auth-section {

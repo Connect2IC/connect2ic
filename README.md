@@ -1,6 +1,6 @@
 <img height=240 src="https://i.imgur.com/gjyJF4g.png" />
 
-# Connect2IC
+# Connect
 
 A toolkit to solve your (auth) problems
 

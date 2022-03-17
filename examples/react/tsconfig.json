@@ -21,7 +21,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react",
-    "baseUrl": "..",
+    "baseUrl": ".",
     "paths": {
       "canisters/counter": [
         ".dfx/local/canisters/counter"
@@ -29,6 +29,6 @@
     }
   },
   "include": [
-    "./frontend"
+    "frontend"
   ]
 }

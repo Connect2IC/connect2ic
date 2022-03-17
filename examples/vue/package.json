@@ -13,7 +13,7 @@
     "@dfinity/candid": "^0.10.0",
     "@dfinity/identity": "^0.10.0",
     "@dfinity/principal": "^0.10.0",
-    "connect2ic": "file:../",
+    "connect2ic": "file:../../",
     "vue": "^3.0.5"
   },
   "devDependencies": {

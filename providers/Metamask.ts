@@ -12,6 +12,7 @@ const Metamask = async (config = {
     init: async () => {
 
     },
+    name: provider,
     connect: () => {
     },
     disconnect: async () => {

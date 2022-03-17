@@ -4,6 +4,8 @@ import createAuth from "./Auth.store"
 import PlugButton from "./buttons/PlugButton.svelte"
 import II from "../providers/InternetIdentity"
 import IIButton from "./buttons/IIButton.svelte"
+// import AstroX from "../providers/AstroX"
+// import AstroXButton from "./buttons/AstroXButton.tsx"
 import Stoic from "../providers/Stoic"
 import StoicButton from "./buttons/StoicButton.svelte"
 import MetamaskButton from "./buttons/MetamaskButton.svelte"
@@ -17,6 +19,8 @@ export {
   PlugButton,
   II,
   IIButton,
+  // AstroX,
+  // AstroXButton,
   Metamask,
   MetamaskButton,
   Stoic,

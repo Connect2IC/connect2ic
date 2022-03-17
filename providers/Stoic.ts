@@ -1,5 +1,4 @@
 import { StoicIdentity } from "ic-stoic-identity"
-import { writable, derived } from "svelte/store"
 
 const provider = "stoic"
 
@@ -27,6 +26,7 @@ const Stoic = async (config = {}) => {
       }
       return res
     },
+    name: provider,
     disconnect: async () => {
       await StoicIdentity.disconnect()
     },

@@ -1,4 +1,3 @@
-import { writable, derived } from "svelte/store"
 import { AuthClient } from "@dfinity/auth-client"
 
 const provider = "ii"
@@ -10,6 +9,7 @@ const II = async (config = {
   let client = await AuthClient.create(config)
   const isAuthenticated = await client.isAuthenticated()
   let state
+
   // TODO: figure out
   if (isAuthenticated) {
     const identity = client.getIdentity()
@@ -19,6 +19,7 @@ const II = async (config = {
 
   return {
     state,
+    name: provider,
     connect: async () => {
       const isAuthenticated = await client.isAuthenticated()
       // if (!isAuthenticated) {

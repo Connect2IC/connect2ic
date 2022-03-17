@@ -33,6 +33,7 @@ const Plug = async (config = {
         return
       }
     },
+    name: provider,
     disconnect: async () => {
 
     },
