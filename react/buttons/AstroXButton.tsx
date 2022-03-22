@@ -1,5 +1,5 @@
 import React from "react"
-import astroXLogo from "../../assets/astrox.jpeg"
+import astroXLogo from "../../assets/astrox.png"
 import "../../connect2ic.css"
 
 const AstroXButton = ({ dark = false, ...props }) => {

@@ -5,6 +5,7 @@ import {
   StoicButton,
   PlugButton,
   MetamaskButton,
+  AstroXButton,
   useAuth,
 } from "./"
 
@@ -55,7 +56,8 @@ const Connect = (props) => {
           <IIButton onClick={() => auth.connect("ii")} dark={dark} />
           <StoicButton onClick={() => auth.connect("stoic")} dark={dark} />
           <PlugButton onClick={() => auth.connect("plug")} dark={dark} />
-          <MetamaskButton onClick={() => auth.connect("metamask")} dark={dark} />
+          {/*<MetamaskButton onClick={() => auth.connect("metamask")} dark={dark} />*/}
+          <AstroXButton onClick={() => auth.connect("astrox")} dark={dark} />
         </Dialog>
       ) : null}
     </>

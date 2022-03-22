@@ -1,3 +1,8 @@
+<script setup lang="ts">
+import Intro from "./Intro.vue"
+import Auth from "./Auth.vue"
+
+</script>
 <template>
   <div class="App">
     <Auth />
@@ -5,18 +10,6 @@
   </div>
 </template>
 
-<script lang="ts">
-import Intro from "./Intro.vue"
-import Auth from "./Auth.vue"
-
-export default {
-  name: "App",
-  components: {
-    Intro,
-    Auth,
-  },
-}
-</script>
 
 <style>
 body {

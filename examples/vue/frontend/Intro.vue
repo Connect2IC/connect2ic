@@ -1,3 +1,29 @@
+<script lang="ts">
+import { ref, onMounted } from "vue"
+import { counter } from "canisters/counter"
+
+export default {
+  name: "Intro",
+  setup: () => {
+    const count = ref(0)
+
+    const refreshCounter = async () => {
+      const res: any = await counter.getValue()
+      count.value = res.toString()
+    }
+
+    const increment = async () => {
+      await counter.increment()
+      refreshCounter()
+    }
+
+    onMounted(refreshCounter)
+
+    return { increment, count }
+  },
+}
+</script>
+
 <template>
   <header class="App-header">
     <img src="./assets/logo-dark.svg" class="App-logo" alt="logo" />
@@ -50,32 +76,6 @@
     <p style="font-size: 0.4em;">by <a href="https://twitter.com/miamaruq">@miamaruq</a></p>
   </header>
 </template>
-
-<script lang="ts">
-import { ref, onMounted } from "vue"
-import { counter } from "canisters/counter"
-
-export default {
-  name: "Intro",
-  setup: () => {
-    const count = ref(0)
-
-    const refreshCounter = async () => {
-      const res: any = await counter.getValue()
-      count.value = res.toString()
-    }
-
-    const increment = async () => {
-      await counter.increment()
-      refreshCounter()
-    }
-
-    onMounted(refreshCounter)
-
-    return { increment, count }
-  },
-}
-</script>
 
 <style scoped>
 .App-logo {

@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import React, { useEffect, useContext, createContext } from "react"
 import { authMachine } from "../machines/authMachine"
 import { useSelector, useInterpret } from "@xstate/react"
 
@@ -9,7 +9,7 @@ const selectState = state => ({
   status: state.value,
 })
 
-const useAuth = (props) => {
+export const useProvideAuth = (props) => {
   const authService = useInterpret(authMachine)
   const state = useSelector(authService, selectState)
 
@@ -40,4 +40,21 @@ const useAuth = (props) => {
   }
 }
 
-export default useAuth
+const AuthContext = createContext()
+
+export const AuthProvider = ({ children, ...options }) => {
+  const auth = useProvideAuth(options)
+  return (
+    <AuthContext.Provider value={auth}>
+      {children}
+    </AuthContext.Provider>
+  )
+}
+
+export const useAuth = () => {
+  return useContext(AuthContext)
+}
+
+export const useCanister = () => {
+  return useContext(AuthContext)
+}

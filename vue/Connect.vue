@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted, computed, watch } from "vue"
+import { ref, onMounted, computed, watch, watchEffect, reactive } from "vue"
 import {
   Dialog,
   IIButton,
@@ -44,29 +44,28 @@ let auth = useAuth({
   onDisconnect,
 })
 
-console.log(auth.value)
-
 let showDialog = ref(false)
 
 // computed?
-watch(() => auth.value.status, (status, prevStatus) => {
-  if (status === "connected") {
-    showDialog.value = false
-  }
-})
-
+// watchEffect( () => {
+//   if (status === "connected") {
+//     console.log(auth, "connected")
+//     showDialog.value = false
+//   }
+// })
+//
 </script>
 
 <template>
-  <button v-if="auth.status === 'connected'" class="connect-button" @click="() => auth.disconnect()">
+  <button v-if="auth.status.value === 'connected'" class="connect-button" @click="() => auth.disconnect()">
     Disconnect
   </button>
 
-  <button v-if="auth.status !== 'connected'" class="connect-button" @click="() => showDialog.value = true">
+  <button v-if="auth.status.value !== 'connected'" class="connect-button" @click="() => showDialog = true">
     Connect
   </button>
 
-  <Dialog v-if="showDialog" @on-close="() => showDialog.value = false">
+  <Dialog v-if="showDialog" @on-close="() => showDialog = false">
     <IIButton @click="() => auth.connect('ii')" :dark="dark" />
     <StoicButton @click="() => auth.connect('stoic')" :dark="dark" />
     <PlugButton @click="() => auth.connect('plug')" :dark="dark" />

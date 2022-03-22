@@ -1,7 +1,7 @@
 import { createMachine, assign } from "xstate"
 import "../connect2ic.css"
-// TODO: move index to root
-import { InternetIdentity, Metamask, Plug, Stoic } from "../providers"
+// TODO: add index to root
+import { InternetIdentity, Metamask, Plug, Stoic, AstroX } from "../providers"
 
 
 const authMachine = createMachine({
@@ -10,6 +10,7 @@ const authMachine = createMachine({
   context: {
     identity: undefined,
     principal: undefined,
+    ic: undefined,
     provider: undefined,
     providers: [],
   },
@@ -51,6 +52,7 @@ const authMachine = createMachine({
             plug: await Plug(),
             stoic: await Stoic(),
             metamask: await Metamask(),
+            astrox: await AstroX(),
           }
           let signedInProviders = Object.values(providers).filter(p => p.state?.identity)
           let res = await Promise.allSettled(Object.values(providers))
@@ -62,6 +64,7 @@ const authMachine = createMachine({
               type: "DONE_AND_CONNECTED", data: {
                 providers,
                 provider: signedInProvider.name,
+                ic: signedInProvider.state?.ic,
                 identity: signedInProvider.state.identity,
                 principal: signedInProvider.state.principal,
               },
@@ -109,7 +112,8 @@ const authMachine = createMachine({
           }
           return {
             provider: event.provider,
-            identity: res.identity,
+            identity: res?.identity,
+            ic: res?.ic,
             principal: res.principal,
           }
         },
@@ -118,9 +122,18 @@ const authMachine = createMachine({
           actions: assign((context, event) => ({
             provider: event.data.provider,
             identity: event.data.identity,
+            ic: event.data?.ic,
             principal: event.data.principal,
           })),
         },
+        // TODO: error state?
+        onError: {
+          target: "idle",
+          actions: (context, event) => {
+            // TODO: handle
+            console.log(event)
+          },
+        }
       },
     },
 

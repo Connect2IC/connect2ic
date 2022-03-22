@@ -1,5 +1,5 @@
 <script setup lang="ts">
-let stoicLogo = "../../assets/stoic.png"
+import stoicLogo from "../../assets/stoic.png"
 
 let dark = false
 

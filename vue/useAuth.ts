@@ -1,8 +1,6 @@
-import "../connect2ic.css"
 import { authMachine } from "../machines/authMachine"
-import { ref, onMounted, onUnmounted } from "vue"
-import { useSelector } from "@xstate/vue"
-import { interpret } from "xstate"
+import { ref, onMounted, onUnmounted, computed, watchEffect } from "vue"
+import { useSelector, useInterpret, useMachine } from "@xstate/vue"
 
 const useAuth = ({
                    // providers = {},
@@ -11,20 +9,27 @@ const useAuth = ({
                    onDisconnect = () => {
                    },
                  }) => {
-  const authService = interpret(authMachine, { devTools: true }).start()
-  const state = useSelector(authService, state => {
-    return {
-      identity: state.context.identity,
-      principal: state.context.principal,
-      status: state.value,
-    }
+  const authService = useInterpret(authMachine, { devTools: true }, (state) => {
+    // TODO:
   })
+  const { state, send } = useMachine(authMachine, { devTools: true })
+  // // TODO: useSelector not working?
+  const identity = useSelector(authService, state => state.context.identity)
+  const principal = useSelector(authService, state => state.context.principal)
+  const status = useSelector(authService, state => state.value)
 
   // TODO: hook not needed?
-  onMounted(() => authService.send({ type: "INIT" }))
+  // onMounted(() => authService.send({ type: "INIT" }))
+  authService.send({ type: "INIT" })
+
+  // watchEffect(() => {
+  //   console.log("use: ", status.value)
+  // })
 
   return {
-    ...state,
+    identity,
+    principal,
+    status,
     connect: (provider) => {
       authService.send({ type: "CONNECT", provider })
     },

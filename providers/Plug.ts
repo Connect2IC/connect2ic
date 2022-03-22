@@ -5,25 +5,39 @@ const Plug = async (config = {
   host: window.location.origin,
 }) => {
   let client
-  // if (!window.ic.plug.agent) {
-  //   try {
-  //     await window.ic.plug.createAgent(config)
-  //     // TODO: never finishes if user doesnt login back
-  //     let principal = await (await window.ic?.plug?.agent.getPrincipal()).toString()
-  //     let res = {
-  //       principal,
-  //       plug: window.ic.plug, provider,
-  //     }
-  //     return res
-  //   } catch (e) {
-  //     console.error(e)
-  //   }
-  // }
+  let state
+  const connected = await window.ic.plug.isConnected()
+  if (connected) {
+    try {
+      await window.ic.plug.createAgent(config) //?
+      // TODO: never finishes if user doesnt login back
+      let principal = await (await window.ic?.plug?.getPrincipal()).toString()
+
+      // TODO: return identity?
+      state = {
+        principal,
+        plug: window.ic.plug,
+        provider,
+      }
+    } catch (e) {
+      console.error(e)
+    }
+  }
 
   return {
+    state,
+    name: provider,
     connect: async () => {
       try {
-        await(window as any)?.ic?.plug?.requestConnect(config)
+        await (window as any)?.ic?.plug?.requestConnect(config)
+        let principal = await (await window.ic?.plug?.getPrincipal()).toString()
+
+        // TODO: return identity?
+        state = {
+          principal,
+          plug: window.ic.plug,
+          provider,
+        }
       } catch (e) {
         // TODO: handle
         return
@@ -33,9 +47,9 @@ const Plug = async (config = {
         return
       }
     },
-    name: provider,
     disconnect: async () => {
-
+      // TODO: no method available in plug
+      state = {}
     },
   }
 }

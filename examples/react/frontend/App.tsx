@@ -1,6 +1,7 @@
 import React from "react"
-import { Connect } from "connect2ic/react"
+import { Connect, AuthProvider } from "connect2ic/react"
 import { Intro } from "./Intro"
+import { createActor } from "canisters/counter"
 
 function App() {
 
@@ -12,12 +13,14 @@ function App() {
   }
 
   return (
-    <div className="App">
-      <div className="auth-section">
-        <Connect dark={false} onDisconnect={onDisconnect} onConnect={onConnect} />
+    <AuthProvider>
+      <div className="App">
+        <div className="auth-section">
+          <Connect dark={false} onDisconnect={onDisconnect} onConnect={onConnect} />
+        </div>
+        <Intro />
       </div>
-      <Intro />
-    </div>
+    </AuthProvider>
   )
 }
 
