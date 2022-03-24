@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue"
-import { Connect } from "connect2ic/vue"
+import { Connect } from "../../../packages/vue"
 
 const onConnect = () => {
 

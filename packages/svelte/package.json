@@ -1,0 +1,34 @@
+{
+  "name": "@connect2ic/svelte",
+  "version": "1.0.0",
+  "types": "./index.ts",
+  "files": ["dist"],
+  "main": "./dist/connect2ic-svelte.umd.js",
+  "module": "./dist/connect2ic-svelte.es.js",
+  "exports": {
+    ".": {
+      "import": "./dist/connect2ic-svelte.es.js",
+      "require": "./dist/connect2ic-svelte.umd.js"
+    }
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "@connect2ic/core": "*"
+  },
+  "devDependencies": {
+    "tsconfig": "*",
+    "config": "*",
+    "typescript": "^4.5.3",
+    "vite": "^2.5.7",
+    "@sveltejs/vite-plugin-svelte": "next",
+    "svelte": "^3.42.5",
+    "svelte-preprocess": "^4.9.4"
+  },
+  "peerDependencies": {
+    "@xstate/svelte": "^0.2.1"
+  }
+}

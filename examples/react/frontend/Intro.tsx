@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react"
-import logo from "connect2ic/assets/logo-dark.svg"
+import logo from "./assets/logo-dark.svg"
 
 export function Intro() {
 
@@ -29,12 +29,12 @@ export function Intro() {
             <code>npm run serve:</code>
             <span> Serves your production-built frontend locally</span>
           </div>
-          <hr/>
+          <hr />
           <div>
             <code>dfx deploy:</code>
             <span> Compiles & deploys your canisters</span>
           </div>
-          <div style={{textAlign: "center", fontSize: "0.8em", marginTop: "2em"}}>
+          <div style={{ textAlign: "center", fontSize: "0.8em", marginTop: "2em" }}>
             <a
               className="App-link"
               href="https://vitejs.dev/guide/features.html"
@@ -54,10 +54,10 @@ export function Intro() {
             </a>
           </div>
         </div>
-        <p style={{fontSize: "0.6em"}}>
+        <p style={{ fontSize: "0.6em" }}>
           This counter is running inside a canister
         </p>
-        <p style={{fontSize: "0.4em"}}>by <a href="https://twitter.com/miamaruq">@miamaruq</a></p>
+        <p style={{ fontSize: "0.4em" }}>by <a href="https://twitter.com/miamaruq">@miamaruq</a></p>
       </header>
     </>
   )

@@ -1,5 +1,5 @@
 import React from "react"
-import { Connect, AuthProvider } from "connect2ic/react"
+import { Connect, AuthProvider } from "@connect2ic/react"
 import { Intro } from "./Intro"
 import { createActor } from "canisters/counter"
 

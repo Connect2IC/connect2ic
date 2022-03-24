@@ -1,40 +1,28 @@
 {
   "name": "connect2ic",
   "version": "0.0.0",
-  "main": "dist/index.js",
-  "module": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "directories": {
-    "svelte": "svelte",
-    "react": "react",
-    "vue": "vue"
-  },
+  "private": true,
+  "workspaces": [
+    "packages/*",
+    "examples/*"
+  ],
   "scripts": {
-    "ts-types": " tsc --emitDeclarationOnly --outDir lib",
-    "build": "rimraf lib && node ./esbuild.mjs && npm run ts-types"
-  },
-  "dependencies": {
-    "@astrox/connection": "^0.0.39",
-    "@dfinity/agent": "0.10.0",
-    "@dfinity/auth-client": "0.10.0",
-    "@dfinity/authentication": "0.10.0",
-    "@dfinity/candid": "0.10.0",
-    "@dfinity/identity": "0.10.0",
-    "@dfinity/principal": "0.10.0",
-    "ic-stoic-identity": "^2.0.0",
-    "xstate": "^4.30.5"
-  },
-  "peerDependencies": {
-    "@xstate/react": "^2.0.1",
-    "@xstate/svelte": "^0.2.1",
-    "@xstate/vue": "^1.0.0"
+    "build": "turbo run build --scope=@connect2ic/*",
+    "dev": "turbo run dev --parallel",
+    "react": "turbo run dev --parallel --scope=\"@connect2ic/react @connect2ic/core\"",
+    "vue": "turbo run dev --parallel --scope=\"@connect2ic/vue @connect2ic/core\"",
+    "svelte": "turbo run dev --parallel --scope=\"@connect2ic/svelte @connect2ic/core\"",
+    "lint": "turbo run lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
-    "buffer": "^6.0.3",
-    "esbuild": "^0.12.1",
-    "esbuild-svelte": "^0.5.6",
-    "rimraf": "^3.0.2",
-    "svelte-preprocess": "^4.9.5",
+    "prettier": "^2.5.1",
+    "turbo": "^1.1.9",
     "typescript": "^4.4.3"
-  }
+  },
+  "engines": {
+    "npm": ">=7.0.0",
+    "node": ">=14.0.0"
+  },
+  "packageManager": "npm@8.1.0"
 }

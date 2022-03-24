@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Connect } from "connect2ic/svelte"
+  import { Connect } from "../../../packages/svelte"
 
   const onConnect = ({ provider, principal, identity }) => {
     console.log("connected with ", provider, principal, identity)
