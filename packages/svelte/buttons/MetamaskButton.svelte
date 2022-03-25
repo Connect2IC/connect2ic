@@ -1,6 +1,6 @@
 <script lang="ts">
   import { metamaskLogo } from "@connect2ic/core"
-  import "@connect2ic/core/connect2ic.css"
+  import "@connect2ic/core/style"
   export let dark = false
 </script>
 

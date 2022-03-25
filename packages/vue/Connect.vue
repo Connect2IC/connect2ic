@@ -46,14 +46,12 @@ let auth = useAuth({
 
 let showDialog = ref(false)
 
-// computed?
-// watchEffect( () => {
-//   if (status === "connected") {
-//     console.log(auth, "connected")
-//     showDialog.value = false
-//   }
-// })
-//
+watchEffect( () => {
+  if (auth.status.value === "connected") {
+    showDialog.value = false
+  }
+})
+
 </script>
 
 <template>

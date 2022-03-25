@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react"
+import "@connect2ic/core/style"
 import {
   Dialog,
   IIButton,

@@ -1,6 +1,6 @@
 import React from "react"
 import { astroxLogo } from "@connect2ic/core"
-import "@connect2ic/core/connect2ic.css"
+import "@connect2ic/core/style"
 
 const AstroXButton = ({ dark = false, ...props }) => {
   return (

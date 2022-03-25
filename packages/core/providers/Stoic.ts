@@ -17,6 +17,8 @@ const Stoic = async (config = {}) => {
   }
 
   return {
+    name: provider,
+    state,
     connect: async () => {
       let identity = await StoicIdentity.connect()
       let res = {
@@ -26,7 +28,6 @@ const Stoic = async (config = {}) => {
       }
       return res
     },
-    name: provider,
     disconnect: async () => {
       await StoicIdentity.disconnect()
     },

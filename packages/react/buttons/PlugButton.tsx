@@ -1,6 +1,6 @@
 import React from "react"
 import { plugDark, plugLight } from "@connect2ic/core"
-import "@connect2ic/core/connect2ic.css"
+import "@connect2ic/core/style"
 
 const PlugButton = ({ dark = false, ...props }) => {
   return (

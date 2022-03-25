@@ -1,6 +1,4 @@
 import { createMachine, assign } from "xstate"
-import "../connect2ic.css"
-// TODO: add index to root
 import { InternetIdentity, Metamask, Plug, Stoic, AstroX } from "../providers"
 
 
