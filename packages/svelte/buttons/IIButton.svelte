@@ -1,6 +1,6 @@
 <script lang="ts">
   import { dfinityLogo } from "@connect2ic/core"
-  import "@connect2ic/core/style"
+  import "@connect2ic/core/style.css"
 
   export let dark = false
 </script>

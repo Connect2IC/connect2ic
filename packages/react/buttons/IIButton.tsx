@@ -1,6 +1,5 @@
 import React from "react"
 import { dfinityLogo } from "@connect2ic/core"
-import "@connect2ic/core/style"
 
 const IIButton = ({ dark = false, ...props }) => {
   return (

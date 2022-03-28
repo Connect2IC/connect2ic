@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { astroxLogo } from "@connect2ic/core"
-import "@connect2ic/core/style"
+import "@connect2ic/core/style.css"
 
 const props = defineProps({
   dark: {

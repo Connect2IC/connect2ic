@@ -1,35 +1,41 @@
-import { IC } from "@astrox/connection"
+import { IC, ICAuthClient as AuthClient } from "@astrox/connection"
 import { PermissionsType } from "@astrox/connection/lib/esm/types"
 
 const provider = "astrox"
 
 const AstroX = async (config = {
   whitelist: [],
+  providerUrl: "https://63k2f-nyaaa-aaaah-aakla-cai.raw.ic0.app",
   host: window.location.origin,
 }) => {
 
+  let client = await AuthClient.create(config)
+  const isAuthenticated = await client.isAuthenticated()
+  let state
+
+  // TODO: figure out
+  if (isAuthenticated) {
+    const identity = client.getIdentity()
+    const principal = identity.getPrincipal().toString()
+    state = { identity, principal, client, provider }
+  }
   // const isAuthenticated = await client.isAuthenticated()
-  let state = {}
   // if (isAuthenticated) {
   //   state = { identity, principal, client, provider }
   // }
 
   return {
     state,
+    name: provider,
     connect: async () => {
       const result = await new Promise(async (resolve, reject) => {
         await IC.connect({
           useFrame: !(window.innerWidth < 768),
-          signerProviderUrl: process.env.isProduction!
-            ? "https://63k2f-nyaaa-aaaah-aakla-cai.raw.ic0.app/signer"
-            : "http://localhost:8080/signer",
-          walletProviderUrl: process.env.isProduction!
-            ? "https://63k2f-nyaaa-aaaah-aakla-cai.raw.ic0.app/transaction"
-            : "http://localhost:8080/transaction",
-          identityProvider: process.env.isProduction!
-            ? "https://63k2f-nyaaa-aaaah-aakla-cai.raw.ic0.app/login#authorize"
-            : "http://localhost:8080/login#authorize",
+          signerProviderUrl: `${config.providerUrl}/signer`,
+          walletProviderUrl: `${config.providerUrl}/transaction`,
+          identityProvider: `${config.providerUrl}/login#authorize`,
           permissions: [PermissionsType.identity, PermissionsType.wallet],
+          ledgerCanisterId: "ryjl3-tyaaa-aaaaa-aaaba-cai",
           onAuthenticated: (icInstance: IC) => {
             const thisIC = window.ic ?? icInstance
             const principal = thisIC.principal.toText()
@@ -38,11 +44,19 @@ const AstroX = async (config = {
             console.log(thisIC, wallet)
             resolve({ principal })
           },
+          onError: (e) => {
+            console.error(e)
+          },
+          onSuccess: (...props) => {
+            console.log(props)
+          },
         })
       })
+      console.log(result)
       return result
     },
     disconnect: async () => {
+      await client.logout()
     },
   }
 }

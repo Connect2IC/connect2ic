@@ -1,4 +1,4 @@
-import "../core/connect2ic.css"
+import "../core/style.css"
 import { authMachine } from "../core/machines/authMachine"
 import { useSelector } from "@xstate/svelte"
 import { interpret } from "xstate"

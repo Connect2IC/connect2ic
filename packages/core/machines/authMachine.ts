@@ -53,6 +53,7 @@ const authMachine = createMachine({
             astrox: await AstroX(),
           }
           let signedInProviders = Object.values(providers).filter(p => p.state?.identity)
+          console.log({ providers, signedInProviders })
           let res = await Promise.allSettled(Object.values(providers))
 
           if (signedInProviders.length > 0) {
@@ -117,12 +118,15 @@ const authMachine = createMachine({
         },
         onDone: {
           target: "connected",
-          actions: assign((context, event) => ({
-            provider: event.data.provider,
-            identity: event.data.identity,
-            ic: event.data?.ic,
-            principal: event.data.principal,
-          })),
+          actions: assign((context, event) => {
+            console.log(event)
+            return ({
+              provider: event.data.provider,
+              identity: event.data.identity,
+              ic: event.data?.ic,
+              principal: event.data.principal,
+            })
+          }),
         },
         // TODO: error state?
         onError: {
@@ -131,7 +135,7 @@ const authMachine = createMachine({
             // TODO: handle
             console.log(event)
           },
-        }
+        },
       },
     },
 

@@ -1,6 +1,5 @@
 import React from "react"
 import { stoicLogo } from "@connect2ic/core"
-import "@connect2ic/core/style"
 
 const StoicButton = ({ dark = false, ...props }) => {
   return (

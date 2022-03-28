@@ -1,6 +1,6 @@
 <script lang="ts">
   import { stoicLogo } from "@connect2ic/core"
-  import "@connect2ic/core/style"
+  import "@connect2ic/core/style.css"
   export let dark = false
 
   const buttonStyles = {

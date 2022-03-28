@@ -9,9 +9,9 @@
   "scripts": {
     "build": "turbo run build --scope=@connect2ic/*",
     "dev": "turbo run dev --parallel",
-    "react": "turbo run dev --parallel --scope=\"@connect2ic/react @connect2ic/core\"",
-    "vue": "turbo run dev --parallel --scope=\"@connect2ic/vue @connect2ic/core\"",
-    "svelte": "turbo run dev --parallel --scope=\"@connect2ic/svelte @connect2ic/core\"",
+    "react": "turbo run dev --parallel --scope=\"@connect2ic/react\"",
+    "vue": "turbo run dev --parallel --scope=\"@connect2ic/vue\"",
+    "svelte": "turbo run dev --parallel --scope=\"@connect2ic/svelte\"",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },

@@ -4,16 +4,19 @@
   "types": "./index.tsx",
   "files": [
     "dist",
-    "connect2ic.css"
+    "style.css"
   ],
   "main": "./dist/connect2ic-core.umd.js",
   "module": "./dist/connect2ic-core.es.js",
   "exports": {
+    "./style.css": {
+      "import": "./style.css",
+      "require": "./style.css"
+    },
     ".": {
       "import": "./dist/connect2ic-core.es.js",
       "require": "./dist/connect2ic-core.umd.js"
-    },
-    "./style": "./connect2ic.css"
+    }
   },
   "scripts": {
     "dev": "vite",
@@ -21,7 +24,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "@astrox/connection": "^0.0.39",
+    "@astrox/connection": "file:../../../astrox-js/packages/connection",
     "@dfinity/agent": "0.10.0",
     "@dfinity/auth-client": "0.10.0",
     "@dfinity/authentication": "0.10.0",

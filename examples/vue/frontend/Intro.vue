@@ -1,27 +1,20 @@
-<script lang="ts">
+<script setup lang="ts">
 import { ref, onMounted } from "vue"
-import { counter } from "canisters/counter"
+// import { counter } from "canisters/counter"
 
-export default {
-  name: "Intro",
-  setup: () => {
-    const count = ref(0)
+const count = ref(0)
 
-    const refreshCounter = async () => {
-      const res: any = await counter.getValue()
-      count.value = res.toString()
-    }
-
-    const increment = async () => {
-      await counter.increment()
-      refreshCounter()
-    }
-
-    onMounted(refreshCounter)
-
-    return { increment, count }
-  },
+const refreshCounter = async () => {
+  // const res: any = await counter.getValue()
+  // count.value = res.toString()
 }
+
+const increment = async () => {
+  // await counter.increment()
+  // refreshCounter()
+}
+
+// onMounted(refreshCounter)
 </script>
 
 <template>
@@ -29,7 +22,7 @@ export default {
     <img src="./assets/logo-dark.svg" class="App-logo" alt="logo" />
     <p style="font-size: 2em; margin-bottom: 0.5em">Ready. Lets build the new web</p>
     <div
-      style="display: flex; font-size: 0.7em; text-align: left; padding: 2em; border-radius: 30px; flex-direction: column; background: rgb(220 218 224 / 25%);">
+        style="display: flex; font-size: 0.7em; text-align: left; padding: 2em; border-radius: 30px; flex-direction: column; background: rgb(220 218 224 / 25%);">
       <div>
         <code>npm run dev:</code>
         <span> Runs the development server</span>
@@ -49,19 +42,19 @@ export default {
       </div>
       <div style="text-align: center; font-size: 0.8em; margin-top: 2em;">
         <a
-          class="App-link"
-          href="https://vitejs.dev/guide/features.html"
-          target="_blank"
-          rel="noopener noreferrer"
+            class="App-link"
+            href="https://vitejs.dev/guide/features.html"
+            target="_blank"
+            rel="noopener noreferrer"
         >
           Vite Docs
         </a>
-        {{" | "}}
+        {{ " | " }}
         <a
-          class="App-link"
-          href="https://sdk.dfinity.org/docs/developers-guide/sdk-guide.html"
-          target="_blank"
-          rel="noopener noreferrer"
+            class="App-link"
+            href="https://sdk.dfinity.org/docs/developers-guide/sdk-guide.html"
+            target="_blank"
+            rel="noopener noreferrer"
         >
           IC SDK Docs
         </a>

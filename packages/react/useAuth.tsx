@@ -10,7 +10,13 @@ const selectState = state => ({
 })
 
 export const useProvideAuth = (props) => {
-  const authService = useInterpret(authMachine)
+  const {
+    onConnect = () => {
+    },
+    onDisconnect = () => {
+    },
+  } = props
+  const authService = useInterpret(authMachine, { devTools: true })
   const state = useSelector(authService, selectState)
 
   useEffect(() => {
@@ -22,10 +28,10 @@ export const useProvideAuth = (props) => {
       return
     }
     if (state.status === "connected") {
-      props.onConnect(state)
+      onConnect(state)
     }
     if (state.status === "disconnected") {
-      props.onDisconnect()
+      onDisconnect()
     }
   }, [state.status])
 
