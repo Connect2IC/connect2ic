@@ -1,0 +1,27 @@
+{
+  "canisters": {
+    "buymecoffee": {
+      "main": "backend/main.mo",
+      "type": "motoko"
+    },
+    "frontend": {
+      "frontend": {
+        "entrypoint": "/html/main/index.html"
+      },
+      "source": ["dist/"],
+      "type": "assets"
+    }
+  },
+  "defaults": {
+    "build": {
+      "packtool": ""
+    }
+  },
+  "networks": {
+    "local": {
+      "bind": "127.0.0.1:8000",
+      "type": "ephemeral"
+    }
+  },
+  "version": 1
+}
