@@ -7,6 +7,14 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
+/*@keyframes fadeIn {*/
+/*    from { opacity: 0.4; }*/
+/*}*/
+
+/*.animate-flicker {*/
+/*    animation: fadeIn 1.2s infinite alternate;*/
+/*}*/
+
 button {
     font-weight: 600;
 }
@@ -16,7 +24,7 @@ button {
 }
 
 .App-logo {
-    height: 15vmin;
+    height: 11vmin;
     pointer-events: none;
 }
 

@@ -1,23 +1,26 @@
-const provider = "plug"
+const name = "plug"
 
 const Plug = async (config = {
   whitelist: [],
   host: window.location.origin,
 }) => {
-  let client
   let state
   const connected = await window.ic.plug.isConnected()
   if (connected) {
     try {
-      await window.ic.plug.createAgent(config) //?
+      await window.ic.plug.createAgent(config)
       // TODO: never finishes if user doesnt login back
-      let principal = await (await window.ic?.plug?.getPrincipal()).toString()
+      let principal = await (await window.ic.plug.getPrincipal()).toString()
 
       // TODO: return identity?
       state = {
         principal,
-        plug: window.ic.plug,
-        provider,
+        // TODO: fix
+        signedIn: true,
+        provider: {
+          name,
+          plug: window.ic.plug,
+        },
       }
     } catch (e) {
       console.error(e)
@@ -26,29 +29,35 @@ const Plug = async (config = {
 
   return {
     state,
-    name: provider,
+    name,
     connect: async () => {
       try {
-        await (window as any)?.ic?.plug?.requestConnect(config)
-        let principal = await (await window.ic?.plug?.getPrincipal()).toString()
+        await window.ic.plug.requestConnect(config)
+        let principal = await (await window.ic.plug.getPrincipal()).toString()
 
         // TODO: return identity?
         state = {
           principal,
-          plug: window.ic.plug,
-          provider,
+          signedIn: true,
+          provider: {
+            name,
+            plug: window.ic.plug,
+          },
         }
       } catch (e) {
         // TODO: handle
         return
       }
-      if (!window.ic?.plug) {
+      if (!window.ic.plug) {
         window.open("https://plugwallet.ooo/", "_blank")
+        // TODO: throw?
         return
       }
+      return state
     },
     disconnect: async () => {
-      // TODO: no method available in plug
+      // TODO: not the best way?
+      await window.ic.plug.disconnect()
       state = {}
     },
   }

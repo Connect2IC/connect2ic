@@ -5,7 +5,7 @@ import plugLight from "./assets/plugLight.svg"
 import stoicLogo from "./assets/stoic.png"
 import metamaskLogo from "./assets/metamask-fox.svg"
 //
-import { authMachine } from "./machines/authMachine"
+import { connectMachine } from "./machines/connectMachine"
 //
 export * from "./providers"
 

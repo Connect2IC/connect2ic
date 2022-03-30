@@ -1,9 +1,8 @@
 import { StoicIdentity } from "ic-stoic-identity"
 
-const provider = "stoic"
+const name = "stoic"
 
 const Stoic = async (config = {}) => {
-  let client
   let identity = await StoicIdentity.load()
   let state
 
@@ -11,20 +10,26 @@ const Stoic = async (config = {}) => {
     state = {
       identity,
       principal: identity.getPrincipal().toText(),
-      provider,
+      signedIn: true,
+      provider: {
+        name,
+      },
     }
     // connected not working?
   }
 
   return {
-    name: provider,
+    name,
     state,
     connect: async () => {
       let identity = await StoicIdentity.connect()
       let res = {
         identity,
         principal: identity.getPrincipal().toText(),
-        provider,
+        signedIn: true,
+        provider: {
+          name,
+        },
       }
       return res
     },

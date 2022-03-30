@@ -1,5 +1,5 @@
 import Connect from "./Connect"
-import { useAuth, AuthProvider } from "./useAuth"
+import { useConnect, useCanister, ConnectProvider } from "./useConnect"
 import Plug from "../core/providers/Plug"
 import PlugButton from "./buttons/PlugButton"
 import II from "../core/providers/InternetIdentity"
@@ -25,6 +25,7 @@ export {
   MetamaskButton,
   Stoic,
   StoicButton,
-  useAuth,
-  AuthProvider,
+  useConnect,
+  useCanister,
+  ConnectProvider,
 }

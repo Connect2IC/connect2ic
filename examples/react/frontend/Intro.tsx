@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from "react"
 import logo from "./assets/logo-dark.svg"
+import { useCanister } from "@connect2ic/react"
 
 export function Intro() {
-
+  const counter = useCanister("counter")
   return (
     <>
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p style={{ fontSize: "2em", marginBottom: "0.5em" }}>Ready. Lets build the new web</p>
+        <img src={logo} className="App-logo animate-flicker" alt="logo" />
+        <p style={{ fontSize: "2em", marginBottom: "0.5em" }}>Connect example</p>
         <div style={{
           display: "flex",
           fontSize: "0.7em",
@@ -54,6 +55,9 @@ export function Intro() {
             </a>
           </div>
         </div>
+        <p style={{ fontSize: "0.6em" }}>
+          Count is {counter.value}
+        </p>
         <p style={{ fontSize: "0.6em" }}>
           This counter is running inside a canister
         </p>

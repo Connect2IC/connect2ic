@@ -2,13 +2,12 @@ import { createMachine, assign } from "xstate"
 import { InternetIdentity, Metamask, Plug, Stoic, AstroX } from "../providers"
 
 
-const authMachine = createMachine({
+const connectMachine = createMachine({
   id: "auth",
   initial: "inactive",
   context: {
     identity: undefined,
     principal: undefined,
-    ic: undefined,
     provider: undefined,
     providers: [],
   },
@@ -52,7 +51,8 @@ const authMachine = createMachine({
             metamask: await Metamask(),
             astrox: await AstroX(),
           }
-          let signedInProviders = Object.values(providers).filter(p => p.state?.identity)
+          // TODO: fix
+          let signedInProviders = Object.values(providers).filter(p => p.state?.signedIn)
           console.log({ providers, signedInProviders })
           let res = await Promise.allSettled(Object.values(providers))
 
@@ -62,9 +62,11 @@ const authMachine = createMachine({
             callback({
               type: "DONE_AND_CONNECTED", data: {
                 providers,
-                provider: signedInProvider.name,
-                ic: signedInProvider.state?.ic,
-                identity: signedInProvider.state.identity,
+                provider: {
+                  name: signedInProvider.name,
+                  ic: signedInProvider.state?.ic,
+                },
+                identity: signedInProvider.state?.identity,
                 principal: signedInProvider.state.principal,
               },
             })
@@ -112,18 +114,15 @@ const authMachine = createMachine({
           return {
             provider: event.provider,
             identity: res?.identity,
-            ic: res?.ic,
             principal: res.principal,
           }
         },
         onDone: {
           target: "connected",
           actions: assign((context, event) => {
-            console.log(event)
             return ({
               provider: event.data.provider,
               identity: event.data.identity,
-              ic: event.data?.ic,
               principal: event.data.principal,
             })
           }),
@@ -154,7 +153,6 @@ const authMachine = createMachine({
         id: "disconnect",
         src: (context, event) => async () => {
           await Promise.allSettled(Object.values(context.providers).map(p => p.disconnect()))
-          // await context.providers[context.provider].disconnect()
           return {}
         },
         onDone: {
@@ -173,4 +171,4 @@ const authMachine = createMachine({
   },
 })
 
-export { authMachine }
+export { connectMachine }

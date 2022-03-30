@@ -1,7 +1,7 @@
 import { IC, ICAuthClient as AuthClient } from "@astrox/connection"
 import { PermissionsType } from "@astrox/connection/lib/esm/types"
 
-const provider = "astrox"
+const name = "astrox"
 
 const AstroX = async (config = {
   whitelist: [],
@@ -17,16 +17,19 @@ const AstroX = async (config = {
   if (isAuthenticated) {
     const identity = client.getIdentity()
     const principal = identity.getPrincipal().toString()
-    state = { identity, principal, client, provider }
+    state = {
+      principal,
+      client,
+      signedIn: true,
+      provider: {
+        name,
+      },
+    }
   }
-  // const isAuthenticated = await client.isAuthenticated()
-  // if (isAuthenticated) {
-  //   state = { identity, principal, client, provider }
-  // }
 
   return {
     state,
-    name: provider,
+    name,
     connect: async () => {
       const result = await new Promise(async (resolve, reject) => {
         await IC.connect({
@@ -39,20 +42,21 @@ const AstroX = async (config = {
           onAuthenticated: (icInstance: IC) => {
             const thisIC = window.ic ?? icInstance
             const principal = thisIC.principal.toText()
-            const wallet = thisIC.wallet ?? "unknown"
-            const isAuth = true
-            console.log(thisIC, wallet)
-            resolve({ principal })
-          },
-          onError: (e) => {
-            console.error(e)
-          },
-          onSuccess: (...props) => {
-            console.log(props)
+            const identity = client.getIdentity()
+            // ?
+            const wallet = thisIC.wallet
+            resolve({
+              principal,
+              identity,
+              signedIn: true,
+              provider: {
+                name,
+                ic: thisIC,
+              },
+            })
           },
         })
       })
-      console.log(result)
       return result
     },
     disconnect: async () => {

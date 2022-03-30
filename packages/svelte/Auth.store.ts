@@ -1,5 +1,5 @@
 import "../core/style.css"
-import { authMachine } from "../core/machines/authMachine"
+import { connectMachine } from "../core/machines/connectMachine"
 import { useSelector } from "@xstate/svelte"
 import { interpret } from "xstate"
 
@@ -10,7 +10,7 @@ const createAuth = ({
                       onDisconnect = () => {
                       },
                     }) => {
-  const authService = interpret(authMachine, { devTools: true }).start()
+  const authService = interpret(connectMachine, { devTools: true }).start()
   const state = useSelector(authService, state => {
     return {
       identity: state.context.identity,

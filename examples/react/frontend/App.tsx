@@ -1,14 +1,14 @@
 import React from "react"
 import "@connect2ic/core/style.css"
-import { Connect, AuthProvider } from "@connect2ic/react"
+import { Connect, ConnectProvider } from "@connect2ic/react"
 import { Intro } from "./Intro"
-import { createActor } from "canisters/counter"
+import * as counter from "canisters/counter"
 import { inspect } from "@xstate/inspect"
 
 inspect({
   // options
   // url: 'https://statecharts.io/inspect', // (default)
-  iframe: false // open in new window
+  iframe: false, // open in new window
 })
 
 function App() {
@@ -21,14 +21,14 @@ function App() {
   }
 
   return (
-    <AuthProvider>
+    <ConnectProvider canisters={{ counter }}>
       <div className="App">
         <div className="auth-section">
-          <Connect dark={false} onDisconnect={onDisconnect} onConnect={onConnect} />
+          <Connect onDisconnect={onDisconnect} onConnect={onConnect} dark={false} />
         </div>
         <Intro />
       </div>
-    </AuthProvider>
+    </ConnectProvider>
   )
 }
 

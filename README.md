@@ -46,9 +46,9 @@ function App() {
 ### Hooks
 When you need more control
 ```jsx
-import { useAuth } from "connect2ic/react"
+import { useConnect } from "connect2ic/react"
 
-let auth = useAuth({
+let auth = useConnect({
   onConnect: ({ provider, identity, principal }) => {
   },
   onDisconnect: () => {

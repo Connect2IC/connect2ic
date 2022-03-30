@@ -1,7 +1,7 @@
 import { AuthClient } from "@dfinity/auth-client"
 // import { Actor, HttpAgent } from "@dfinity/agent"
 
-const provider = "ii"
+const name = "ii"
 
 const II = async (config = {
   whitelist: [],
@@ -15,12 +15,20 @@ const II = async (config = {
   if (isAuthenticated) {
     const identity = client.getIdentity()
     const principal = identity.getPrincipal().toString()
-    state = { identity, principal, client, provider }
+    state = {
+      identity,
+      principal,
+      client,
+      signedIn: true,
+      provider: {
+        name,
+      },
+    }
   }
 
   return {
     state,
-    name: provider,
+    name,
     connect: async () => {
       const isAuthenticated = await client.isAuthenticated()
       // if (!isAuthenticated) {
@@ -36,7 +44,15 @@ const II = async (config = {
             onError: reject,
           })
         })
-        state = { identity, principal, client, provider }
+        state = {
+          identity,
+          principal,
+          client,
+          signedIn: true,
+          provider: {
+            name,
+          },
+        }
         return state
       } catch (e) {
         // TODO: handle errors

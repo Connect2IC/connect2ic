@@ -4,10 +4,10 @@ import {
   IIButton,
   StoicButton,
   PlugButton,
-  MetamaskButton,
   AstroXButton,
-  useAuth,
+  useConnect,
 } from "./index"
+import { useSelector } from "@xstate/react"
 
 const Connect = (props) => {
   const {
@@ -15,7 +15,7 @@ const Connect = (props) => {
       ii: {},
       plug: {},
       stoic: {},
-      metamask: {},
+      astrox: {},
     },
     style = {},
     dark = false,
@@ -25,27 +25,27 @@ const Connect = (props) => {
     },
   } = props
 
-  const auth = useAuth({
+  const { connect, disconnect, ...state } = useConnect({
     onConnect,
     onDisconnect,
   })
   const [showDialog, setShowDialog] = useState(false)
 
   useEffect(() => {
-    if (auth.status === "connected") {
+    if (state.status === "connected") {
       setShowDialog(false)
     }
-  }, [auth.status])
+  }, [state.status])
 
   return (
     <>
-      {auth.status === "connected" ? (
-        <button style={style} className="connect-button" onClick={() => auth.disconnect()}>
+      {state.status === "connected" ? (
+        <button style={style} className="connect-button" onClick={() => disconnect()}>
           Disconnect
         </button>
       ) : null}
 
-      {auth.status !== "connected" ? (
+      {state.status !== "connected" ? (
         <button style={style} className="connect-button" onClick={() => setShowDialog(true)}>
           Connect
         </button>
@@ -53,11 +53,10 @@ const Connect = (props) => {
 
       {showDialog ? (
         <Dialog onClose={() => setShowDialog(false)}>
-          <IIButton onClick={() => auth.connect("ii")} dark={dark} />
-          <StoicButton onClick={() => auth.connect("stoic")} dark={dark} />
-          <PlugButton onClick={() => auth.connect("plug")} dark={dark} />
-          {/*<MetamaskButton onClick={() => auth.connect("metamask")} dark={dark} />*/}
-          <AstroXButton onClick={() => auth.connect("astrox")} dark={dark} />
+          <IIButton onClick={() => connect("ii")} dark={dark} />
+          <AstroXButton onClick={() => connect("astrox")} dark={dark} />
+          <StoicButton onClick={() => connect("stoic")} dark={dark} />
+          <PlugButton onClick={() => connect("plug")} dark={dark} />
         </Dialog>
       ) : null}
     </>

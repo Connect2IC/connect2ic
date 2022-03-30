@@ -8,8 +8,8 @@ const AstroXButton = ({ dark = false, ...props }) => {
               style={dark ? {} : { background: "#f4f4f4", color: "black" }} {...props}>
         <img style={{ height: "auto" }} className={"img-styles"} src={astroxLogo} />
         <div>
-          <span className="button-label">AstroX</span>
-          <span>Connect with your AstroX identity</span>
+          <span className="button-label">AstroX ME</span>
+          <span>Connect with your AstroX ME identity</span>
         </div>
       </button>
     </>

@@ -1,4 +1,4 @@
-import { authMachine } from "../core/machines/authMachine"
+import { connectMachine } from "../core/machines/connectMachine"
 import { ref, onMounted, onUnmounted, computed, watchEffect } from "vue"
 import { useSelector, useInterpret, useMachine } from "@xstate/vue"
 
@@ -9,10 +9,10 @@ const useAuth = ({
                    onDisconnect = () => {
                    },
                  }) => {
-  const authService = useInterpret(authMachine, { devTools: true }, (state) => {
+  const authService = useInterpret(connectMachine, { devTools: true }, (state) => {
     // TODO:
   })
-  const { state, send } = useMachine(authMachine, { devTools: true })
+  const { state, send } = useMachine(connectMachine, { devTools: true })
   // // TODO: useSelector not working?
   const identity = useSelector(authService, state => state.context.identity)
   const principal = useSelector(authService, state => state.context.principal)
