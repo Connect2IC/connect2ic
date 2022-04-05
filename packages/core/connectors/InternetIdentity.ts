@@ -1,42 +1,49 @@
 import { AuthClient } from "@dfinity/auth-client"
 import { Actor, HttpAgent } from "@dfinity/agent"
-// import { Actor, HttpAgent } from "@dfinity/agent"
+import { IConnector } from "./connectors"
 
-const name = "ii"
+class InternetIdentityConnector implements IConnector {
 
-const II = async (config = {
-  whitelist: [],
-  host: window.location.origin,
-}) => {
-  let client = await AuthClient.create(config)
-  const isAuthenticated = await client.isAuthenticated()
-  let state
+  readonly id = "ii"
+  readonly name = "Internet Identity"
 
-  // TODO: figure out
-  if (isAuthenticated) {
-    const identity = client.getIdentity()
-    const principal = identity.getPrincipal().toString()
-    state = {
-      identity,
-      principal,
-      client,
-      signedIn: true,
-      provider: {
-        name,
-      },
+  #config: {
+    whitelist: [string],
+    host: string,
+    dev: Boolean,
+  }
+  #identity?: any
+  #principal?: string
+  #client?: any
+
+  constructor(userConfig) {
+    this.#config = {
+      whitelist: [],
+      host: window.location.origin,
+      dev: false,
+      ...userConfig,
     }
   }
 
-  return {
-    state,
-    name,
-    createActor: async (canisterId, idlFactory) => {
-      // // pass in the path to the Provider
-      // const { canisterId, idlFactory } = import(`canisters/${canisterName}`)
+  async init() {
+    this.#client = await AuthClient.create(this.config)
+    const isAuthenticated = await this.isAuthenticated()
+    // // TODO: fix?
+    if (isAuthenticated) {
+      this.#identity = this.#client.getIdentity()
+      this.#principal = this.#identity.getPrincipal().toString()
+    }
+  }
 
-      // TODO: pass identity
-      const agent = new HttpAgent({ ...config })
+  async isAuthenticated() {
+    return await this.#client.isAuthenticated()
+  }
 
+  async createActor(canisterId, idlFactory) {
+    // TODO: pass identity?
+    const agent = new HttpAgent({ ...this.#config })
+
+    if (this.#config.dev) {
       // Fetch root key for certificate validation during development
       // if(process.env.NODE_ENV !== "production") {
       agent.fetchRootKey().catch(err => {
@@ -44,47 +51,38 @@ const II = async (config = {
         console.error(err)
       })
       // }
+    }
 
-      // TODO: add actorOptions?
-      return Actor.createActor(idlFactory, {
-        agent,
-        canisterId,
-      })
-    },
-    connect: async () => {
-      // const isAuthenticated = await client.isAuthenticated()
-      // if (!isAuthenticated) {
-      try {
-        const { identity, principal } = await new Promise((resolve, reject) => {
-          client.login({
-            identityProvider: "https://identity.ic0.app",
-            onSuccess: () => {
-              const identity = client.getIdentity()
-              const principal = identity.getPrincipal().toString()
-              resolve({ identity, principal })
-            },
-            onError: reject,
-          })
-        })
-        state = {
-          identity,
-          principal,
-          client,
-          signedIn: true,
-          provider: {
-            name,
+    // TODO: add actorOptions?
+    return Actor.createActor(idlFactory, {
+      agent,
+      canisterId,
+    })
+  }
+
+  async connect() {
+    try {
+      const { identity, principal } = await new Promise((resolve, reject) => {
+        this.#client.login({
+          identityProvider: "https://identity.ic0.app",
+          onSuccess: () => {
+            const identity = this.#client.getIdentity()
+            const principal = identity.getPrincipal().toString()
+            resolve({ identity, principal })
           },
-        }
-        return state
-      } catch (e) {
-        // TODO: handle errors
-      }
-      // }
-    },
-    disconnect: async () => {
-      await client.logout()
-    },
+          onError: reject,
+        })
+      })
+      this.#identity = identity
+      this.#principal = principal
+    } catch (e) {
+      // TODO: handle errors
+    }
+  }
+
+  async disconnect() {
+    await this.#client.logout()
   }
 }
 
-export default II
+export default InternetIdentityConnector

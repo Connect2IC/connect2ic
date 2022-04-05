@@ -18,12 +18,12 @@ const canisterStates = {
               const agent = new HttpAgent({ host })
 
               // Fetch root key for certificate validation during development
-              // if(process.env.NODE_ENV !== "production") {
-              agent.fetchRootKey().catch(err => {
-                console.warn("Unable to fetch root key. Check to ensure that your local replica is running")
-                console.error(err)
-              })
-              // }
+              if (context.dev) {
+                agent.fetchRootKey().catch(err => {
+                  console.warn("Unable to fetch root key. Check to ensure that your local replica is running")
+                  console.error(err)
+                })
+              }
 
               const actor = Actor.createActor(e.idlFactory, {
                 agent,
@@ -54,14 +54,6 @@ const authStates = {
   initial: "initializing",
   states: {
 
-    // "inactive": {
-    //   on: {
-    //     INIT: {
-    //       target: "initializing",
-    //     },
-    //   },
-    // },
-
     "initializing": {
       on: {
         DONE: {
@@ -76,7 +68,7 @@ const authStates = {
           actions: assign((context, event) => ({
             providers: event.data.providers,
             provider: event.data.provider,
-            wallet: event.data.wallet,
+            // wallet: event.data.wallet,
             identity: event.data.identity,
             principal: event.data.principal,
           })),
@@ -87,30 +79,25 @@ const authStates = {
         src: (context, event) => async (callback, onReceive) => {
           // TODO: clean up
           // Save in context?
-          const { whitelist, host, connectors } = context
-          let providers = connectors.map(Connector => new Connector({ whitelist, host }))
-          // let providers = {
-          //   ii: await InternetIdentity({ whitelist, host }),
-          //   plug: await Plug({ whitelist, host }),
-          //   stoic: await Stoic({ whitelist, host }),
-          //   astrox: await AstroX({ whitelist, host }),
-          // }
+          const { whitelist, host, dev, connectors } = context
+          let providers = connectors.map(Connector => new Connector({ whitelist, host, dev }))
+          await Promise.allSettled(providers.map(p => p.init()))
           // TODO: fix
-          let signedInProviders = providers.filter(p => p.state?.signedIn)
-          let res = await Promise.allSettled(providers)
+          let maybeProviders = await Promise.allSettled(providers.map(async p => {
+            const isAuthenticated = await p.isAuthenticated()
+            return isAuthenticated ? p : false
+          }))
+          let signedInProviders = maybeProviders.filter(p => p)
 
           if (signedInProviders.length > 0) {
-            // TODO: how to choose provider?
             let signedInProvider = signedInProviders[0]
             callback({
               type: "DONE_AND_CONNECTED", data: {
                 providers,
-                provider: {
-                  ...signedInProvider.state?.provider,
-                },
-                wallet: signedInProvider.state?.wallet,
-                identity: signedInProvider.state?.identity,
-                principal: signedInProvider.state.principal,
+                provider: signedInProvider,
+                // wallet: signedInProvider.wallet,
+                identity: signedInProvider.identity,
+                principal: signedInProvider.principal,
               },
             })
           } else {
@@ -140,14 +127,14 @@ const authStates = {
             if (e.type === "CONNECT") {
               let res
               try {
-                res = await provider.connect()
+                await provider.connect()
                 callback({
                   type: "DONE",
                   // TODO: fix?
                   provider,
-                  wallet: provider.state?.wallet,
-                  identity: res?.identity,
-                  principal: res.principal,
+                  // wallet: provider.wallet,
+                  identity: provider.identity,
+                  principal: provider.principal,
                 })
               } catch (e) {
                 callback({
@@ -170,7 +157,7 @@ const authStates = {
           actions: assign((context, event) => {
             return ({
               provider: event.provider,
-              wallet: event.wallet,
+              // wallet: event.wallet,
               identity: event.identity,
               principal: event.principal,
             })
@@ -185,7 +172,7 @@ const authStates = {
           //     principal: event.principal,
           //   })
           // }),
-        }
+        },
       },
     },
 
@@ -247,12 +234,13 @@ const rootMachine = createMachine({
   initial: "inactive",
   context: {
     host: window.location.origin,
+    dev: false,
     whitelist: [],
     connectors: [],
     identity: undefined,
     principal: undefined,
     provider: undefined,
-    wallet: undefined,
+    // wallet: undefined,
     providers: [],
     canisters: {},
     anonymousCanisters: {},
