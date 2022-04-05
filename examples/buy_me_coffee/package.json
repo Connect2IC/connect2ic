@@ -45,6 +45,7 @@
   ],
   "dependencies": {
     "@astrox/connection": "0.0.37",
+    "@connect2ic/react": "*",
     "@dfinity/agent": "^0.10.1",
     "@dfinity/auth-client": "^0.10.1",
     "@dfinity/authentication": "^0.10.1",
@@ -57,8 +58,8 @@
     "@modern-js/plugin-less": "^1.1.1",
     "@modern-js/runtime": "^1.0.0",
     "@svgr/webpack": "^6.1.2",
-    "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react": "^17.0.0",
+    "react-dom": "^17.0.0"
   },
   "devDependencies": {
     "@modern-js/app-tools": "^1.0.0",

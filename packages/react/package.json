@@ -30,6 +30,7 @@
     "vite": "^2.5.7"
   },
   "peerDependencies": {
-    "@xstate/react": "^2.0.1"
+    "@xstate/react": "^2.0.1",
+    "react": "*"
   }
 }

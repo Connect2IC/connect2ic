@@ -14,22 +14,27 @@ inspect({
 function App() {
 
   const onConnect = ({ provider, identity, principal }) => {
-    console.log(provider, identity, principal)
   }
 
   const onDisconnect = () => {
   }
 
   return (
-    <ConnectProvider canisters={{ counter }}>
-      <div className="App">
-        <div className="auth-section">
-          <Connect onDisconnect={onDisconnect} onConnect={onConnect} dark={false} />
-        </div>
-        <Intro />
+    <div className="App">
+      <div className="auth-section">
+        <Connect onDisconnect={onDisconnect} onConnect={onConnect} dark={false} />
       </div>
-    </ConnectProvider>
+      <Intro />
+    </div>
   )
 }
 
-export default App
+const canisters = { counter }
+const whitelist = Object.values(canisters).map(canister => canister.canisterId)
+const host = window.location.origin
+
+export default () => (
+  <ConnectProvider host={host} whitelist={whitelist} canisters={canisters}>
+    <App />
+  </ConnectProvider>
+)

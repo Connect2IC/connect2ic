@@ -7,16 +7,9 @@ import {
   AstroXButton,
   useConnect,
 } from "./index"
-import { useSelector } from "@xstate/react"
 
 const Connect = (props) => {
   const {
-    config = {
-      ii: {},
-      plug: {},
-      stoic: {},
-      astrox: {},
-    },
     style = {},
     dark = false,
     onConnect = () => {
@@ -25,15 +18,21 @@ const Connect = (props) => {
     },
   } = props
 
-  const { connect, disconnect, ...state } = useConnect({
+  const providerButtons = {
+    ii: IIButton,
+    stoic: StoicButton,
+    plug: PlugButton,
+    astrox: AstroXButton,
+  }
+
+  const { connect, disconnect, dialog, providers, ...state } = useConnect({
     onConnect,
     onDisconnect,
   })
-  const [showDialog, setShowDialog] = useState(false)
 
   useEffect(() => {
     if (state.status === "connected") {
-      setShowDialog(false)
+      dialog.close()
     }
   }, [state.status])
 
@@ -46,17 +45,20 @@ const Connect = (props) => {
       ) : null}
 
       {state.status !== "connected" ? (
-        <button style={style} className="connect-button" onClick={() => setShowDialog(true)}>
+        <button style={style} className="connect-button" onClick={() => dialog.open()}>
           Connect
         </button>
       ) : null}
 
-      {showDialog ? (
-        <Dialog onClose={() => setShowDialog(false)}>
-          <IIButton onClick={() => connect("ii")} dark={dark} />
-          <AstroXButton onClick={() => connect("astrox")} dark={dark} />
-          <StoicButton onClick={() => connect("stoic")} dark={dark} />
-          <PlugButton onClick={() => connect("plug")} dark={dark} />
+      {dialog.isOpen ? (
+        <Dialog onClose={() => dialog.close()}>
+          {providers.map((provider) => {
+            const ProviderButton = providerButtons[provider.name]
+            console.log(provider, ProviderButton)
+            return (
+              <ProviderButton onClick={() => connect(provider.name)} dark={dark} />
+            )
+          })}
         </Dialog>
       ) : null}
     </>

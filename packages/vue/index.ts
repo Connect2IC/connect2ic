@@ -1,15 +1,13 @@
 import Connect from "./Connect.vue"
-import Plug from "../core/providers/Plug"
+import Plug from "../core/connectors/Plug"
 import useAuth from "./useAuth"
 import PlugButton from "./buttons/PlugButton.vue"
-import II from "../core/providers/InternetIdentity"
+import II from "../core/connectors/InternetIdentity"
 import IIButton from "./buttons/IIButton.vue"
 // import AstroX from "../providers/AstroX"
 // import AstroXButton from "./buttons/AstroXButton.tsx"
-import Stoic from "../core/providers/Stoic"
+import Stoic from "../core/connectors/Stoic"
 import StoicButton from "./buttons/StoicButton.vue"
-import MetamaskButton from "./buttons/MetamaskButton.vue"
-import Metamask from "../core/providers/Metamask"
 import Dialog from "./Dialog.vue"
 
 export {
@@ -21,8 +19,6 @@ export {
   IIButton,
   // AstroX,
   // AstroXButton,
-  Metamask,
-  MetamaskButton,
   Stoic,
   StoicButton,
   useAuth,

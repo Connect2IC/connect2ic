@@ -1,4 +1,5 @@
 import { AuthClient } from "@dfinity/auth-client"
+import { Actor, HttpAgent } from "@dfinity/agent"
 // import { Actor, HttpAgent } from "@dfinity/agent"
 
 const name = "ii"
@@ -29,8 +30,29 @@ const II = async (config = {
   return {
     state,
     name,
+    createActor: async (canisterId, idlFactory) => {
+      // // pass in the path to the Provider
+      // const { canisterId, idlFactory } = import(`canisters/${canisterName}`)
+
+      // TODO: pass identity
+      const agent = new HttpAgent({ ...config })
+
+      // Fetch root key for certificate validation during development
+      // if(process.env.NODE_ENV !== "production") {
+      agent.fetchRootKey().catch(err => {
+        console.warn("Unable to fetch root key. Check to ensure that your local replica is running")
+        console.error(err)
+      })
+      // }
+
+      // TODO: add actorOptions?
+      return Actor.createActor(idlFactory, {
+        agent,
+        canisterId,
+      })
+    },
     connect: async () => {
-      const isAuthenticated = await client.isAuthenticated()
+      // const isAuthenticated = await client.isAuthenticated()
       // if (!isAuthenticated) {
       try {
         const { identity, principal } = await new Promise((resolve, reject) => {
@@ -61,27 +83,6 @@ const II = async (config = {
     },
     disconnect: async () => {
       await client.logout()
-    },
-    createActor: async (canisterName, options) => {
-      // // TODO: import by canisterName shouldnt be hardcoded to how create-ic-app works
-      // // pass in the path to the Provider
-      // const { canisterId, idlFactory } = import(`canisters/${canisterName}`)
-      // const agent = new HttpAgent({ ...options?.agentOptions })
-      // //
-      // // // Fetch root key for certificate validation during development
-      // if (process.env.NODE_ENV !== "production") {
-      //   agent.fetchRootKey().catch(err => {
-      //     console.warn("Unable to fetch root key. Check to ensure that your local replica is running")
-      //     console.error(err)
-      //   })
-      // }
-      //
-      // // Creates an actor with using the candid interface and the HttpAgent
-      // return Actor.createActor(idlFactory, {
-      //   agent,
-      //   canisterId,
-      //   ...options?.actorOptions,
-      // })
     },
   }
 }

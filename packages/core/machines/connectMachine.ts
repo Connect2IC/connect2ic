@@ -1,25 +1,66 @@
-import { createMachine, assign } from "xstate"
-import { InternetIdentity, Metamask, Plug, Stoic, AstroX } from "../providers"
+import { createMachine, assign, interpret, forwardTo } from "xstate"
+import { Actor, HttpAgent } from "@dfinity/agent"
 
 
-const connectMachine = createMachine({
-  id: "auth",
-  initial: "inactive",
-  context: {
-    identity: undefined,
-    principal: undefined,
-    provider: undefined,
-    providers: [],
-  },
+const canisterStates = {
+  id: "canisters",
+  initial: "idle",
   states: {
 
-    "inactive": {
+    "idle": {
+      invoke: {
+        id: "anonymousCanisterService",
+        autoForward: true,
+        src: (context, _event) => (callback, onReceive) => {
+          onReceive(async (e) => {
+            if (e.type === "CREATE_ANONYMOUS_ACTOR") {
+              const { host } = context
+              const agent = new HttpAgent({ host })
+
+              // Fetch root key for certificate validation during development
+              // if(process.env.NODE_ENV !== "production") {
+              agent.fetchRootKey().catch(err => {
+                console.warn("Unable to fetch root key. Check to ensure that your local replica is running")
+                console.error(err)
+              })
+              // }
+
+              const actor = Actor.createActor(e.idlFactory, {
+                agent,
+                canisterId: e.canisterId,
+              })
+              callback({ type: "SAVE_ANONYMOUS_ACTOR", actor, canisterName: e.canisterName })
+            }
+          })
+        },
+      },
       on: {
-        INIT: {
-          target: "initializing",
+        CREATE_ANONYMOUS_ACTOR: {
+          actions: forwardTo("anonymousCanisterService"),
+        },
+        SAVE_ANONYMOUS_ACTOR: {
+          actions: assign((context, event) => ({
+            anonymousCanisters: { ...context.anonymousCanisters, [event.canisterName]: event.actor },
+          })),
         },
       },
     },
+
+  },
+}
+
+const authStates = {
+  id: "auth",
+  initial: "initializing",
+  states: {
+
+    // "inactive": {
+    //   on: {
+    //     INIT: {
+    //       target: "initializing",
+    //     },
+    //   },
+    // },
 
     "initializing": {
       on: {
@@ -35,6 +76,7 @@ const connectMachine = createMachine({
           actions: assign((context, event) => ({
             providers: event.data.providers,
             provider: event.data.provider,
+            wallet: event.data.wallet,
             identity: event.data.identity,
             principal: event.data.principal,
           })),
@@ -44,17 +86,18 @@ const connectMachine = createMachine({
         id: "init",
         src: (context, event) => async (callback, onReceive) => {
           // TODO: clean up
-          let providers = {
-            ii: await InternetIdentity(),
-            plug: await Plug(),
-            stoic: await Stoic(),
-            metamask: await Metamask(),
-            astrox: await AstroX(),
-          }
+          // Save in context?
+          const { whitelist, host, connectors } = context
+          let providers = connectors.map(Connector => new Connector({ whitelist, host }))
+          // let providers = {
+          //   ii: await InternetIdentity({ whitelist, host }),
+          //   plug: await Plug({ whitelist, host }),
+          //   stoic: await Stoic({ whitelist, host }),
+          //   astrox: await AstroX({ whitelist, host }),
+          // }
           // TODO: fix
-          let signedInProviders = Object.values(providers).filter(p => p.state?.signedIn)
-          console.log({ providers, signedInProviders })
-          let res = await Promise.allSettled(Object.values(providers))
+          let signedInProviders = providers.filter(p => p.state?.signedIn)
+          let res = await Promise.allSettled(providers)
 
           if (signedInProviders.length > 0) {
             // TODO: how to choose provider?
@@ -63,9 +106,9 @@ const connectMachine = createMachine({
               type: "DONE_AND_CONNECTED", data: {
                 providers,
                 provider: {
-                  name: signedInProvider.name,
-                  ic: signedInProvider.state?.ic,
+                  ...signedInProvider.state?.provider,
                 },
+                wallet: signedInProvider.state?.wallet,
                 identity: signedInProvider.state?.identity,
                 principal: signedInProvider.state.principal,
               },
@@ -87,62 +130,90 @@ const connectMachine = createMachine({
     },
 
     "idle": {
-      on: {
-        CONNECT: {
-          target: "connecting",
-        },
-      },
-    },
-
-    "connecting": {
-      // TODO: This is weird. Shouldn't be a separate state
-      on: {
-        CONNECT: {
-          target: "connecting",
-        },
-      },
       invoke: {
-        id: "connect",
-        // TODO: onCleanup?
-        src: (context, event) => async () => {
-          let res
-          try {
-            res = await context.providers[event.provider].connect()
-          } catch (e) {
-            // TODO:
-          }
-          return {
-            provider: event.provider,
-            identity: res?.identity,
-            principal: res.principal,
-          }
+        id: "connectService",
+        autoForward: true,
+        src: (context, _event) => (callback, onReceive) => {
+          onReceive(async (e) => {
+            // TODO: Handle cancellation with AbortController?
+            const provider = context.providers.find(p => p.name === e.provider)
+            if (e.type === "CONNECT") {
+              let res
+              try {
+                res = await provider.connect()
+                callback({
+                  type: "DONE",
+                  // TODO: fix?
+                  provider,
+                  wallet: provider.state?.wallet,
+                  identity: res?.identity,
+                  principal: res.principal,
+                })
+              } catch (e) {
+                callback({
+                  // TODO: or cancel?
+                  type: "ERROR",
+                  error: e,
+                  // TODO: fix?
+                })
+              }
+            }
+          })
         },
-        onDone: {
+      },
+      on: {
+        CONNECT: {
+          actions: forwardTo("connectService"),
+        },
+        DONE: {
           target: "connected",
           actions: assign((context, event) => {
             return ({
-              provider: event.data.provider,
-              identity: event.data.identity,
-              principal: event.data.principal,
+              provider: event.provider,
+              wallet: event.wallet,
+              identity: event.identity,
+              principal: event.principal,
             })
           }),
         },
-        // TODO: error state?
-        onError: {
-          target: "idle",
-          actions: (context, event) => {
-            // TODO: handle
-            console.log(event)
-          },
-        },
+        ERROR: {
+          // actions: assign((context, event) => {
+          //   return ({
+          //     provider: event.provider,
+          //     wallet: event.wallet,
+          //     identity: event.identity,
+          //     principal: event.principal,
+          //   })
+          // }),
+        }
       },
     },
 
     "connected": {
+      invoke: {
+        id: "canisterService",
+        autoForward: true,
+        src: (context, _event) => (callback, onReceive) => {
+          onReceive(async (e) => {
+            if (e.type === "CREATE_ACTOR") {
+              const actor = await context.provider.createActor(e.canisterId, e.idlFactory)
+              callback({ type: "SAVE_ACTOR", actor, canisterName: e.canisterName })
+            }
+          })
+        },
+      },
       on: {
+        CREATE_ACTOR: {
+          actions: forwardTo("canisterService"),
+        },
         DISCONNECT: {
           target: "disconnecting",
           // TODO: pass provider?
+        },
+        SAVE_ACTOR: {
+          actions: assign((context, event) => ({
+            canisters: { ...context.canisters, [event.canisterName]: event.actor },
+          })),
         },
       },
     },
@@ -152,7 +223,7 @@ const connectMachine = createMachine({
       invoke: {
         id: "disconnect",
         src: (context, event) => async () => {
-          await Promise.allSettled(Object.values(context.providers).map(p => p.disconnect()))
+          await Promise.allSettled(context.providers.map(p => p.disconnect()))
           return {}
         },
         onDone: {
@@ -169,6 +240,45 @@ const connectMachine = createMachine({
       },
     },
   },
+}
+
+const rootMachine = createMachine({
+  id: "root",
+  initial: "inactive",
+  context: {
+    host: window.location.origin,
+    whitelist: [],
+    connectors: [],
+    identity: undefined,
+    principal: undefined,
+    provider: undefined,
+    wallet: undefined,
+    providers: [],
+    canisters: {},
+    anonymousCanisters: {},
+  },
+  states: {
+    "inactive": {
+      on: {
+        INIT: {
+          target: "idle",
+          actions: assign((context, event) => ({
+            whitelist: event.whitelist,
+            host: event.host,
+            connectors: event.connectors,
+          })),
+        },
+      },
+    },
+    "idle": {
+      id: "connect",
+      type: "parallel",
+      states: {
+        canisters: canisterStates,
+        auth: authStates,
+      },
+    },
+  },
 })
 
-export { connectMachine }
+export { rootMachine as connectMachine }

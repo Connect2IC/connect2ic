@@ -1,8 +1,13 @@
-import { Switch, Route } from '@modern-js/runtime/router';
+import { walletConnectors } from "@connect2ic/core"
+import { ConnectProvider } from "@connect2ic/react"
+import * as buymeacoffee from "@/canisters/buymecoffee"
+import { MainLayout } from "./pages/Layout/MainLayout"
 
-// import './global.less';
-import { MainLayout } from './pages/Layout/MainLayout';
+const canisters = { buymeacoffee }
+const App: React.FC = () => (
+  <ConnectProvider connectors={walletConnectors} canisters={canisters}>
+    <MainLayout />
+  </ConnectProvider>
+)
 
-const App: React.FC = () => <MainLayout />;
-
-export default App;
+export default App

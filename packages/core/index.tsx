@@ -7,6 +7,6 @@ import metamaskLogo from "./assets/metamask-fox.svg"
 //
 import { connectMachine } from "./machines/connectMachine"
 //
-export * from "./providers"
+export * from "./connectors"
 
 export { astroxLogo, dfinityLogo, plugDark, plugLight, stoicLogo, metamaskLogo }

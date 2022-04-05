@@ -25,19 +25,15 @@
   },
   "dependencies": {
     "@astrox/connection": "file:../../../astrox-js/packages/connection",
-    "@dfinity/agent": "0.10.0",
-    "@dfinity/auth-client": "0.10.0",
-    "@dfinity/authentication": "0.10.0",
-    "@dfinity/candid": "0.10.0",
-    "@dfinity/identity": "0.10.0",
-    "@dfinity/principal": "0.10.0",
+    "@dfinity/agent": "0.10.4",
+    "@dfinity/auth-client": "0.10.4",
+    "@dfinity/authentication": "0.10.4",
+    "@dfinity/candid": "0.10.4",
+    "@dfinity/identity": "0.10.4",
+    "@dfinity/principal": "0.10.4",
     "ic-stoic-identity": "^2.0.0",
+    "secp256k1": "^4.0.3",
     "xstate": "^4.30.5"
-  },
-  "peerDependencies": {
-    "@xstate/react": "^2.0.1",
-    "@xstate/svelte": "^0.2.1",
-    "@xstate/vue": "^1.0.0"
   },
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^13.1.3",

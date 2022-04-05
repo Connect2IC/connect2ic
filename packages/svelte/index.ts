@@ -1,15 +1,13 @@
 import Connect from "./Connect.svelte"
-import Plug from "../core/providers/Plug"
+import Plug from "../core/connectors/Plug"
 import createAuth from "./Auth.store"
 import PlugButton from "./buttons/PlugButton.svelte"
-import II from "../core/providers/InternetIdentity"
+import II from "../core/connectors/InternetIdentity"
 import IIButton from "./buttons/IIButton.svelte"
-// import AstroX from "../providers/AstroX"
-// import AstroXButton from "./buttons/AstroXButton.tsx"
-import Stoic from "../core/providers/Stoic"
+import AstroX from "../core/connectors/AstroX"
+import AstroXButton from "./buttons/AstroXButton.svelte"
+import Stoic from "../core/connectors/Stoic"
 import StoicButton from "./buttons/StoicButton.svelte"
-import MetamaskButton from "./buttons/MetamaskButton.svelte"
-import Metamask from "../core/providers/Metamask"
 import Dialog from "./Dialog.svelte"
 
 export {
@@ -21,8 +19,6 @@ export {
   IIButton,
   // AstroX,
   // AstroXButton,
-  Metamask,
-  MetamaskButton,
   Stoic,
   StoicButton,
   createAuth,
