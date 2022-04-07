@@ -2,7 +2,7 @@ import { StoicIdentity } from "ic-stoic-identity"
 import { Actor, HttpAgent } from "@dfinity/agent"
 import { IConnector } from "./connectors"
 
-class Stoic implements IConnector {
+class StoicConnector implements IConnector {
   readonly id = "stoic"
   readonly name = "Stoic Wallet"
   #config: {
@@ -12,7 +12,12 @@ class Stoic implements IConnector {
   }
   #identity?: any
   #principal?: string
-  #client?: any
+  get identity() {
+    return this.#identity
+  }
+  get principal() {
+    return this.#principal
+  }
 
   constructor(userConfig) {
     this.#config = {
@@ -24,7 +29,7 @@ class Stoic implements IConnector {
   }
 
   async init() {
-    let identity = await StoicIdentity.load()
+    const identity = await StoicIdentity.load()
 
     if (identity) {
       this.#identity = identity
@@ -52,7 +57,8 @@ class Stoic implements IConnector {
   }
 
   async isAuthenticated() {
-    return await this.#client.isAuthenticated()
+    const identity = await StoicIdentity.load()
+    return !!identity
   }
 
   async connect() {
@@ -65,4 +71,4 @@ class Stoic implements IConnector {
   }
 }
 
-export default Stoic
+export default StoicConnector

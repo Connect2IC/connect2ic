@@ -19,7 +19,7 @@ import {
   useState,
 } from "react"
 import "@connect2ic/core/style.css"
-import { useConnect, useCanister } from "@connect2ic/react"
+import { useConnect, useCanister, useWallet } from "@connect2ic/react"
 import { Route, Switch, useHistory } from "@modern-js/runtime/router"
 import { useModel } from "@modern-js/runtime/model"
 import { LoginModal } from "../../components/LoginModal"
@@ -46,13 +46,14 @@ export const MainLayout = (children: any) => {
   const history = useHistory()
   const [state, actions] = useModel(appModel)
 
-  const { status, principal, wallet: providerWallet } = useConnect({
+  const { status, principal, disconnect } = useConnect({
     onDisconnect: () => {
       setDefault()
       history.push("/empty")
     }
   })
-  const wallet = providerWallet?.address || "unknown"
+  const [wallet] = useWallet()
+  const walletAddress = wallet?.address || "unknown"
   const isAuth = status === "connected"
 
   const deleteME = async () => {
@@ -65,7 +66,9 @@ export const MainLayout = (children: any) => {
   }
 
   const login = () => {}
-  const logout = () => {}
+  const logout = () => {
+    disconnect()
+  }
 
   const setDefault = () => {
     setName(undefined)
@@ -139,7 +142,7 @@ export const MainLayout = (children: any) => {
         }
       }
     }
-  }, [actor])
+  }, [actor, isAuth])
 
   return (
     <Layout
@@ -231,7 +234,7 @@ export const MainLayout = (children: any) => {
           modalVisible={modalVisible}
           name={name}
           principal={principal}
-          wallet={wallet}
+          wallet={walletAddress}
         />
       </Content>
     </Layout>

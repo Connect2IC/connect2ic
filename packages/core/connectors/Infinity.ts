@@ -1,8 +1,8 @@
 import { IConnector, IWalletConnector } from "./connectors"
 
-class PlugConnector implements IConnector, IWalletConnector {
-  readonly id = "plug"
-  readonly name = "Plug Wallet"
+class InfinityConnector implements IConnector, IWalletConnector {
+  readonly id = "infinity"
+  readonly name = "Infinity Wallet"
   #config: {
     whitelist: [string],
     host: string,
@@ -12,19 +12,15 @@ class PlugConnector implements IConnector, IWalletConnector {
   #principal?: string
   #client?: any
   #ic?: any
-
   get identity() {
     return this.#identity
   }
-
   get principal() {
     return this.#principal
   }
-
   get client() {
     return this.#client
   }
-
   get ic() {
     return this.#ic
   }
@@ -32,21 +28,21 @@ class PlugConnector implements IConnector, IWalletConnector {
   constructor(userConfig) {
     this.#config = {
       whitelist: [],
+      // TODO: Fix CORS error: Access to fetch at 'https://testnet.infinityswap.one/api/v2/status'
       host: window.location.origin,
       dev: false,
       ...userConfig,
     }
-    this.#ic = window.ic.plug
+    this.#ic = window.ic.infinityWallet
   }
 
   async init() {
     const isAuthenticated = await this.isAuthenticated()
     if (isAuthenticated) {
       try {
-        await this.#ic.createAgent(this.#config)
+        // await window.ic.infinityWallet.createAgent(this.#config)
         // TODO: never finishes if user doesnt login back?
-        this.#principal = await (await this.#ic.getPrincipal()).toString()
-        // TODO: return identity?
+        this.#principal = await (await window.ic.infinityWallet.getPrincipal()).toString()
         // const walletAddress = thisIC.wallet
       } catch (e) {
         console.error(e)
@@ -56,37 +52,38 @@ class PlugConnector implements IConnector, IWalletConnector {
 
   async isAuthenticated() {
     // TODO: no window
-    return await this.#ic.isConnected()
+    return await window.ic.infinityWallet.isConnected()
   }
 
   async createActor(canisterId, idlFactory) {
     // Fetch root key for certificate validation during development
     if (this.#config.dev) {
-      await this.#ic.agent.fetchRootKey()
+      await window.ic.infinityWallet.agent.fetchRootKey()
     }
 
-    return await this.#ic.createActor({ canisterId, interfaceFactory: idlFactory })
+    return await window.ic.infinityWallet.createActor({ canisterId, interfaceFactory: idlFactory })
   }
 
+
   async connect() {
+    if (!window.ic.infinityWallet) {
+      window.open("https://chrome.google.com/webstore/detail/infinity-wallet/jnldfbidonfeldmalbflbmlebbipcnle", "_blank")
+      // TODO: throw?
+      return
+    }
     try {
-      await this.#ic.requestConnect(this.#config)
+      await window.ic.infinityWallet.requestConnect(this.#config)
       this.#principal = await (await this.#ic.getPrincipal()).toString()
       // const walletAddress = thisIC.wallet
     } catch
       (e) {
       // TODO: handle
-      throw e
-    }
-    if (!this.#ic) {
-      window.open("https://plugwallet.ooo/", "_blank")
-      // TODO: throw?
       return
     }
   }
 
   async disconnect() {
-    await this.#ic.disconnect()
+    await window.ic.infinityWallet.disconnect()
     // TODO: reset state?
   }
 
@@ -121,4 +118,4 @@ class PlugConnector implements IConnector, IWalletConnector {
   }
 }
 
-export default PlugConnector
+export default InfinityConnector

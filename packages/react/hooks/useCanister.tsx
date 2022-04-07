@@ -30,6 +30,7 @@ export const useCanister = (
     if (!initialized) {
       return
     }
+    // TODO: throw if invalid canisterName?
     const { canisterId, idlFactory } = canisters[canisterName]
     connectService.send({ type: "CREATE_ANONYMOUS_ACTOR", canisterId, idlFactory, canisterName })
   }, [canisterName, initialized])

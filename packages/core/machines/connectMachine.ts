@@ -1,4 +1,4 @@
-import { createMachine, assign, interpret, forwardTo } from "xstate"
+import { createMachine, assign, forwardTo } from "xstate"
 import { Actor, HttpAgent } from "@dfinity/agent"
 
 
@@ -83,14 +83,14 @@ const authStates = {
           let providers = connectors.map(Connector => new Connector({ whitelist, host, dev }))
           await Promise.allSettled(providers.map(p => p.init()))
           // TODO: fix
-          let maybeProviders = await Promise.allSettled(providers.map(async p => {
+          let maybeProviders = providers.map(p => new Promise(async (resolve, reject) => {
             const isAuthenticated = await p.isAuthenticated()
-            return isAuthenticated ? p : false
+            isAuthenticated ? resolve(p) : reject()
           }))
-          let signedInProviders = maybeProviders.filter(p => p)
+          const maybeSignedInProvider = Promise.any(maybeProviders)
+          // let signedInProviders = (await Promise.allSettled(maybeProviders)).filter(p => p)
 
-          if (signedInProviders.length > 0) {
-            let signedInProvider = signedInProviders[0]
+          maybeSignedInProvider.then((signedInProvider) => {
             callback({
               type: "DONE_AND_CONNECTED", data: {
                 providers,
@@ -100,11 +100,11 @@ const authStates = {
                 principal: signedInProvider.principal,
               },
             })
-          } else {
+          }).catch(e => {
             // TODO: handle failures
             // TODO: action
             callback({ type: "DONE", data: { providers } })
-          }
+          })
         },
         // onDone: {
         //   // TODO: => "connected"?
@@ -123,11 +123,11 @@ const authStates = {
         src: (context, _event) => (callback, onReceive) => {
           onReceive(async (e) => {
             // TODO: Handle cancellation with AbortController?
-            const provider = context.providers.find(p => p.name === e.provider)
+            const provider = context.providers.find(p => p.id === e.provider)
             if (e.type === "CONNECT") {
-              let res
               try {
                 await provider.connect()
+                console.log("connect worked??", provider)
                 callback({
                   type: "DONE",
                   // TODO: fix?
@@ -137,6 +137,7 @@ const authStates = {
                   principal: provider.principal,
                 })
               } catch (e) {
+                console.log("connect failed??")
                 callback({
                   // TODO: or cancel?
                   type: "ERROR",
@@ -251,9 +252,9 @@ const rootMachine = createMachine({
         INIT: {
           target: "idle",
           actions: assign((context, event) => ({
-            whitelist: event.whitelist,
-            host: event.host,
-            connectors: event.connectors,
+            whitelist: event.whitelist || [],
+            host: event.host || window.location.origin,
+            connectors: event.connectors || [],
           })),
         },
       },

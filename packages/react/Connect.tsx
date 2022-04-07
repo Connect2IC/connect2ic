@@ -5,6 +5,7 @@ import {
   StoicButton,
   PlugButton,
   AstroXButton,
+  InfinityButton,
   useConnect,
 } from "./index"
 
@@ -23,6 +24,7 @@ const Connect = (props) => {
     stoic: StoicButton,
     plug: PlugButton,
     astrox: AstroXButton,
+    infinity: InfinityButton,
   }
 
   const { connect, disconnect, dialog, providers, ...state } = useConnect({
@@ -53,10 +55,9 @@ const Connect = (props) => {
       {dialog.isOpen ? (
         <Dialog onClose={() => dialog.close()}>
           {providers.map((provider) => {
-            const ProviderButton = providerButtons[provider.name]
-            console.log(provider, ProviderButton)
+            const ProviderButton = providerButtons[provider.id]
             return (
-              <ProviderButton onClick={() => connect(provider.name)} dark={dark} />
+              <ProviderButton key={provider.id} onClick={() => connect(provider.id)} dark={dark} />
             )
           })}
         </Dialog>

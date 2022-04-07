@@ -9,8 +9,8 @@ export default defineConfig({
     devServer: {
       proxy: {
         '/api': {
-          target: 'http://localhost:8000/',
-          changeOrigin: false,
+          target: 'http://0.0.0.0:8000/',
+          changeOrigin: true,
         },
       },
     },

@@ -1,15 +1,9 @@
 import React from "react"
 import "@connect2ic/core/style.css"
+import { defaultConnectors } from "@connect2ic/core"
 import { Connect, ConnectProvider } from "@connect2ic/react"
 import { Intro } from "./Intro"
 import * as counter from "canisters/counter"
-import { inspect } from "@xstate/inspect"
-
-inspect({
-  // options
-  // url: 'https://statecharts.io/inspect', // (default)
-  iframe: false, // open in new window
-})
 
 function App() {
 
@@ -30,11 +24,9 @@ function App() {
 }
 
 const canisters = { counter }
-const whitelist = Object.values(canisters).map(canister => canister.canisterId)
-const host = window.location.origin
 
 export default () => (
-  <ConnectProvider host={host} whitelist={whitelist} canisters={canisters}>
+  <ConnectProvider connectors={defaultConnectors} canisters={canisters}>
     <App />
   </ConnectProvider>
 )

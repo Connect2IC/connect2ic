@@ -15,11 +15,10 @@ class AstroXConnector implements IConnector, IWalletConnector {
   }
   #identity?: any
   #principal?: string
-  #client?: any
   #ic?: any
 
   get identity() {
-    return this.#identity
+    return this.#ic.identity
   }
   get principal() {
     return this.#principal
@@ -41,19 +40,32 @@ class AstroXConnector implements IConnector, IWalletConnector {
   }
 
   async init() {
-    let client = await AuthClient.create(this.#config)
+    this.#ic = await IC.create({
+      useFrame: !(window.innerWidth < 768),
+      signerProviderUrl: `${this.#config.providerUrl}/signer`,
+      walletProviderUrl: `${this.#config.providerUrl}/transaction`,
+      identityProvider: `${this.#config.providerUrl}/login#authorize`,
+      permissions: [PermissionsType.identity, PermissionsType.wallet],
+      ledgerCanisterId: this.#config.ledgerCanisterId,
+      onAuthenticated: (icInstance: IC) => {
+        this.#ic = window.ic.astrox ?? icInstance
+        this.#principal = this.#ic.principal.toText()
+        this.#identity = this.#ic.identity
+        // this.#address = this.#ic.wallet
+      },
+    })
+    // this.#ic = window.ic.astrox // ?? icInstance
     const isAuthenticated = await this.isAuthenticated()
 
     // TODO: figure out
     if (isAuthenticated) {
-      const identity = client.getIdentity()
-      this.#principal = identity.getPrincipal().toString()
-      this.#client = client
+      this.#identity = this.#ic.identity
+      this.#principal = this.#ic.principal
     }
   }
 
   async isAuthenticated() {
-    return this.#client.isAuthenticated()
+    return this.#ic.isAuthenticated()
   }
 
   async createActor(canisterId, idlFactory) {
@@ -65,11 +77,11 @@ class AstroXConnector implements IConnector, IWalletConnector {
     //   console.error(err)
     // })
     // // }
-    return await window.ic.astrox.createActor(idlFactory, canisterId)
+    return await this.#ic.createActor(idlFactory, canisterId)
   }
 
   async connect() {
-    await IC.connect({
+    await this.#ic.connect({
       useFrame: !(window.innerWidth < 768),
       signerProviderUrl: `${this.#config.providerUrl}/signer`,
       walletProviderUrl: `${this.#config.providerUrl}/transaction`,
@@ -79,14 +91,14 @@ class AstroXConnector implements IConnector, IWalletConnector {
       onAuthenticated: (icInstance: IC) => {
         this.#ic = window.ic.astrox ?? icInstance
         this.#principal = this.#ic.principal.toText()
-        this.#identity = this.#client.getIdentity()
+        this.#identity = this.#ic.identity
         // this.#address = this.#ic.wallet
       },
     })
   }
 
   async disconnect() {
-    await this.#client.logout()
+    await this.#ic.disconnect()
   }
 
   requestTransfer(...args) {

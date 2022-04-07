@@ -1,8 +1,8 @@
 import {
   IllustrationNoContent,
   IllustrationNoContentDark,
-} from '@douyinfe/semi-illustrations';
-import { Button, Empty, Typography } from '@douyinfe/semi-ui';
+} from "@douyinfe/semi-illustrations"
+import { Button, Empty, Typography } from "@douyinfe/semi-ui"
 import { Connect, useConnect, useCanister } from "@connect2ic/react"
 
 export const EmptyPage = () => {
@@ -24,9 +24,16 @@ export const EmptyPage = () => {
         ME.
         eg: login and make transactions, without extension
       </p>
-      <div style={{ textAlign: "center" }}>
-        <Connect />
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        <Connect style={{
+          background: "var(--semi-color-primary)",
+          marginTop: "32px",
+          height: "40px",
+          padding: "32px 80px",
+          fontSize: "20px",
+          borderRadius: "32px",
+        }} />
       </div>
     </Empty>
   )
-};
+}

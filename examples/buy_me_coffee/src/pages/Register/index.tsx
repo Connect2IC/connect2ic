@@ -1,67 +1,71 @@
-import { ActorSubclass } from '@dfinity/agent';
-import { Button, Form, Modal, Typography } from '@douyinfe/semi-ui';
-import { useEffect, useState } from 'react';
-import { FormApi } from '@douyinfe/semi-ui/lib/es/form';
-import { useModel } from '@modern-js/runtime/model';
-import { useHistory } from '@modern-js/runtime/router';
+import { ActorSubclass } from "@dfinity/agent"
+import { Button, Form, Modal, Typography } from "@douyinfe/semi-ui"
+import { useEffect, useState } from "react"
+import { FormApi } from "@douyinfe/semi-ui/lib/es/form"
+import { useModel } from "@modern-js/runtime/model"
+import { useHistory } from "@modern-js/runtime/router"
 import {
   BuyMeCoffee,
   People,
   Error as CoffeeError,
-} from '@/canisters/buymecoffee/types';
-import { appModel } from '@/models/app';
+} from "@/canisters/buymecoffee/types"
+import { appModel } from "@/models/app"
+import { useCanister, useConnect, useWallet } from "@connect2ic/react"
 
 export const Register = () => {
-  const [state, actions] = useModel(appModel);
-  const { actor, wallet, principal, name } = state;
-  const [loading, setLoading] = useState<boolean>(false);
-  const history = useHistory();
+  const [state, actions] = useModel(appModel)
+  const [actor] = useCanister("buymeacoffee")
+  const { principal } = useConnect()
+  const [wallet] = useWallet()
+  const { name } = state
+  const [loading, setLoading] = useState<boolean>(false)
+  const history = useHistory()
 
   const registerPeople = async (values: Record<string, any>) => {
-    setLoading(true);
+    setLoading(true)
     const result = await actor?.create({
       name: values.name,
       wallet: values.wallet,
-    });
+    })
 
-    setLoading(false);
+    setLoading(false)
     if ((result as { ok: People }).ok !== undefined) {
-      const res = (result as { ok: People }).ok;
-      actions.setName(res.name);
-      actions.setPrincipal(res.id.toText());
-      actions.setWallet(res.wallet);
-      history.push('/');
+      const res = (result as { ok: People }).ok
+      actions.setName(res.name)
+      actions.setPrincipal(res.id.toText())
+      actions.setWallet(res.wallet)
+      history.push("/")
     } else {
       Modal.error({
-        title: 'Unfortunately, there is an error',
+        title: "Unfortunately, there is an error",
         content:
           result !== undefined
             ? JSON.stringify((result as { err: CoffeeError }).err)
-            : 'Error Unknown',
-      });
+            : "Error Unknown",
+      })
     }
-  };
+  }
 
   const [walletFormApi, setWalletFormApi] = useState<FormApi | undefined>(
     undefined,
-  );
+  )
 
-  return (
+  return wallet ? (
     <>
       <Typography.Title>Name Yourself</Typography.Title>
       <Form
         onSubmit={values => registerPeople(values)}
-        initValues={{ wallet, principal }}
-        style={{ width: '100%' }}
+        initValues={{ wallet: wallet.address, principal }}
+        style={{ width: "100%" }}
         getFormApi={formApi => {
-          setWalletFormApi(formApi);
+          setWalletFormApi(formApi)
         }}>
         {({ formState, values, formApi }) => (
           <>
             <Form.Input
               field="name"
               label="Name"
-              style={{ width: '100%', maxWidth: 400 }}
+              style={{ width: "100%", maxWidth: 400 }}
               disabled={loading}
               required={true}
               placeholder="Enter your name"
@@ -69,14 +73,14 @@ export const Register = () => {
             <Form.Input
               field="principal"
               label="Principal ID"
-              style={{ width: '100%', maxWidth: 400 }}
+              style={{ width: "100%", maxWidth: 400 }}
               disabled={true}
               placeholder="Your Principal ID"
             />
             <Form.Input
               field="wallet"
               label="Wallet"
-              style={{ width: '100%', maxWidth: 400 }}
+              style={{ width: "100%", maxWidth: 400 }}
               disabled={true}
               placeholder="Your Wallet Address"
             />
@@ -86,9 +90,9 @@ export const Register = () => {
             </Form.Checkbox>
             <div
               style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
               }}>
               <Button
                 loading={loading}
@@ -102,5 +106,5 @@ export const Register = () => {
         )}
       </Form>
     </>
-  );
-};
+  ) : null
+}

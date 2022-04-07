@@ -3,17 +3,19 @@ import { useSelector } from "@xstate/react"
 import { useConnect } from "./useConnect"
 import { ConnectContext } from "../context"
 
-export const useWallet = (canisterName) => {
-  // TODO: support anonymous identity?
-  // TODO: support lazy loading canisters?
-  // TODO: NNS, management, ledger canister support?
+export const useWallet = () => {
+  // TODO: check if supported or not
   const { connectService } = useContext(ConnectContext)
   const { status } = useConnect({
     onConnect: async ({ provider }) => {
       // ...
     },
   })
-  const wallet = useSelector(connectService, (state) => state.context.wallet)
+  const provider = useSelector(connectService, (state) => state.context.provider)
+  const wallet = provider && {
+    requestTransfer: (...args) => provider.requestTransfer(...args),
+    address: provider.principal,
+  }
   const loading = false
   const error = false
 

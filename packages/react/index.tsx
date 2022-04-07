@@ -1,30 +1,39 @@
 import Connect from "./Connect"
-import { useConnect } from "./hooks/useConnect"
-import Plug from "../core/connectors/Plug"
-import PlugButton from "./buttons/PlugButton"
-import II from "../core/connectors/InternetIdentity"
+import {
+  PlugConnector,
+  InternetIdentityConnector,
+  AstroXConnector,
+  StoicConnector,
+  InfinityConnector
+} from "@connect2ic/core"
+
 import IIButton from "./buttons/IIButton"
-import AstroX from "../core/connectors/AstroX"
+import PlugButton from "./buttons/PlugButton"
 import AstroXButton from "./buttons/AstroXButton"
-import Stoic from "../core/connectors/Stoic"
 import StoicButton from "./buttons/StoicButton"
+import InfinityButton from "./buttons/InfinityButton"
 import Dialog from "./Dialog"
+import { useConnect } from "./hooks/useConnect"
 import { useCanister } from "./hooks/useCanister"
+import { useWallet } from "./hooks/useWallet"
 import { ConnectProvider, ConnectContext } from "./context"
 
 export {
   Connect,
   Dialog,
-  Plug,
+  PlugConnector,
   PlugButton,
-  II,
+  InternetIdentityConnector,
   IIButton,
-  AstroX,
+  AstroXConnector,
   AstroXButton,
-  Stoic,
+  StoicConnector,
   StoicButton,
+  InfinityConnector,
+  InfinityButton,
   useConnect,
   useCanister,
+  useWallet,
   ConnectProvider,
   ConnectContext
 }

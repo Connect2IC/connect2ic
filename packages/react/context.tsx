@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useState } from "react"
 import { useInterpret, useSelector } from "@xstate/react"
-import { connectMachine } from "../core/machines/connectMachine"
+import { connectMachine } from "@connect2ic/core"
 
 export const ConnectContext = createContext({})
 
@@ -22,7 +22,7 @@ const ConnectProvider = ({ children, ...options }) => {
 
   useEffect(() => {
     const whitelist = options.whitelist || Object.values(options.canisters).map(canister => (canister as any).canisterId)
-    connectService.send({ type: "INIT", whitelist, host: options.host, connectors: options.connectors })
+    connectService.send({ type: "INIT", whitelist, ...options })
   }, [connectService, options])
 
   return (

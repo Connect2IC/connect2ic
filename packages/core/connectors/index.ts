@@ -1,23 +1,27 @@
-import AstroX from "./AstroX"
-import InternetIdentity from "./InternetIdentity"
-import Plug from "./Plug"
-import Stoic from "./Stoic"
+import AstroXConnector from "./AstroX"
+import InternetIdentityConnector from "./InternetIdentity"
+import PlugConnector from "./Plug"
+import StoicConnector from "./Stoic"
+import InfinityConnector from "./Infinity"
 
 export const defaultConnectors = [
-  AstroX,
-  InternetIdentity,
-  Plug,
-  Stoic,
+  AstroXConnector,
+  InternetIdentityConnector,
+  PlugConnector,
+  StoicConnector,
+  InfinityConnector,
 ]
 
 export const walletConnectors = [
-  AstroX,
-  Plug,
+  AstroXConnector,
+  PlugConnector,
+  InfinityConnector,
 ]
 
 export {
-  AstroX,
-  InternetIdentity,
-  Plug,
-  Stoic,
+  AstroXConnector,
+  InternetIdentityConnector,
+  PlugConnector,
+  StoicConnector,
+  InfinityConnector,
 }
