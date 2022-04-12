@@ -19,7 +19,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: rgb(0 0 0 / 35%);
+    background: rgb(0 0 0 / 50%);
     animation: fade-in 0.18s;
     backdrop-filter: blur(5px);
     cursor: pointer;
@@ -67,6 +67,10 @@
     display: flex;
     align-items: center;
     background: rgb(35 35 39);
+}
+
+.dark .button-styles {
+    border: none;
 }
 
 .button-label {

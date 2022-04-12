@@ -4,6 +4,7 @@ import { IConnector, IWalletConnector } from "./connectors"
 
 class AstroXConnector implements IConnector, IWalletConnector {
 
+  static readonly id = "astrox"
   readonly id = "astrox"
   readonly name = "AstroX ME"
   #config: {
@@ -40,6 +41,7 @@ class AstroXConnector implements IConnector, IWalletConnector {
   }
 
   async init() {
+    console.log(this.#config)
     this.#ic = await IC.create({
       useFrame: !(window.innerWidth < 768),
       signerProviderUrl: `${this.#config.providerUrl}/signer`,

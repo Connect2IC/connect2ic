@@ -3,7 +3,7 @@ import logo from "./assets/logo-dark.svg"
 import { useCanister } from "@connect2ic/react"
 
 export function Intro() {
-  const [counter] = useCanister("counter", { mode: "auto" })
+  const [counter] = useCanister("counter")
   const [value, setValue] = useState()
 
   const refreshCounter = async () => {
@@ -13,6 +13,11 @@ export function Intro() {
 
   const increment = async () => {
     await counter.increment()
+    await refreshCounter()
+  }
+
+  const decrement = async () => {
+    await counter.decrement()
     await refreshCounter()
   }
 
@@ -77,6 +82,7 @@ export function Intro() {
           Count is {value}
         </p>
         <button onClick={increment}>Increment</button>
+        <button onClick={decrement}>Auth Decrement</button>
         <p style={{ fontSize: "0.6em" }}>
           This counter is running inside a canister
         </p>

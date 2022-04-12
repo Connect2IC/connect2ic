@@ -3,12 +3,9 @@ import { useSelector } from "@xstate/react"
 import { ConnectContext } from "../context"
 
 const selectState = state => ({
-  providers: state.context.providers,
   identity: state.context.identity,
   principal: state.context.principal,
   provider: state.context.provider,
-  wallet: state.context.wallet,
-  // TODO: kind of hacky
   status: state.value.idle?.auth,
 })
 
@@ -22,7 +19,6 @@ export const useConnect = (props = {}) => {
   } = props
   const {
     connectService,
-    dialog,
   } = useContext(ConnectContext)
   const state = useSelector(connectService, selectState)
 
@@ -40,7 +36,6 @@ export const useConnect = (props = {}) => {
 
   return {
     ...state,
-    dialog,
     connect: (provider) => {
       connectService.send({ type: "CONNECT", provider })
     },

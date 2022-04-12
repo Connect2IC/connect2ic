@@ -1,12 +1,7 @@
 import React, { useEffect, useState } from "react"
 import {
-  Dialog,
-  IIButton,
-  StoicButton,
-  PlugButton,
-  AstroXButton,
-  InfinityButton,
   useConnect,
+  useDialog
 } from "./index"
 
 const Connect = (props) => {
@@ -19,24 +14,11 @@ const Connect = (props) => {
     },
   } = props
 
-  const providerButtons = {
-    ii: IIButton,
-    stoic: StoicButton,
-    plug: PlugButton,
-    astrox: AstroXButton,
-    infinity: InfinityButton,
-  }
-
-  const { connect, disconnect, dialog, providers, ...state } = useConnect({
+  const [dialog] = useDialog()
+  const { connect, disconnect, ...state } = useConnect({
     onConnect,
     onDisconnect,
   })
-
-  useEffect(() => {
-    if (state.status === "connected") {
-      dialog.close()
-    }
-  }, [state.status])
 
   return (
     <>
@@ -50,17 +32,6 @@ const Connect = (props) => {
         <button style={style} className="connect-button" onClick={() => dialog.open()}>
           Connect
         </button>
-      ) : null}
-
-      {dialog.isOpen ? (
-        <Dialog onClose={() => dialog.close()}>
-          {providers.map((provider) => {
-            const ProviderButton = providerButtons[provider.id]
-            return (
-              <ProviderButton key={provider.id} onClick={() => connect(provider.id)} dark={dark} />
-            )
-          })}
-        </Dialog>
       ) : null}
     </>
   )

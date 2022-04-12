@@ -6,22 +6,22 @@ import InfinityConnector from "./Infinity"
 
 export const defaultConnectors = [
   AstroXConnector,
+  InfinityConnector,
   InternetIdentityConnector,
   PlugConnector,
   StoicConnector,
-  InfinityConnector,
 ]
 
 export const walletConnectors = [
   AstroXConnector,
-  PlugConnector,
   InfinityConnector,
+  PlugConnector,
 ]
 
 export {
   AstroXConnector,
+  InfinityConnector,
   InternetIdentityConnector,
   PlugConnector,
   StoicConnector,
-  InfinityConnector,
 }

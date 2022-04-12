@@ -6,6 +6,7 @@ import stoicLogo from "./assets/stoic.png"
 import metamaskLogo from "./assets/metamask-fox.svg"
 import infinityLogo from "./assets/infinity.png"
 import { connectMachine } from "./machines/connectMachine"
+import * as canisters from "./canisters"
 
 export * from "./connectors"
-export { astroxLogo, dfinityLogo, plugDark, plugLight, stoicLogo, metamaskLogo, infinityLogo, connectMachine }
+export { canisters, astroxLogo, dfinityLogo, plugDark, plugLight, stoicLogo, metamaskLogo, infinityLogo, connectMachine }

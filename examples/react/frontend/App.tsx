@@ -1,7 +1,7 @@
 import React from "react"
 import "@connect2ic/core/style.css"
-import { defaultConnectors } from "@connect2ic/core"
-import { Connect, ConnectProvider } from "@connect2ic/react"
+import { defaultConnectors, walletConnectors } from "@connect2ic/core"
+import { Connect, Dialog, ConnectProvider } from "@connect2ic/react"
 import { Intro } from "./Intro"
 import * as counter from "canisters/counter"
 
@@ -15,6 +15,7 @@ function App() {
 
   return (
     <div className="App">
+      <Dialog />
       <div className="auth-section">
         <Connect onDisconnect={onDisconnect} onConnect={onConnect} dark={false} />
       </div>
@@ -25,8 +26,14 @@ function App() {
 
 const canisters = { counter }
 
+// ledger
+// s24we-diaaa-aaaaa-aaaka-cai
+// nns dapp
+// st75y-vaaaa-aaaaa-aaalq-cai
+// internet identity
+// si2b5-pyaaa-aaaaa-aaaja-cai
 export default () => (
-  <ConnectProvider connectors={defaultConnectors} canisters={canisters}>
+  <ConnectProvider dev={true} connectors={defaultConnectors} canisters={canisters}>
     <App />
   </ConnectProvider>
 )

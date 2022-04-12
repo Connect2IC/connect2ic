@@ -215,7 +215,7 @@ export const MainLayout = (children: any) => {
             <Dashboard />
           </Route>
           <Route path="/empty">
-            <EmptyPage />
+            <EmptyPage dark={!isLight} />
           </Route>
           <Route path="/dashboard">
             <Dashboard />

@@ -79,8 +79,9 @@ const authStates = {
         src: (context, event) => async (callback, onReceive) => {
           // TODO: clean up
           // Save in context?
-          const { whitelist, host, dev, connectors } = context
-          let providers = connectors.map(Connector => new Connector({ whitelist, host, dev }))
+          const { whitelist, host, dev, connectors, config } = context
+          console.log(config)
+          let providers = connectors.map(Connector => new Connector({ whitelist, host, dev, ...(config?.[Connector.id] ? config[Connector.id] : {}) }))
           await Promise.allSettled(providers.map(p => p.init()))
           // TODO: fix
           let maybeProviders = providers.map(p => new Promise(async (resolve, reject) => {
@@ -127,7 +128,6 @@ const authStates = {
             if (e.type === "CONNECT") {
               try {
                 await provider.connect()
-                console.log("connect worked??", provider)
                 callback({
                   type: "DONE",
                   // TODO: fix?
@@ -137,7 +137,7 @@ const authStates = {
                   principal: provider.principal,
                 })
               } catch (e) {
-                console.log("connect failed??")
+                console.log("connect failed??", e)
                 callback({
                   // TODO: or cancel?
                   type: "ERROR",
@@ -234,6 +234,7 @@ const rootMachine = createMachine({
   id: "root",
   initial: "inactive",
   context: {
+    config: {},
     host: window.location.origin,
     dev: false,
     whitelist: [],
@@ -252,9 +253,11 @@ const rootMachine = createMachine({
         INIT: {
           target: "idle",
           actions: assign((context, event) => ({
+            config: event.config || {},
             whitelist: event.whitelist || [],
             host: event.host || window.location.origin,
             connectors: event.connectors || [],
+            dev: event.dev,
           })),
         },
       },

@@ -16,6 +16,8 @@ import Dialog from "./Dialog"
 import { useConnect } from "./hooks/useConnect"
 import { useCanister } from "./hooks/useCanister"
 import { useWallet } from "./hooks/useWallet"
+import { useDialog } from "./hooks/useDialog"
+import { useProviders } from "./hooks/useProviders"
 import { ConnectProvider, ConnectContext } from "./context"
 
 export {
@@ -34,6 +36,8 @@ export {
   useConnect,
   useCanister,
   useWallet,
+  useDialog,
+  useProviders,
   ConnectProvider,
   ConnectContext
 }

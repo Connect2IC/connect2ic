@@ -3,9 +3,9 @@ import {
   IllustrationNoContentDark,
 } from "@douyinfe/semi-illustrations"
 import { Button, Empty, Typography } from "@douyinfe/semi-ui"
-import { Connect, useConnect, useCanister } from "@connect2ic/react"
+import { Connect, Dialog } from "@connect2ic/react"
 
-export const EmptyPage = () => {
+export const EmptyPage = ({ dark }) => {
   return (
     <Empty
       image={<IllustrationNoContent style={{ width: 150, height: 150 }} />}
@@ -34,6 +34,7 @@ export const EmptyPage = () => {
           borderRadius: "32px",
         }} />
       </div>
+      <Dialog dark={dark} />
     </Empty>
   )
 }

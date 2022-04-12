@@ -1,8 +1,11 @@
 import { IConnector, IWalletConnector } from "./connectors"
 
 class InfinityConnector implements IConnector, IWalletConnector {
+
+  static readonly id = "infinity"
   readonly id = "infinity"
   readonly name = "Infinity Wallet"
+
   #config: {
     whitelist: [string],
     host: string,
@@ -12,15 +15,19 @@ class InfinityConnector implements IConnector, IWalletConnector {
   #principal?: string
   #client?: any
   #ic?: any
+
   get identity() {
     return this.#identity
   }
+
   get principal() {
     return this.#principal
   }
+
   get client() {
     return this.#client
   }
+
   get ic() {
     return this.#ic
   }

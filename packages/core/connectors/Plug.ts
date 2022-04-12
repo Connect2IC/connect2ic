@@ -1,8 +1,11 @@
 import { IConnector, IWalletConnector } from "./connectors"
 
 class PlugConnector implements IConnector, IWalletConnector {
+
+  static readonly id = "plug"
   readonly id = "plug"
   readonly name = "Plug Wallet"
+
   #config: {
     whitelist: [string],
     host: string,

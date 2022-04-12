@@ -5,13 +5,12 @@ import { ConnectContext } from "../context"
 
 export const useCanister = (
   canisterName,
+  // TODO:
   options = {
     mode: "auto", // "anonymous" | "authenticated"
   },
 ) => {
   // TODO: support lazy loading canisters?
-  // TODO: NNS, management, ledger canister support?
-  // TODO: support anonymous canisters
   const [canister, setCanister] = useState()
   const { canisters, connectService } = useContext(ConnectContext)
   const { status } = useConnect({
@@ -35,7 +34,6 @@ export const useCanister = (
     connectService.send({ type: "CREATE_ANONYMOUS_ACTOR", canisterId, idlFactory, canisterName })
   }, [canisterName, initialized])
 
-  // TODO: configurable?
   // TODO: move inside machine?
   useEffect(() => {
     if (actor) {
@@ -47,8 +45,8 @@ export const useCanister = (
     }
   }, [anonymousActor, actor])
 
-  const loading = !canister
   // TODO:
+  const loading = !canister
   const error = false
 
   return [canister, { error, loading }]

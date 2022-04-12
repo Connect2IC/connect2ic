@@ -3,8 +3,11 @@ import { Actor, HttpAgent } from "@dfinity/agent"
 import { IConnector } from "./connectors"
 
 class StoicConnector implements IConnector {
+
+  static readonly id = "stoic"
   readonly id = "stoic"
   readonly name = "Stoic Wallet"
+
   #config: {
     whitelist: [string],
     host: string,
@@ -12,9 +15,11 @@ class StoicConnector implements IConnector {
   }
   #identity?: any
   #principal?: string
+
   get identity() {
     return this.#identity
   }
+
   get principal() {
     return this.#principal
   }

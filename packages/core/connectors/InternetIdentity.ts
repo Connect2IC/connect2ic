@@ -4,6 +4,7 @@ import { IConnector } from "./connectors"
 
 class InternetIdentityConnector implements IConnector {
 
+  static readonly id = "ii"
   readonly id = "ii"
   readonly name = "Internet Identity"
 
@@ -15,12 +16,15 @@ class InternetIdentityConnector implements IConnector {
   #identity?: any
   #principal?: string
   #client?: any
+
   get identity() {
     return this.#identity
   }
+
   get principal() {
     return this.#principal
   }
+
   get client() {
     return this.#client
   }

@@ -1,5 +1,5 @@
 export interface IConnector {
-  readonly id: string
+  // readonly id: string
   readonly name: string
   init: () => Promise<void>
   isAuthenticated: () => Promise<Boolean>
