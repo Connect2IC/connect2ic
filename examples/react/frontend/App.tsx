@@ -33,7 +33,18 @@ const canisters = { counter }
 // internet identity
 // si2b5-pyaaa-aaaaa-aaaja-cai
 export default () => (
-  <ConnectProvider dev={true} connectors={defaultConnectors} canisters={canisters}>
+  <ConnectProvider connectorConfig={{
+    astrox: {
+      providerUrl: "http://localhost:8080",
+      ledgerCanisterId: "s24we-diaaa-aaaaa-aaaka-cai",
+    },
+    ii: {
+      providerUrl: "http://wxns6-qiaaa-aaaaa-aaaqa-cai.localhost:8000",
+    },
+    stoic: {
+      // providerUrl: "http://localhost:8080"
+    }
+  }} dev={true} connectors={defaultConnectors} canisters={canisters}>
     <App />
   </ConnectProvider>
 )

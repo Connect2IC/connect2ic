@@ -19,11 +19,15 @@ export const useCanister = (
       const { canisterId, idlFactory } = canisters[canisterName]
       connectService.send({ type: "CREATE_ACTOR", canisterId, idlFactory, canisterName })
     },
+    onDisconnect: async () => {
+      if (anonymousActor) {
+        setCanister(anonymousActor)
+      }
+    },
   })
-  const anonymousActor = useSelector(connectService, (state) => state.context.anonymousCanisters[canisterName])
-  const actor = useSelector(connectService, (state) => state.context.canisters[canisterName])
+  const anonymousActor = useSelector(connectService, (state) => state.context.anonymousActors[canisterName])
+  const actor = useSelector(connectService, (state) => state.context.actors[canisterName])
   const initialized = useSelector(connectService, (state) => !!state.value?.idle)
-  // TODO: whitelist + host selector instead?
 
   useEffect(() => {
     if (!initialized) {
@@ -36,6 +40,7 @@ export const useCanister = (
 
   // TODO: move inside machine?
   useEffect(() => {
+    // if logged out
     if (actor) {
       setCanister(actor)
       return

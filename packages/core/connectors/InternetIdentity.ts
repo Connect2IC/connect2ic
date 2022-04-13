@@ -11,6 +11,7 @@ class InternetIdentityConnector implements IConnector {
   #config: {
     whitelist: [string],
     host: string,
+    providerUrl: string,
     dev: Boolean,
   }
   #identity?: any
@@ -33,13 +34,15 @@ class InternetIdentityConnector implements IConnector {
     this.#config = {
       whitelist: [],
       host: window.location.origin,
+      providerUrl: "https://identity.ic0.app",
       dev: false,
       ...userConfig,
     }
   }
 
   async init() {
-    this.#client = await AuthClient.create(this.config)
+    // TODO: pass in config or not?
+    this.#client = await AuthClient.create(this.#config)
     const isAuthenticated = await this.isAuthenticated()
     // // TODO: fix?
     if (isAuthenticated) {
@@ -54,16 +57,18 @@ class InternetIdentityConnector implements IConnector {
 
   async createActor(canisterId, idlFactory) {
     // TODO: pass identity?
-    const agent = new HttpAgent({ ...this.#config })
+    console.log("createActor", this.#principal)
+    const agent = new HttpAgent({
+      ...this.#config,
+      identity: this.#identity,
+    })
 
     if (this.#config.dev) {
       // Fetch root key for certificate validation during development
-      // if(process.env.NODE_ENV !== "production") {
       agent.fetchRootKey().catch(err => {
         console.warn("Unable to fetch root key. Check to ensure that your local replica is running")
         console.error(err)
       })
-      // }
     }
 
     // TODO: add actorOptions?
@@ -75,19 +80,20 @@ class InternetIdentityConnector implements IConnector {
 
   async connect() {
     try {
-      const { identity, principal } = await new Promise((resolve, reject) => {
+      await new Promise((resolve, reject) => {
         this.#client.login({
-          identityProvider: "https://identity.ic0.app",
+          // TODO: local
+          identityProvider: this.#config.providerUrl,
           onSuccess: () => {
             const identity = this.#client.getIdentity()
             const principal = identity.getPrincipal().toString()
+            this.#identity = identity
+            this.#principal = principal
             resolve({ identity, principal })
           },
           onError: reject,
         })
       })
-      this.#identity = identity
-      this.#principal = principal
     } catch (e) {
       // TODO: handle errors
     }

@@ -90,8 +90,21 @@ class InfinityConnector implements IConnector, IWalletConnector {
   }
 
   async disconnect() {
-    await window.ic.infinityWallet.disconnect()
-    // TODO: reset state?
+    await Promise.race([
+      new Promise((resolve, reject) => {
+        // InfinityWallet disconnect promise never resolves despite being disconnected
+        // This is a hacky workaround
+        setTimeout(async () => {
+          const isConnected = await this.#ic.isConnected()
+          if (!isConnected) {
+            resolve(isConnected)
+          } else {
+            reject()
+          }
+        }, 0)
+      }),
+      this.#ic.disconnect()
+    ])
   }
 
   // address: walletAddress

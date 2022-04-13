@@ -19,20 +19,18 @@ export const useConnect = (props = {}) => {
   } = props
   const {
     connectService,
+    action,
   } = useContext(ConnectContext)
   const state = useSelector(connectService, selectState)
 
   useEffect(() => {
-    if (!state) {
-      return
-    }
-    if (state.status === "connected") {
+    if (action === "onConnect") {
       onConnect(state)
     }
-    if (state.status === "disconnected") {
+    if (action === "onDisconnect") {
       onDisconnect()
     }
-  }, [state.status])
+  }, [action])
 
   return {
     ...state,

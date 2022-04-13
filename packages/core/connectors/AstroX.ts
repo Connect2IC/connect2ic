@@ -41,7 +41,6 @@ class AstroXConnector implements IConnector, IWalletConnector {
   }
 
   async init() {
-    console.log(this.#config)
     this.#ic = await IC.create({
       useFrame: !(window.innerWidth < 768),
       signerProviderUrl: `${this.#config.providerUrl}/signer`,

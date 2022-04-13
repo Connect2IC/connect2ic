@@ -5,6 +5,7 @@
   "files": [
     "dist"
   ],
+  "sideEffects": false,
   "main": "./dist/connect2ic-react.umd.js",
   "module": "./dist/connect2ic-react.es.js",
   "exports": {
@@ -14,7 +15,7 @@
     }
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "vite build --watch",
     "build": "vite build",
     "serve": "vite preview"
   },

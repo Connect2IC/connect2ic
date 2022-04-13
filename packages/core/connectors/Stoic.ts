@@ -10,6 +10,7 @@ class StoicConnector implements IConnector {
 
   #config: {
     whitelist: [string],
+    providerUrl: string,
     host: string,
     dev: Boolean,
   }
@@ -28,13 +29,14 @@ class StoicConnector implements IConnector {
     this.#config = {
       whitelist: [],
       host: window.location.origin,
+      providerUrl: "https://www.stoicwallet.com",
       dev: false,
       ...userConfig,
     }
   }
 
   async init() {
-    const identity = await StoicIdentity.load()
+    const identity = await StoicIdentity.load(this.#config.providerUrl)
 
     if (identity) {
       this.#identity = identity
@@ -44,7 +46,10 @@ class StoicConnector implements IConnector {
 
   async createActor(canisterId, idlFactory) {
     // TODO: pass identity
-    const agent = new HttpAgent({ ...this.#config })
+    const agent = new HttpAgent({
+      ...this.#config,
+      identity: this.#identity,
+    })
 
     // Fetch root key for certificate validation during development
     if (this.#config.dev) {
