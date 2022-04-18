@@ -11,7 +11,7 @@ module.exports = defineConfig({
   ],
   build: {
     lib: {
-      entry: path.resolve(__dirname, "index.tsx"),
+      entry: path.resolve(__dirname, "index.ts"),
       name: "@connect2ic/core",
       fileName: (format) => `connect2ic-core.${format}.js`,
     },

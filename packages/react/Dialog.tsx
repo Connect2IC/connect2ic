@@ -2,15 +2,16 @@ import React, { useEffect } from "react"
 import { useDialog } from "./hooks/useDialog"
 import { useProviders } from "./hooks/useProviders"
 import { useConnect } from "./hooks/useConnect"
-import { AstroXButton, IIButton, InfinityButton, PlugButton, StoicButton } from "./index"
+import { AstroXButton, IIButton, InfinityButton, PlugButton, StoicButton, NFIDButton } from "./index"
 
 const Dialog = (props) => {
   const {
     onClose = () => {
       dialog.close()
     },
-      children,
-      dark,
+    children,
+    dark,
+    title,
   } = props
 
   const onClickInside = (e) => {
@@ -18,11 +19,12 @@ const Dialog = (props) => {
   }
 
   const providerButtons = {
-    ii: IIButton,
-    stoic: StoicButton,
-    plug: PlugButton,
     astrox: AstroXButton,
+    ii: IIButton,
     infinity: InfinityButton,
+    nfid: NFIDButton,
+    plug: PlugButton,
+    stoic: StoicButton,
   }
 
   const [dialog] = useDialog()
@@ -38,16 +40,21 @@ const Dialog = (props) => {
   }, [status])
 
   return dialog.isOpen ? (
-    <div onClick={onClose} className={`dialog-styles ${dark ? "dark" : "light"}`}>
-      <div onClick={onClickInside} className="dialog-container">
-        {providers.map((provider) => {
-          const ProviderButton = providerButtons[provider.id]
-          return (
-            <ProviderButton key={provider.id} onClick={() => connect(provider.id)} dark={dark} />
-          )
-        })}
+    <>
+      <div onClick={onClose} className={`dialog-styles ${dark ? "dark" : "light"}`}>
+        <div onClick={onClickInside} className="dialog-container">
+          {title ? (
+            <h2>{title}</h2>
+          ) : null}
+          {providers.map((provider) => {
+            const ProviderButton = providerButtons[provider.id]
+            return (
+              <ProviderButton key={provider.id} onClick={() => connect(provider.id)} dark={dark} />
+            )
+          })}
+        </div>
       </div>
-    </div>
+    </>
   ) : null
 }
 

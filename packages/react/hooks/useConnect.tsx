@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext, useEffect, useRef, useState } from "react"
 import { useSelector } from "@xstate/react"
-import { ConnectContext } from "../context"
+import { Connect2ICContext } from "../context"
 
 const selectState = state => ({
   identity: state.context.identity,
@@ -20,12 +20,13 @@ export const useConnect = (props = {}) => {
   const {
     connectService,
     action,
-  } = useContext(ConnectContext)
+  } = useContext(Connect2ICContext)
   const state = useSelector(connectService, selectState)
 
   useEffect(() => {
+    // TODO: Fires multiple times? Fix
     if (action === "onConnect") {
-      onConnect(state)
+      onConnect()
     }
     if (action === "onDisconnect") {
       onDisconnect()
@@ -35,7 +36,7 @@ export const useConnect = (props = {}) => {
   return {
     ...state,
     connect: (provider) => {
-      connectService.send({ type: "CONNECT", provider })
+      connectService.send({ type: "CONNECT", data: { provider } })
     },
     disconnect: () => {
       connectService.send({ type: "DISCONNECT" })

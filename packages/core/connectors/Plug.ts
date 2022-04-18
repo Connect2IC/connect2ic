@@ -71,6 +71,7 @@ class PlugConnector implements IConnector, IWalletConnector {
     return await this.#ic.createActor({ canisterId, interfaceFactory: idlFactory })
   }
 
+  // TODO: handle Plug account switching
   async connect() {
     try {
       await this.#ic.requestConnect(this.#config)
@@ -93,7 +94,12 @@ class PlugConnector implements IConnector, IWalletConnector {
     // TODO: reset state?
   }
 
-  // address: walletAddress
+  address() {
+    return {
+      principal: this.#principal,
+      // accountId: this.#ic.accountId,
+    }
+  }
 
   requestTransfer(...args) {
     return this.#ic.requestTransfer(...args)

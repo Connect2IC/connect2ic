@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react"
 import logo from "./assets/logo-dark.svg"
-import { useCanister, useConnect } from "@connect2ic/react"
+import { useCanister, useConnect, useWallet } from "@connect2ic/react"
 
 export function Intro() {
   const [counter] = useCanister("counter")
   const { principal } = useConnect()
+  // const [wallet] = useWallet()
   const [value, setValue] = useState()
 
   const refreshCounter = async () => {
@@ -79,7 +80,7 @@ export function Intro() {
             </a>
           </div>
         </div>
-        <p>{principal?.toString()}</p>
+        {/*<p>Wallet: {wallet?.address}</p>*/}
         <p style={{ fontSize: "0.6em" }}>
           Count is {value}
         </p>

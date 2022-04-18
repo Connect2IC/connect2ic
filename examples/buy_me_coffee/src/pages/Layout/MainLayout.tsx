@@ -53,7 +53,7 @@ export const MainLayout = (children: any) => {
     }
   })
   const [wallet] = useWallet()
-  const walletAddress = wallet?.address || "unknown"
+  const walletAddress = wallet?.principal || "unknown"
   const isAuth = status === "connected"
 
   const deleteME = async () => {

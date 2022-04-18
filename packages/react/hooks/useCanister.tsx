@@ -1,23 +1,23 @@
 import { useContext, useEffect, useState } from "react"
 import { useSelector } from "@xstate/react"
 import { useConnect } from "./useConnect"
-import { ConnectContext } from "../context"
+import { Connect2ICContext } from "../context"
 
 export const useCanister = (
   canisterName,
-  // TODO:
   options = {
     mode: "auto", // "anonymous" | "authenticated"
   },
 ) => {
+  const { mode } = options
   // TODO: support lazy loading canisters?
   const [canister, setCanister] = useState()
-  const { canisters, connectService } = useContext(ConnectContext)
+  const { canisters, connectService } = useContext(Connect2ICContext)
   const { status } = useConnect({
-    onConnect: async ({ provider }) => {
+    onConnect: async () => {
       // TODO: save in machine? not context
       const { canisterId, idlFactory } = canisters[canisterName]
-      connectService.send({ type: "CREATE_ACTOR", canisterId, idlFactory, canisterName })
+      connectService.send({ type: "CREATE_ACTOR", data: { canisterId, idlFactory, canisterName } })
     },
     onDisconnect: async () => {
       if (anonymousActor) {
@@ -35,20 +35,20 @@ export const useCanister = (
     }
     // TODO: throw if invalid canisterName?
     const { canisterId, idlFactory } = canisters[canisterName]
-    connectService.send({ type: "CREATE_ANONYMOUS_ACTOR", canisterId, idlFactory, canisterName })
+    connectService.send({ type: "CREATE_ANONYMOUS_ACTOR", data: { canisterId, idlFactory, canisterName } })
   }, [canisterName, initialized])
 
   // TODO: move inside machine?
   useEffect(() => {
     // if logged out
-    if (actor) {
+    if (actor && mode !== "anonymous") {
       setCanister(actor)
       return
     }
     if (anonymousActor) {
       setCanister(anonymousActor)
     }
-  }, [anonymousActor, actor])
+  }, [anonymousActor, actor, mode])
 
   // TODO:
   const loading = !canister

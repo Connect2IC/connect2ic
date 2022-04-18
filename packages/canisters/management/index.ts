@@ -1,11 +1,11 @@
 import managementCanisterIdl from "./management_idl"
 // import { Actor, ActorSubclass, CallConfig } from '../actor';
-import { Principal } from '@dfinity/principal';
+import { Principal } from "@dfinity/principal"
 // import _SERVICE from './management_service';
 //
 // export type ManagementCanisterRecord = _SERVICE;
 
-export const canisterId = Principal.fromHex('').toString()
+export const canisterId = Principal.fromHex("").toString()
 
 export { managementCanisterIdl as idlFactory }
 

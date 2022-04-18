@@ -1,21 +1,48 @@
-import { useContext, useEffect } from "react"
+import { useContext, useEffect, useState } from "react"
 import { useSelector } from "@xstate/react"
 import { useConnect } from "./useConnect"
-import { ConnectContext } from "../context"
+import { Connect2ICContext } from "../context"
 
 export const useWallet = () => {
   // TODO: check if supported or not
-  const { connectService } = useContext(ConnectContext)
+  const { connectService } = useContext(Connect2ICContext)
+  const provider = useSelector(connectService, (state) => state.context.provider)
+  const [wallet, setWallet] = useState(undefined)
+  const supportsWallet = !!provider?.requestTransfer
   const { status } = useConnect({
-    onConnect: async ({ provider }) => {
-      // ...
+    onConnect: async () => {
+      // TODO: fix onConnect()
+
+      // if (supportsWallet) {
+      //   // TODO: kind of hacky?
+      //   setWallet({
+      //     requestTransfer: (...args) => provider.requestTransfer(...args),
+      //     principal: provider.principal,
+      //     queryBalance: (...args) => provider.queryBalance(...args),
+      //     // accountId: provider.accountId,
+      //   })
+      // }
+    },
+    onDisconnect: () => {
+      setWallet(undefined)
     },
   })
-  const provider = useSelector(connectService, (state) => state.context.provider)
-  const wallet = provider && {
-    requestTransfer: (...args) => provider.requestTransfer(...args),
-    address: provider.principal,
-  }
+
+  useEffect(() => {
+    if (status === "connected") {
+      if (supportsWallet) {
+        // TODO: kind of hacky?
+        setWallet({
+          requestTransfer: (...args) => provider.requestTransfer(...args),
+          principal: provider.principal,
+          queryBalance: (...args) => provider.queryBalance(...args),
+          // accountId: provider.accountId,
+        })
+      }
+    }
+  }, [status, setWallet])
+
+  // investigate io-ts runtime type checking?
   const loading = false
   const error = false
 

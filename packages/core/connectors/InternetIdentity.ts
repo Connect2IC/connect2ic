@@ -79,24 +79,18 @@ class InternetIdentityConnector implements IConnector {
   }
 
   async connect() {
-    try {
-      await new Promise((resolve, reject) => {
-        this.#client.login({
-          // TODO: local
-          identityProvider: this.#config.providerUrl,
-          onSuccess: () => {
-            const identity = this.#client.getIdentity()
-            const principal = identity.getPrincipal().toString()
-            this.#identity = identity
-            this.#principal = principal
-            resolve({ identity, principal })
-          },
-          onError: reject,
-        })
+    await new Promise((resolve, reject) => {
+      this.#client.login({
+        // TODO: local
+        identityProvider: this.#config.providerUrl,
+        onSuccess: resolve,
+        onError: reject,
       })
-    } catch (e) {
-      // TODO: handle errors
-    }
+    })
+    const identity = this.#client.getIdentity()
+    const principal = identity.getPrincipal().toString()
+    this.#identity = identity
+    this.#principal = principal
   }
 
   async disconnect() {

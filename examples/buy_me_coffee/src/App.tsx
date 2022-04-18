@@ -1,5 +1,5 @@
 import { walletConnectors, defaultConnectors } from "@connect2ic/core"
-import { ConnectProvider } from "@connect2ic/react"
+import { Connect2ICProvider } from "@connect2ic/react"
 import * as buymeacoffee from "@/canisters/buymecoffee"
 import { MainLayout } from "./pages/Layout/MainLayout"
 
@@ -11,9 +11,9 @@ const canisters = {
 }
 
 const App: React.FC = () => (
-  <ConnectProvider connectors={walletConnectors} canisters={canisters}>
+  <Connect2ICProvider connectors={walletConnectors} canisters={canisters}>
     <MainLayout />
-  </ConnectProvider>
+  </Connect2ICProvider>
 )
 
 export default App

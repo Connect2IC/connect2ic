@@ -1,7 +1,7 @@
 {
   "name": "@connect2ic/core",
   "version": "0.0.0",
-  "types": "./index.tsx",
+  "types": "./index.ts",
   "files": [
     "dist",
     "style.css"

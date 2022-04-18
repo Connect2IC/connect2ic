@@ -1,15 +1,14 @@
 import React from "react"
-import { astroxLogo } from "@connect2ic/core"
+import { astroxLogo, astroxDarkLogo } from "@connect2ic/core"
 
 const AstroXButton = ({ dark = false, ...props }) => {
   return (
     <>
-      <button className={"button-styles ii-styles"}
-              style={dark ? {} : { background: "#f4f4f4", color: "black" }} {...props}>
-        <img style={{ height: "auto" }} className={"img-styles"} src={astroxLogo} />
+      <button className={"button-styles ii-styles"} {...props}>
+        <img style={{ height: "auto" }} className={"img-styles"} src={dark ? astroxDarkLogo : astroxLogo } />
         <div>
           <span className="button-label">AstroX ME</span>
-          <span>Connect with your AstroX ME identity</span>
+          {/*<span>Connect with your AstroX ME identity</span>*/}
         </div>
       </button>
     </>

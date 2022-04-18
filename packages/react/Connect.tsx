@@ -12,6 +12,7 @@ const Connect = (props) => {
     },
     onDisconnect = () => {
     },
+    children
   } = props
 
   const [dialog] = useDialog()
@@ -24,13 +25,13 @@ const Connect = (props) => {
     <>
       {state.status === "connected" ? (
         <button style={style} className="connect-button" onClick={() => disconnect()}>
-          Disconnect
+          {children ?? "Disconnect"}
         </button>
       ) : null}
 
       {state.status !== "connected" ? (
         <button style={style} className="connect-button" onClick={() => dialog.open()}>
-          Connect
+          {children ?? "Connect"}
         </button>
       ) : null}
     </>

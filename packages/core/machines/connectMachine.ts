@@ -1,7 +1,5 @@
 import { createMachine, assign, forwardTo } from "xstate"
 import { Actor, HttpAgent } from "@dfinity/agent"
-import { onDisconnect } from "../../svelte/Connect.svelte"
-
 
 const canisterStates = {
   id: "canisters",
@@ -26,11 +24,11 @@ const canisterStates = {
                 })
               }
 
-              const actor = Actor.createActor(e.idlFactory, {
+              const actor = Actor.createActor(e.data.idlFactory, {
                 agent,
-                canisterId: e.canisterId,
+                canisterId: e.data.canisterId,
               })
-              callback({ type: "SAVE_ANONYMOUS_ACTOR", actor, canisterName: e.canisterName })
+              callback({ type: "SAVE_ANONYMOUS_ACTOR", data: { actor, canisterName: e.data.canisterName } })
             }
           })
         },
@@ -41,7 +39,7 @@ const canisterStates = {
         },
         SAVE_ANONYMOUS_ACTOR: {
           actions: assign((context, event) => ({
-            anonymousActors: { ...context.anonymousActors, [event.canisterName]: event.actor },
+            anonymousActors: { ...context.anonymousActors, [event.data.canisterName]: event.data.actor },
           })),
         },
       },
@@ -74,7 +72,6 @@ const authStates = {
               identity: event.data.identity,
               principal: event.data.principal,
             })),
-            "onConnect",
           ],
         },
       },
@@ -86,7 +83,8 @@ const authStates = {
           let providers = connectors.map(Connector => new Connector({
             whitelist,
             host,
-            dev, ...(connectorConfig?.[Connector.id] ? connectorConfig[Connector.id] : {}),
+            dev,
+            ...(connectorConfig?.[Connector.id] ? connectorConfig[Connector.id] : {}),
           }))
           await Promise.allSettled(providers.map(p => p.init()))
           let maybeProviders = providers.map(p => new Promise(async (resolve, reject) => {
@@ -97,7 +95,8 @@ const authStates = {
 
           maybeSignedInProvider.then((signedInProvider) => {
             callback({
-              type: "DONE_AND_CONNECTED", data: {
+              type: "DONE_AND_CONNECTED",
+              data: {
                 providers,
                 provider: signedInProvider,
                 // wallet: signedInProvider.wallet,
@@ -128,25 +127,29 @@ const authStates = {
         src: (context, _event) => (callback, onReceive) => {
           onReceive(async (e) => {
             // TODO: Handle cancellation with AbortController?
-            const provider = context.providers.find(p => p.id === e.provider)
+            const provider = context.providers.find(p => p.id === e.data.provider)
             if (e.type === "CONNECT") {
               try {
                 await provider.connect()
                 callback({
                   type: "DONE",
                   // TODO: fix?
-                  provider,
-                  // wallet: provider.wallet,
-                  identity: provider.identity,
-                  principal: provider.principal,
+                  data: {
+                    provider,
+                    // wallet: provider.wallet,
+                    identity: provider.identity,
+                    principal: provider.principal,
+                  },
                 })
               } catch (e) {
                 console.log("connect failed??", e)
                 callback({
                   // TODO: or cancel?
                   type: "ERROR",
-                  error: e,
-                  // TODO: fix?
+                  data: {
+                    error: e,
+                    // TODO: fix?
+                  },
                 })
               }
             }
@@ -160,24 +163,21 @@ const authStates = {
         DONE: {
           target: "connected",
           actions: [
-            assign((context, event) => {
-              return ({
-                provider: event.provider,
-                // wallet: event.wallet,
-                identity: event.identity,
-                principal: event.principal,
-              })
-            }),
-            "onConnect",
+            assign((context, event) => ({
+              provider: event.data.provider,
+              // wallet: event.wallet,
+              identity: event.data.identity,
+              principal: event.data.principal,
+            })),
           ],
         },
         ERROR: {
           // actions: assign((context, event) => {
           //   return ({
-          //     provider: event.provider,
-          //     wallet: event.wallet,
-          //     identity: event.identity,
-          //     principal: event.principal,
+          //     provider: event.data.provider,
+          //     wallet: event.data.wallet,
+          //     identity: event.data.identity,
+          //     principal: event.data.principal,
           //   })
           // }),
         },
@@ -185,14 +185,15 @@ const authStates = {
     },
 
     "connected": {
+      entry: ["onConnect"],
       invoke: {
         id: "actorService",
         autoForward: true,
         src: (context, _event) => (callback, onReceive) => {
           onReceive(async (e) => {
             if (e.type === "CREATE_ACTOR") {
-              const actor = await context.provider.createActor(e.canisterId, e.idlFactory)
-              callback({ type: "SAVE_ACTOR", actor, canisterName: e.canisterName })
+              const actor = await context.provider.createActor(e.data.canisterId, e.data.idlFactory)
+              callback({ type: "SAVE_ACTOR", data: { actor, canisterName: e.data.canisterName } })
             }
           })
         },
@@ -207,7 +208,7 @@ const authStates = {
         },
         SAVE_ACTOR: {
           actions: assign((context, event) => ({
-            actors: { ...context.actors, [event.canisterName]: event.actor },
+            actors: { ...context.actors, [event.data.canisterName]: event.data.actor },
           })),
         },
       },
@@ -258,11 +259,11 @@ const rootMachine = createMachine({
         INIT: {
           target: "idle",
           actions: assign((context, event) => ({
-            connectorConfig: event.connectorConfig || {},
-            whitelist: event.whitelist || [],
-            host: event.host || window.location.origin,
-            connectors: event.connectors || [],
-            dev: event.dev,
+            connectorConfig: event.data.connectorConfig || {},
+            whitelist: event.data.whitelist || [],
+            host: event.data.host || window.location.origin,
+            connectors: event.data.connectors || [],
+            dev: event.data.dev,
           })),
         },
       },

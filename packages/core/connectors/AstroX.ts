@@ -1,4 +1,4 @@
-import { IC, ICAuthClient as AuthClient } from "@astrox/connection"
+import { IC } from "@astrox/connection"
 import { PermissionsType } from "@astrox/connection/lib/esm/types"
 import { IConnector, IWalletConnector } from "./connectors"
 
@@ -11,6 +11,7 @@ class AstroXConnector implements IConnector, IWalletConnector {
     whitelist: [string],
     providerUrl: string,
     ledgerCanisterId: string,
+    walletHost?: string,
     host: string,
     dev: Boolean,
   }
@@ -21,9 +22,11 @@ class AstroXConnector implements IConnector, IWalletConnector {
   get identity() {
     return this.#ic.identity
   }
+
   get principal() {
     return this.#principal
   }
+
   get ic() {
     return this.#ic
   }
@@ -34,6 +37,7 @@ class AstroXConnector implements IConnector, IWalletConnector {
       // TODO: check if dev
       providerUrl: "https://63k2f-nyaaa-aaaah-aakla-cai.raw.ic0.app",
       ledgerCanisterId: "ryjl3-tyaaa-aaaaa-aaaba-cai",
+      walletHost: "https://boundary.ic0.app/",
       host: window.location.origin,
       dev: false,
       ...userConfig,
@@ -48,20 +52,20 @@ class AstroXConnector implements IConnector, IWalletConnector {
       identityProvider: `${this.#config.providerUrl}/login#authorize`,
       permissions: [PermissionsType.identity, PermissionsType.wallet],
       ledgerCanisterId: this.#config.ledgerCanisterId,
+      walletHost: this.#config.walletHost,
       onAuthenticated: (icInstance: IC) => {
         this.#ic = window.ic.astrox ?? icInstance
         this.#principal = this.#ic.principal.toText()
         this.#identity = this.#ic.identity
-        // this.#address = this.#ic.wallet
       },
+      dev: this.#config.dev,
     })
-    // this.#ic = window.ic.astrox // ?? icInstance
     const isAuthenticated = await this.isAuthenticated()
 
     // TODO: figure out
     if (isAuthenticated) {
       this.#identity = this.#ic.identity
-      this.#principal = this.#ic.principal
+      this.#principal = this.#ic.principal.toText()
     }
   }
 
@@ -102,12 +106,29 @@ class AstroXConnector implements IConnector, IWalletConnector {
     await this.#ic.disconnect()
   }
 
+  address() {
+    return {
+      principal: this.#principal,
+      // accountId: this.#ic.accountId,
+    }
+  }
+
   requestTransfer(...args) {
     return this.#ic.requestTransfer(...args)
   }
 
-  queryBalance(...args) {
-    return this.#ic.queryBalance(...args)
+  async queryBalance(...args) {
+    // TODO: gets called often
+    // Temporary workaround
+    const ICPBalance = await this.#ic.queryBalance(...args)
+    return [{
+      amount: Number(ICPBalance) / 100000000,
+      canisterId: this.#config.ledgerCanisterId,
+      decimals: 8,
+      image: "Dfinity.svg",
+      name: "ICP",
+      symbol: "ICP",
+    }]
   }
 
   signMessage(...args) {

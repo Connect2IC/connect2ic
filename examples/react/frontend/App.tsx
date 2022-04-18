@@ -1,7 +1,7 @@
 import React from "react"
 import "@connect2ic/core/style.css"
 import { defaultConnectors, walletConnectors } from "@connect2ic/core"
-import { Connect, Dialog, ConnectProvider } from "@connect2ic/react"
+import { Connect, Dialog, Connect2ICProvider } from "@connect2ic/react"
 import { Intro } from "./Intro"
 import * as counter from "canisters/counter"
 
@@ -15,7 +15,7 @@ function App() {
 
   return (
     <div className="App">
-      <Dialog />
+      <Dialog /* title="Sign in with"*/ />
       <div className="auth-section">
         <Connect onDisconnect={onDisconnect} onConnect={onConnect} dark={false} />
       </div>
@@ -33,7 +33,7 @@ const canisters = { counter }
 // internet identity
 // si2b5-pyaaa-aaaaa-aaaja-cai
 export default () => (
-  <ConnectProvider connectorConfig={{
+  <Connect2ICProvider connectorConfig={{
     astrox: {
       providerUrl: "http://localhost:8080",
       ledgerCanisterId: "s24we-diaaa-aaaaa-aaaka-cai",
@@ -46,5 +46,5 @@ export default () => (
     }
   }} dev={true} connectors={defaultConnectors} canisters={canisters}>
     <App />
-  </ConnectProvider>
+  </Connect2ICProvider>
 )

@@ -35,7 +35,6 @@ class InfinityConnector implements IConnector, IWalletConnector {
   constructor(userConfig) {
     this.#config = {
       whitelist: [],
-      // TODO: Fix CORS error: Access to fetch at 'https://testnet.infinityswap.one/api/v2/status'
       host: window.location.origin,
       dev: false,
       ...userConfig,
@@ -47,7 +46,6 @@ class InfinityConnector implements IConnector, IWalletConnector {
     const isAuthenticated = await this.isAuthenticated()
     if (isAuthenticated) {
       try {
-        // await window.ic.infinityWallet.createAgent(this.#config)
         // TODO: never finishes if user doesnt login back?
         this.#principal = await (await window.ic.infinityWallet.getPrincipal()).toString()
         // const walletAddress = thisIC.wallet

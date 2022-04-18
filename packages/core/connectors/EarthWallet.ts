@@ -1,0 +1,139 @@
+import { IConnector, IWalletConnector } from "./connectors"
+
+class EarthWalletConnector implements IConnector, IWalletConnector {
+
+  static readonly id = "earth"
+  readonly id = "earth"
+  readonly name = "Earth Wallet"
+
+  #config: {
+    whitelist: [string],
+    host: string,
+    dev: Boolean,
+  }
+  #identity?: any
+  #principal?: string
+  #client?: any
+  #ic?: any
+
+  get identity() {
+    return this.#identity
+  }
+
+  get principal() {
+    return this.#principal
+  }
+
+  get client() {
+    return this.#client
+  }
+
+  get ic() {
+    return this.#ic
+  }
+
+  constructor(userConfig) {
+    this.#config = {
+      whitelist: [],
+      host: window.location.origin,
+      dev: false,
+      ...userConfig,
+    }
+    this.#ic = window.ic.infinityWallet
+  }
+
+  async init() {
+    const isAuthenticated = await this.isAuthenticated()
+    if (isAuthenticated) {
+      try {
+        // TODO: never finishes if user doesnt login back?
+        this.#principal = await (await window.ic.infinityWallet.getPrincipal()).toString()
+        // const walletAddress = thisIC.wallet
+      } catch (e) {
+        console.error(e)
+      }
+    }
+  }
+
+  async isAuthenticated() {
+    // TODO: no window
+    return await window.ic.infinityWallet.isConnected()
+  }
+
+  async createActor(canisterId, idlFactory) {
+    // Fetch root key for certificate validation during development
+    if (this.#config.dev) {
+      await window.ic.infinityWallet.agent.fetchRootKey()
+    }
+
+    return await window.ic.infinityWallet.createActor({ canisterId, interfaceFactory: idlFactory })
+  }
+
+
+  async connect() {
+    if (!window.ic.infinityWallet) {
+      window.open("https://chrome.google.com/webstore/detail/infinity-wallet/jnldfbidonfeldmalbflbmlebbipcnle", "_blank")
+      // TODO: throw?
+      return
+    }
+    try {
+      await window.ic.infinityWallet.requestConnect(this.#config)
+      this.#principal = await (await this.#ic.getPrincipal()).toString()
+      // const walletAddress = thisIC.wallet
+    } catch
+      (e) {
+      // TODO: handle
+      return
+    }
+  }
+
+  async disconnect() {
+    await Promise.race([
+      new Promise((resolve, reject) => {
+        // InfinityWallet disconnect promise never resolves despite being disconnected
+        // This is a hacky workaround
+        setTimeout(async () => {
+          const isConnected = await this.#ic.isConnected()
+          if (!isConnected) {
+            resolve(isConnected)
+          } else {
+            reject()
+          }
+        }, 0)
+      }),
+      this.#ic.disconnect()
+    ])
+  }
+
+  // address: walletAddress
+
+  requestTransfer(...args) {
+    return this.#ic.requestTransfer(...args)
+  }
+
+  queryBalance(...args) {
+    return this.#ic.requestBalance(...args)
+  }
+
+  signMessage(...args) {
+    return this.#ic.signMessage(...args)
+  }
+
+  getManagementCanister(...args) {
+    return this.#ic.getManagementCanister(...args)
+  }
+
+  callClientRPC(...args) {
+    return this.#ic.callClientRPC(...args)
+  }
+
+  requestBurnXTC(...args) {
+    return this.#ic.requestBurnXTC(...args)
+  }
+
+  batchTransactions(...args) {
+    return this.#ic.batchTransactions(...args)
+  }
+}
+
+export default EarthWalletConnector

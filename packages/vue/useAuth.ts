@@ -31,7 +31,7 @@ const useAuth = ({
     principal,
     status,
     connect: (provider) => {
-      authService.send({ type: "CONNECT", provider })
+      authService.send({ type: "CONNECT", data: { provider } })
     },
     disconnect: () => {
       authService.send({ type: "DISCONNECT" })

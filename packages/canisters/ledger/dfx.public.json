@@ -1,0 +1,33 @@
+{
+    "canisters": {
+        "ledger": {
+            "type": "custom",
+            "candid": "ledger.public.did",
+            "wasm": "ledger-canister.wasm"
+        }
+    },
+    "defaults": {
+        "build": {
+            "packtool": ""
+        }
+    },
+    "networks": {
+        "local": {
+            "bind": "127.0.0.1:8000",
+            "type": "ephemeral"
+        },
+        "messaging": {
+            "providers": [
+                "http://10.12.36.13:8080"
+            ],
+            "type": "persistent"
+        },
+        "mainnet": {
+            "providers": [
+                "https://identity.ic0.app"
+            ],
+            "type": "persistent"
+        }
+    },
+    "version": 1
+}
