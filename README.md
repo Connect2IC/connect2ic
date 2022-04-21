@@ -1,4 +1,4 @@
-<img height=340 src="https://uc4aa39bba5117b7fd265ab16084.previews.dropboxusercontent.com/p/thumb/ABhUwUFRjQphViTh7CqzcLK1gDRME5_OdVGbiqheCTPqWIz4f_DMhLPpeF3MGlKegK5hP_8MP3ZqNat3aO3eknsAO_naWrTCDTH5l0tnLryGI6VKAFr7F1vkRUMMJdEe2Q8k5e2KeL7kRU82oIZTUfG_y5vq65x3BEgyOjo2ohmfylBiT8eMgVvxNhMMl42Ln6Rw9xFZ1m--LSgabMDMufOHi1-JpmQAkmi1SPjs1aNWEZSgwdP7z9cpGptpfERCDYIZtC_9CV3hx-ttYvzyu1l9OI-dxepYhKLch2GSF9nyZl3XG9KHBRClfc0EFXS6lzQDvKaeKeJQVmukZOZ01Bzzp-h57t-pQsA2_ECBvt-fU6iHAZsRa7cjEB93PrS3lgKl4FZ1qON_hDpVwuEI8rI2/p.png" />
+<img height=340 src="https://i.imgur.com/aGREctC.png" />
 
 # Connect2IC
 
