@@ -2,14 +2,12 @@
 
 # Connect2IC
 
-A toolkit for IC app development
+Auth and canister management for the IC made simple & other goodies.
 
-```
-npm i -S @connect2ic/core @connect2ic/react | svelte | vue
-```
+## Introduction
+This will give you a nice dialog out of the box to use for auth with the IC.
 
-Sign in with:
-
+## Supported providers
 - [Internet Identity](https://identity.ic0.app/)
 - [Stoic Wallet](https://plugwallet.ooo/)
 - [Plug](https://plugwallet.ooo/)
@@ -17,18 +15,29 @@ Sign in with:
 - [Infinity Wallet](https://chrome.google.com/webstore/detail/infinity-wallet/jnldfbidonfeldmalbflbmlebbipcnle)
 - [NFID](https://nfid.one)
 
-For React, Vue & Svelte.
+## Packages
+| package | description |
+| ----------- | ----------- |
+| [@connect2ic/core]() | Core logic, connectors, assets and utilities |
+| [@connect2ic/react]() | React components & hooks |
+| [@connect2ic/vue]() | Vue components & composables |
+| [@connect2ic/svelte]() | Svelte components & stores |
+| [@connect2ic/canisters]() | Some useful canisters to aid with development |
 
-- Dialog with selection
-- Hooks & utilities for app development
-- Provider assets
+# React
 
-## React
+## Quickstart
 
-### Quick start
-Fully working auth by importing 1 component. For the lazy.
+Following these steps will give you fully working auth with a Connect button and dialog as shown in the screenshot.
 
-1. Wrap your app with the Provider
+1. Install the necessary packages
+
+```
+npm i -S @connect2ic/core @connect2ic/react
+```
+
+
+2. Wrap your app with the Provider
 
 ```jsx
 import { defaultConnectors } from "@connect2ic/core"
@@ -47,14 +56,14 @@ export default () => (
 
 ```
 
-2. Place the components
+3. Place the components
 
 ```jsx
 import { ConnectButton, ConnectDialog, Connect2ICProvider, useConnect } from "@connect2ic/react"
 
 function App() {
   
-  const {} = useConnect({
+  const { status } = useConnect({
     onConnect: () => {
       // Signed in
     },
@@ -78,7 +87,7 @@ When you need more control
 ```jsx
 import { useConnect } from "connect2ic/react"
 
-const {status, connect, disconnect} = useConnect({
+const { status, connect, disconnect } = useConnect({
   onConnect: () => {
   },
   onDisconnect: () => {
@@ -86,13 +95,13 @@ const {status, connect, disconnect} = useConnect({
 })
 
 // connect
-auth.connect()
+connect()
 
 // disconnect
-auth.disconnect()
+disconnect()
 
-// read
-auth.status
+// "inactive" | "idle" | "connected" | "disconnecting"
+status
 ```
 
 ### useCanister
@@ -100,7 +109,7 @@ When you need more control
 ```jsx
 import { useCanister } from "connect2ic/react"
 
-const [counter, {loading, error}] = useCanister()
+const [counter, { loading, error }] = useCanister()
 ```
 
 ### useDialog
@@ -158,7 +167,7 @@ function App() {
   }
 
   return (
-    <Connect dark={false} onConnect={onConnect} onDisconnect={onDisconnect} style={{/* custom styles */ }} />
+    <Connect dark={false} onConnect={onConnect} onDisconnect={onDisconnect} style={{/* custom styles */}} />
   )
 }
 ```
