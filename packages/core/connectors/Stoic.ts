@@ -25,7 +25,7 @@ class StoicConnector implements IConnector {
     return this.#principal
   }
 
-  constructor(userConfig) {
+  constructor(userConfig = {}) {
     this.#config = {
       whitelist: [],
       host: window.location.origin,

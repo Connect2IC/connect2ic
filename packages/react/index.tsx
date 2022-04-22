@@ -21,6 +21,8 @@ import { useWallet } from "./hooks/useWallet"
 import { useBalance } from "./hooks/useBalance"
 import { useDialog } from "./hooks/useDialog"
 import { useProviders } from "./hooks/useProviders"
+import { useSignMessage } from "./hooks/useSignMessage"
+import { useTransfer } from "./hooks/useTransfer"
 import { Connect2ICProvider, Connect2ICContext } from "./context"
 
 export {
@@ -44,6 +46,8 @@ export {
   useWallet,
   useDialog,
   useProviders,
+  useSignMessage,
+  useTransfer,
   Connect2ICProvider,
   Connect2ICContext,
 }

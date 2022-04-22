@@ -30,7 +30,7 @@ class InternetIdentityConnector implements IConnector {
     return this.#client
   }
 
-  constructor(userConfig) {
+  constructor(userConfig = {}) {
     this.#config = {
       whitelist: [],
       host: window.location.origin,

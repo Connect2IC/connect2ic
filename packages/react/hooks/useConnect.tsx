@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from "react"
+import React, { useContext, useEffect, useMemo, useRef } from "react"
 import { useSelector } from "@xstate/react"
 import { Connect2ICContext } from "../context"
 
@@ -6,7 +6,7 @@ const selectState = state => ({
   identity: state.context.identity,
   principal: state.context.principal,
   provider: state.context.provider,
-  status: state.value.idle?.auth,
+  status: state.value.idle,
 })
 
 export const useConnect = (props = {}) => {
@@ -21,20 +21,23 @@ export const useConnect = (props = {}) => {
     connectService,
     action,
   } = useContext(Connect2ICContext)
-  const state = useSelector(connectService, selectState)
+  const { identity, principal, provider, status } = useSelector(connectService, selectState)
 
   useEffect(() => {
-    // TODO: Fires multiple times? Fix
-    if (action === "onConnect") {
-      onConnect()
+    // TODO: Some other workaround? useSelector still has old state when action fires.
+    if (action?.type === "onConnect" && provider) {
+      onConnect({ provider })
     }
-    if (action === "onDisconnect") {
+    if (action?.type === "onDisconnect") {
       onDisconnect()
     }
-  }, [action])
+  }, [action, provider])
 
   return {
-    ...state,
+    identity,
+    principal,
+    provider,
+    status,
     connect: (provider) => {
       connectService.send({ type: "CONNECT", data: { provider } })
     },

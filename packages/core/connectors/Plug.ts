@@ -32,7 +32,7 @@ class PlugConnector implements IConnector, IWalletConnector {
     return this.#ic
   }
 
-  constructor(userConfig) {
+  constructor(userConfig = {}) {
     this.#config = {
       whitelist: [],
       host: window.location.origin,
@@ -90,8 +90,8 @@ class PlugConnector implements IConnector, IWalletConnector {
   }
 
   async disconnect() {
-    await this.#ic.disconnect()
-    // TODO: reset state?
+    // TODO: should be awaited but never finishes, tell Plug to fix
+    this.#ic.disconnect()
   }
 
   address() {
@@ -101,8 +101,11 @@ class PlugConnector implements IConnector, IWalletConnector {
     }
   }
 
-  requestTransfer(...args) {
-    return this.#ic.requestTransfer(...args)
+  requestTransfer(args) {
+    return this.#ic.requestTransfer({
+      ...args,
+      amount: args.amount * 100000000,
+    })
   }
 
   queryBalance(...args) {

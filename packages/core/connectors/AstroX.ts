@@ -2,6 +2,20 @@ import { IC } from "@astrox/connection"
 import { PermissionsType } from "@astrox/connection/lib/esm/types"
 import { IConnector, IWalletConnector } from "./connectors"
 
+const balanceFromString = (balance: string, decimal = 8): bigint => {
+  const list = balance.split(".")
+  const aboveZero = list[0]
+  const aboveZeroBigInt = BigInt(aboveZero) * BigInt(1 * 10 ** decimal)
+  let belowZeroBigInt = BigInt(0)
+  const belowZero = list[1]
+  if (belowZero !== undefined) {
+    belowZeroBigInt = BigInt(
+      belowZero.substring(0, decimal).padEnd(decimal, "0"),
+    )
+  }
+  return aboveZeroBigInt + belowZeroBigInt
+}
+
 class AstroXConnector implements IConnector, IWalletConnector {
 
   static readonly id = "astrox"
@@ -11,7 +25,7 @@ class AstroXConnector implements IConnector, IWalletConnector {
     whitelist: [string],
     providerUrl: string,
     ledgerCanisterId: string,
-    walletHost?: string,
+    ledgerHost?: string,
     host: string,
     dev: Boolean,
   }
@@ -31,13 +45,12 @@ class AstroXConnector implements IConnector, IWalletConnector {
     return this.#ic
   }
 
-  constructor(userConfig) {
+  constructor(userConfig = {}) {
     this.#config = {
       whitelist: [],
-      // TODO: check if dev
       providerUrl: "https://63k2f-nyaaa-aaaah-aakla-cai.raw.ic0.app",
       ledgerCanisterId: "ryjl3-tyaaa-aaaaa-aaaba-cai",
-      walletHost: "https://boundary.ic0.app/",
+      ledgerHost: "https://boundary.ic0.app/",
       host: window.location.origin,
       dev: false,
       ...userConfig,
@@ -52,7 +65,7 @@ class AstroXConnector implements IConnector, IWalletConnector {
       identityProvider: `${this.#config.providerUrl}/login#authorize`,
       permissions: [PermissionsType.identity, PermissionsType.wallet],
       ledgerCanisterId: this.#config.ledgerCanisterId,
-      walletHost: this.#config.walletHost,
+      ledgerHost: this.#config.ledgerHost,
       onAuthenticated: (icInstance: IC) => {
         this.#ic = window.ic.astrox ?? icInstance
         this.#principal = this.#ic.principal.toText()
@@ -113,8 +126,11 @@ class AstroXConnector implements IConnector, IWalletConnector {
     }
   }
 
-  requestTransfer(...args) {
-    return this.#ic.requestTransfer(...args)
+  requestTransfer(args) {
+    return this.#ic.requestTransfer({
+      ...args,
+      amount: balanceFromString(String(args.amount)),
+    })
   }
 
   async queryBalance(...args) {
@@ -132,13 +148,17 @@ class AstroXConnector implements IConnector, IWalletConnector {
   }
 
   signMessage(...args) {
-    return this.#ic.signMessage(...args)
+    return this.#ic.signMessage({
+      signerProvider: this.#config.providerUrl,
+      ...args,
+    })
+
   }
 
-  // // getManagementCanister: (...args) => thisIC.getManagementCanister(...args),
-  // // callClientRPC: (...args) => thisIC.callClientRPC(...args),
-  // // requestBurnXTC: (...args) => thisIC.requestBurnXTC(...args),
-  // // batchTransactions: (...args) => thisIC.batchTransactions(...args),
+  // // getManagementCanister: (...args) => this.#ic.getManagementCanister(...args),
+  // // callClientRPC: (...args) => this.#ic.callClientRPC(...args),
+  // // requestBurnXTC: (...args) => this.#ic.requestBurnXTC(...args),
+  // // batchTransactions: (...args) => this.#ic.batchTransactions(...args),
 }
 
 export default AstroXConnector

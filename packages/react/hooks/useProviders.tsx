@@ -12,5 +12,5 @@ export const useProviders = () => {
   // + add / remove ?
   // + give info about which type (identity, wallet) ?
 
-  return [providers || [], { loading, error }]
+  return [providers ?? [], { loading, error }]
 }

@@ -32,7 +32,7 @@ class InfinityConnector implements IConnector, IWalletConnector {
     return this.#ic
   }
 
-  constructor(userConfig) {
+  constructor(userConfig = {}) {
     this.#config = {
       whitelist: [],
       host: window.location.origin,

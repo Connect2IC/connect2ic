@@ -43,9 +43,9 @@ const Dialog = (props) => {
     <>
       <div onClick={onClose} className={`dialog-styles ${dark ? "dark" : "light"}`}>
         <div onClick={onClickInside} className="dialog-container">
-          {title ? (
-            <h2>{title}</h2>
-          ) : null}
+          {/*{title ? (*/}
+          {/*  <h2>{title}</h2>*/}
+          {/*) : null}*/}
           {providers.map((provider) => {
             const ProviderButton = providerButtons[provider.id]
             return (

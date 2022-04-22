@@ -10,12 +10,11 @@ const Connect2ICProvider = ({ children, ...options }) => {
   const connectService = useInterpret(connectMachine, {
     devTools: true,
     actions: {
-      // TODO: pass to useConnect how?
-      onConnect: (context, e) => {
-        setAction("onConnect")
+      onConnect: (context, event) => {
+        setAction({ type: "onConnect", context, event })
       },
-      onDisconnect: () => {
-        setAction("onDisconnect")
+      onDisconnect: (context, event) => {
+        setAction({ type: "onDisconnect", context, event })
       },
     },
   })
@@ -28,16 +27,11 @@ const Connect2ICProvider = ({ children, ...options }) => {
   }
 
   useEffect(() => {
-    const whitelist = options.whitelist || Object.values(options.canisters).map(canister => (canister as any).canisterId)
     connectService.send({
       type: "INIT",
       data: {
-        whitelist,
-        host: options.host,
-        dev: options.dev,
-        canisters: options.canisters,
-        connectors: options.connectors,
-        connectorConfig: options.connectorConfig,
+        ...options,
+        whitelist: options.whitelist || Object.values(options.canisters).map(canister => (canister as any).canisterId),
       },
     })
   }, [connectService, options])

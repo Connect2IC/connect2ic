@@ -12,16 +12,6 @@ export const useWallet = () => {
   const { status } = useConnect({
     onConnect: async () => {
       // TODO: fix onConnect()
-
-      // if (supportsWallet) {
-      //   // TODO: kind of hacky?
-      //   setWallet({
-      //     requestTransfer: (...args) => provider.requestTransfer(...args),
-      //     principal: provider.principal,
-      //     queryBalance: (...args) => provider.queryBalance(...args),
-      //     // accountId: provider.accountId,
-      //   })
-      // }
     },
     onDisconnect: () => {
       setWallet(undefined)
@@ -32,12 +22,7 @@ export const useWallet = () => {
     if (status === "connected") {
       if (supportsWallet) {
         // TODO: kind of hacky?
-        setWallet({
-          requestTransfer: (...args) => provider.requestTransfer(...args),
-          principal: provider.principal,
-          queryBalance: (...args) => provider.queryBalance(...args),
-          // accountId: provider.accountId,
-        })
+        setWallet(provider)
       }
     }
   }, [status, setWallet])
