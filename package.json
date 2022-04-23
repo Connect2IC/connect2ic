@@ -1,6 +1,7 @@
 {
   "name": "connect2ic",
-  "version": "0.0.0",
+  "author": "Mio Quispe",
+  "version": "0.0.1",
   "private": true,
   "workspaces": [
     "packages/*",

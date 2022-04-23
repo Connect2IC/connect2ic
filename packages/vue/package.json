@@ -1,6 +1,7 @@
 {
   "name": "@connect2ic/vue",
-  "version": "1.0.0",
+  "author": "Mio Quispe",
+  "version": "0.0.1",
   "types": "./index.ts",
   "files": ["dist"],
   "main": "./dist/connect2ic-vue.umd.js",
