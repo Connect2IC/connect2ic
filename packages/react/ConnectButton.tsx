@@ -31,7 +31,7 @@ const ConnectButton = (props) => {
 
       {state.status !== "connected" ? (
         <button style={style} className="connect-button" onClick={() => dialog.open()}>
-          {children ?? "ConnectButton"}
+          {children ?? "Connect"}
         </button>
       ) : null}
     </>

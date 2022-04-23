@@ -25,7 +25,7 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "@astrox/connection": "^0.40.0",
+    "@astrox/connection": "^0.0.40",
     "@dfinity/agent": "0.10.4",
     "@dfinity/auth-client": "0.10.4",
     "@dfinity/authentication": "0.10.4",
