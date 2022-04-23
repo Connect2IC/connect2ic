@@ -1,5 +1,12 @@
 import { ActorSubclass } from "@dfinity/agent"
-import { Button, Form, Modal, Typography } from "@douyinfe/semi-ui"
+import {
+  Button,
+  Form,
+  Modal,
+  Typography,
+  Input,
+  Checkbox,
+} from "@douyinfe/semi-ui"
 import { useEffect, useState } from "react"
 import { FormApi } from "@douyinfe/semi-ui/lib/es/form"
 import { useModel } from "@modern-js/runtime/model"
@@ -54,51 +61,49 @@ export const Register = () => {
     <>
       <Typography.Title>Name Yourself</Typography.Title>
       <Form
-        onSubmit={values => registerPeople(values)}
+        onSubmit={(values) => registerPeople(values)}
         initValues={{ wallet: wallet.address, principal }}
         style={{ width: "100%" }}
-        getFormApi={formApi => {
+        getFormApi={(formApi) => {
           setWalletFormApi(formApi)
-        }}>
+        }}
+      >
         {({ formState, values, formApi }) => (
           <>
-            <Form.Input
-              field="name"
-              label="Name"
+            <Input
+              prefix="Name"
               style={{ width: "100%", maxWidth: 400 }}
               disabled={loading}
               required={true}
               placeholder="Enter your name"
             />
-            <Form.Input
-              field="principal"
-              label="Principal ID"
+            <Input
+              prefix="Principal ID"
               style={{ width: "100%", maxWidth: 400 }}
               disabled={true}
               placeholder="Your Principal ID"
             />
-            <Form.Input
-              field="wallet"
-              label="Wallet"
+            <Input
+              prefix="Wallet"
               style={{ width: "100%", maxWidth: 400 }}
               disabled={true}
               placeholder="Your Wallet Address"
             />
 
-            <Form.Checkbox field="agree" noLabel={true}>
-              I have read and agree to the terms of service
-            </Form.Checkbox>
+            <Checkbox>I have read and agree to the terms of service</Checkbox>
             <div
               style={{
                 display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
-              }}>
+              }}
+            >
               <Button
                 loading={loading}
                 disabled={!values.agree}
                 htmlType="submit"
-                type="tertiary">
+                type="tertiary"
+              >
                 Sign Me Up
               </Button>
             </div>
