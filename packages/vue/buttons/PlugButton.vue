@@ -18,7 +18,7 @@ const props = defineProps({
       Plug
     </span>
       <span>
-    Connect with your Plug wallet
+    ConnectButton with your Plug wallet
     </span>
     </div>
   </button>

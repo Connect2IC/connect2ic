@@ -12,7 +12,7 @@
       Internet Identity
     </span>
     <span>
-    Connect with your Internet Identity
+    ConnectButton with your Internet Identity
     </span>
   </div>
 </button>

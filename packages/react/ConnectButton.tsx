@@ -4,7 +4,7 @@ import {
   useDialog
 } from "./index"
 
-const Connect = (props) => {
+const ConnectButton = (props) => {
   const {
     style = {},
     dark = false,
@@ -31,11 +31,11 @@ const Connect = (props) => {
 
       {state.status !== "connected" ? (
         <button style={style} className="connect-button" onClick={() => dialog.open()}>
-          {children ?? "Connect"}
+          {children ?? "ConnectButton"}
         </button>
       ) : null}
     </>
   )
 }
 
-export default Connect
+export default ConnectButton

@@ -10,7 +10,7 @@ const StoicButton = ({ dark = false, ...props }) => {
         <img style={{ width: "55px" }} className={"img-styles"} src={stoicLogo} />
         <div>
           <span className="button-label">Stoic Wallet</span>
-          {/*<span>Connect with your Stoic Wallet</span>*/}
+          {/*<span>ConnectButton with your Stoic Wallet</span>*/}
         </div>
       </button>
       {/*<span>🌐</span>*/}

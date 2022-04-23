@@ -7,7 +7,7 @@ const PlugButton = ({ dark = false, ...props }) => {
       <img className={"img-styles"} src={dark ? plugDark : plugLight} />
       <div>
         <span className="button-label">Plug</span>
-        {/*<span>Connect with your Plug wallet</span>*/}
+        {/*<span>ConnectButton with your Plug wallet</span>*/}
       </div>
     </button>
   )

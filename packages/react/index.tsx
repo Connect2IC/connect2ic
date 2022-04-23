@@ -1,4 +1,4 @@
-import Connect from "./Connect"
+import ConnectButton from "./ConnectButton"
 import {
   PlugConnector,
   InternetIdentityConnector,
@@ -14,7 +14,7 @@ import AstroXButton from "./buttons/AstroXButton"
 import StoicButton from "./buttons/StoicButton"
 import InfinityButton from "./buttons/InfinityButton"
 import NFIDButton from "./buttons/NFIDButton"
-import Dialog from "./Dialog"
+import ConnectDialog from "./ConnectDialog"
 import { useConnect } from "./hooks/useConnect"
 import { useCanister } from "./hooks/useCanister"
 import { useWallet } from "./hooks/useWallet"
@@ -26,8 +26,8 @@ import { useTransfer } from "./hooks/useTransfer"
 import { Connect2ICProvider, Connect2ICContext } from "./context"
 
 export {
-  Connect,
-  Dialog,
+  ConnectButton,
+  ConnectDialog,
   PlugConnector,
   PlugButton,
   InternetIdentityConnector,

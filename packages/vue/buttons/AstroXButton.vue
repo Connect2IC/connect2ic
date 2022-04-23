@@ -18,7 +18,7 @@ const props = defineProps({
       AstroX
     </span>
       <span>
-    Connect with your AstroX identity
+    ConnectButton with your AstroX identity
     </span>
     </div>
   </button>

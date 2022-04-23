@@ -7,7 +7,7 @@ const IIButton = ({ dark = false, ...props }) => {
       <img style={{ width: "55px" }} className={"img-styles"} src={dfinityLogo} />
       <div>
         <span className="button-label">Internet Identity</span>
-        {/*<span>Connect with your Internet Identity</span>*/}
+        {/*<span>ConnectButton with your Internet Identity</span>*/}
       </div>
     </button>
   )

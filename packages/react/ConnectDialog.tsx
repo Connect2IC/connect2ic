@@ -4,7 +4,7 @@ import { useProviders } from "./hooks/useProviders"
 import { useConnect } from "./hooks/useConnect"
 import { AstroXButton, IIButton, InfinityButton, PlugButton, StoicButton, NFIDButton } from "./index"
 
-const Dialog = (props) => {
+const ConnectDialog = (props) => {
   const {
     onClose = () => {
       dialog.close()
@@ -58,4 +58,4 @@ const Dialog = (props) => {
   ) : null
 }
 
-export default Dialog
+export default ConnectDialog

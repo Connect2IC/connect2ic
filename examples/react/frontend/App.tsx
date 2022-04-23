@@ -1,7 +1,7 @@
 import React from "react"
 import "@connect2ic/core/style.css"
 import { defaultConnectors, walletConnectors } from "@connect2ic/core"
-import { Connect, Dialog, Connect2ICProvider } from "@connect2ic/react"
+import { ConnectButton, ConnectDialog, Connect2ICProvider } from "@connect2ic/react"
 import { Intro } from "./Intro"
 import * as counter from "canisters/counter"
 
@@ -15,9 +15,9 @@ function App() {
 
   return (
     <div className="App">
-      <Dialog /* title="Sign in with"*/ />
+      <ConnectDialog /* title="Sign in with"*/ />
       <div className="auth-section">
-        <Connect onDisconnect={onDisconnect} onConnect={onConnect} dark={false} />
+        <ConnectButton onDisconnect={onDisconnect} onConnect={onConnect} dark={false} />
       </div>
       <Intro />
     </div>

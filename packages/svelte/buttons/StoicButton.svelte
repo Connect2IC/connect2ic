@@ -35,7 +35,7 @@
   Stoic Wallet
   </span>
     <span>
-    Connect with your Stoic Wallet
+    ConnectButton with your Stoic Wallet
     </span>
   </div>
 </button>

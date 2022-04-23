@@ -60,7 +60,7 @@ watchEffect( () => {
   </button>
 
   <button v-if="auth.status.value !== 'connected'" class="connect-button" @click="() => showDialog = true">
-    Connect
+    ConnectButton
   </button>
 
   <Dialog v-if="showDialog" @on-close="() => showDialog = false">

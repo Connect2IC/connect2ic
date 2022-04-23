@@ -3,7 +3,6 @@ import { useSelector } from "@xstate/react"
 import { Connect2ICContext } from "../context"
 
 const selectState = state => ({
-  identity: state.context.identity,
   principal: state.context.principal,
   provider: state.context.provider,
   status: state.value.idle,
@@ -21,7 +20,7 @@ export const useConnect = (props = {}) => {
     connectService,
     action,
   } = useContext(Connect2ICContext)
-  const { identity, principal, provider, status } = useSelector(connectService, selectState)
+  const { principal, provider, status } = useSelector(connectService, selectState)
 
   useEffect(() => {
     // TODO: Some other workaround? useSelector still has old state when action fires.
@@ -34,9 +33,12 @@ export const useConnect = (props = {}) => {
   }, [action, provider])
 
   return {
-    identity,
     principal,
     provider,
+    isConnected: status === "connected",
+    isConnecting: status === "connecting",
+    isDisconnecting: status === "disconnecting",
+    isIdle: status === "idle",
     status,
     connect: (provider) => {
       connectService.send({ type: "CONNECT", data: { provider } })

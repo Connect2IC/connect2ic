@@ -41,7 +41,7 @@
 
 {#if $auth.status !== "connected"}
   <button style={style} class="connect-button" on:click={() => showDialog = true}>
-    Connect
+    ConnectButton
   </button>
 {/if}
 

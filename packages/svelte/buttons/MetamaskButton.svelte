@@ -11,7 +11,7 @@
   Metamask
   </span>
     <span>
-    Connect with your Metamask wallet
+    ConnectButton with your Metamask wallet
     </span>
   </div>
 </button>

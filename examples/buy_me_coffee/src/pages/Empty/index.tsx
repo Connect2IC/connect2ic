@@ -3,7 +3,7 @@ import {
   IllustrationNoContentDark,
 } from "@douyinfe/semi-illustrations"
 import { Button, Empty, Typography } from "@douyinfe/semi-ui"
-import { Connect, Dialog } from "@connect2ic/react"
+import { ConnectButton, ConnectDialog } from "@connect2ic/react"
 
 export const EmptyPage = ({ dark }) => {
   return (
@@ -25,7 +25,7 @@ export const EmptyPage = ({ dark }) => {
         eg: login and make transactions, without extension
       </p>
       <div style={{ display: "flex", justifyContent: "center" }}>
-        <Connect style={{
+        <ConnectButton style={{
           background: "var(--semi-color-primary)",
           marginTop: "32px",
           height: "40px",
@@ -34,7 +34,7 @@ export const EmptyPage = ({ dark }) => {
           borderRadius: "32px",
         }} />
       </div>
-      <Dialog dark={dark} />
+      <ConnectDialog dark={dark} />
     </Empty>
   )
 }
