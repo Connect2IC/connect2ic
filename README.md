@@ -3,7 +3,7 @@
 # Connect2IC
 A toolkit which makes it trivial to support any wallet or identity provider, and make authenticated calls to canisters.
 ## Introduction
-There are many new wallets coming out and adding support for these isn't always easy. Connect2ic allows you to get fully working auth for the most popular providers with only a few lines of code. Use the already styled `<Dialog />` component or feel free to create your own. Connect2ic gives you full control and additionally provides you with convenient helper utilities such as `useCanister()` or `useTransaction()`.
+There are many new wallets coming out and adding support for these isn't always easy. Connect2ic allows you to get fully working auth for the most popular providers with only a few lines of code. Use the already styled `<Dialog />` component or feel free to create your own. Connect2ic gives you full control and additionally provides you with convenient helper utilities such as `useCanister()` or `useTransfer()`.
 
 ## Supported providers
 - [Internet Identity](https://identity.ic0.app/)
