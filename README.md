@@ -26,7 +26,7 @@ There are many new wallets coming out and adding support for these isn't always 
 
 ## Quickstart
 
-Following these steps will give you fully working auth with a `<Connect />` button and `<Dialog />` as shown in the screenshot.
+Following these steps will give you fully working auth with a `<ConnectButton />` and `<ConnectDialog />` as shown in the top image.
 
 **1.** Install the necessary packages
 
