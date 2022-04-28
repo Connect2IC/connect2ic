@@ -85,7 +85,7 @@ function App() {
 ### useConnect
 When you need more control
 ```jsx
-import { useConnect } from "connect2ic/react"
+import { useConnect } from "@connect2ic/react"
 
 const { isConnected, principal, provider, connect, disconnect } = useConnect({
   onConnect: () => {
@@ -115,7 +115,7 @@ status
 ### useCanister
 Automatically switches between the anonymous & connected identity for the canister. Authenticated calls are now easy.
 ```jsx
-import { useCanister } from "connect2ic/react"
+import { useCanister } from "@connect2ic/react"
 
 const [counter, { loading, error }] = useCanister("counter")
 
@@ -126,7 +126,7 @@ counter.increment()
 ### useDialog
 Programmatically control the prestyled `<Dialog />` or check its state
 ```jsx
-import { useDialog } from "connect2ic/react"
+import { useDialog } from "@connect2ic/react"
 
 const [dialog] = useDialog()
 
@@ -140,7 +140,7 @@ dialog.isOpen
 ### useWallet
 Wallet info and addresses.
 ```jsx
-import { useWallet } from "connect2ic/react"
+import { useWallet } from "@connect2ic/react"
 
 const [wallet] = useWallet()
 ```
@@ -148,7 +148,7 @@ const [wallet] = useWallet()
 ### useBalance
 Provides you with the users balances when a wallet is connected.
 ```jsx
-import { useBalance } from "connect2ic/react"
+import { useBalance } from "@connect2ic/react"
 
 const [assets] = useBalance()
 ```
@@ -156,7 +156,7 @@ const [assets] = useBalance()
 ### useProviders
 Gives you direct access to the instantiated Connector (provider). When you need more control.
 ```jsx
-import { useProviders } from "connect2ic/react"
+import { useProviders } from "@connect2ic/react"
 
 const [providers] = useProviders()
 ```
