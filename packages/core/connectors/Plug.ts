@@ -2,10 +2,6 @@ import { IConnector, IWalletConnector } from "./connectors"
 
 class PlugConnector implements IConnector, IWalletConnector {
 
-  static readonly id = "plug"
-  readonly id = "plug"
-  readonly name = "Plug Wallet"
-
   #config: {
     whitelist: [string],
     host: string,
@@ -39,12 +35,15 @@ class PlugConnector implements IConnector, IWalletConnector {
       dev: false,
       ...userConfig,
     }
-    this.#ic = window.ic.plug
+    this.#ic = window.ic?.plug
   }
 
   async init() {
-    const isAuthenticated = await this.isAuthenticated()
-    if (isAuthenticated) {
+    if (!this.#ic) {
+      throw Error("Not supported")
+    }
+    const isConnected = await this.isConnected()
+    if (isConnected) {
       try {
         await this.#ic.createAgent(this.#config)
         // TODO: never finishes if user doesnt login back?
@@ -57,9 +56,9 @@ class PlugConnector implements IConnector, IWalletConnector {
     }
   }
 
-  async isAuthenticated() {
+  async isConnected() {
     // TODO: no window
-    return await this.#ic.isConnected()
+    return await this.#ic?.isConnected()
   }
 
   async createActor(canisterId, idlFactory) {
@@ -73,19 +72,15 @@ class PlugConnector implements IConnector, IWalletConnector {
 
   // TODO: handle Plug account switching
   async connect() {
+    if (!this.#ic) {
+      window.open("https://plugwallet.ooo/", "_blank")
+      throw Error("Not installed")
+    }
     try {
       await this.#ic.requestConnect(this.#config)
       this.#principal = await (await this.#ic.getPrincipal()).toString()
-      // const walletAddress = thisIC.wallet
-    } catch
-      (e) {
-      // TODO: handle
+    } catch (e) {
       throw e
-    }
-    if (!this.#ic) {
-      window.open("https://plugwallet.ooo/", "_blank")
-      // TODO: throw?
-      return
     }
   }
 

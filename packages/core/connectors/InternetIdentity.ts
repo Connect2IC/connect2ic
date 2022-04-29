@@ -4,10 +4,6 @@ import { IConnector } from "./connectors"
 
 class InternetIdentityConnector implements IConnector {
 
-  static readonly id = "ii"
-  readonly id = "ii"
-  readonly name = "Internet Identity"
-
   #config: {
     whitelist: [string],
     host: string,
@@ -43,21 +39,20 @@ class InternetIdentityConnector implements IConnector {
   async init() {
     // TODO: pass in config or not?
     this.#client = await AuthClient.create(this.#config)
-    const isAuthenticated = await this.isAuthenticated()
+    const isConnected = await this.isConnected()
     // // TODO: fix?
-    if (isAuthenticated) {
+    if (isConnected) {
       this.#identity = this.#client.getIdentity()
       this.#principal = this.#identity.getPrincipal().toString()
     }
   }
 
-  async isAuthenticated() {
+  async isConnected() {
     return await this.#client.isAuthenticated()
   }
 
   async createActor(canisterId, idlFactory) {
     // TODO: pass identity?
-    console.log("createActor", this.#principal)
     const agent = new HttpAgent({
       ...this.#config,
       identity: this.#identity,

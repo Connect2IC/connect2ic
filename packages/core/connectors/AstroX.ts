@@ -17,10 +17,6 @@ const balanceFromString = (balance: string, decimal = 8): bigint => {
 }
 
 class AstroXConnector implements IConnector, IWalletConnector {
-
-  static readonly id = "astrox"
-  readonly id = "astrox"
-  readonly name = "AstroX ME"
   #config: {
     whitelist: [string],
     providerUrl: string,
@@ -73,16 +69,16 @@ class AstroXConnector implements IConnector, IWalletConnector {
       },
       dev: this.#config.dev,
     })
-    const isAuthenticated = await this.isAuthenticated()
+    const isConnected = await this.isConnected()
 
     // TODO: figure out
-    if (isAuthenticated) {
+    if (isConnected) {
       this.#identity = this.#ic.identity
       this.#principal = this.#ic.principal.toText()
     }
   }
 
-  async isAuthenticated() {
+  async isConnected() {
     return this.#ic.isAuthenticated()
   }
 
@@ -155,10 +151,8 @@ class AstroXConnector implements IConnector, IWalletConnector {
 
   }
 
-  // // getManagementCanister: (...args) => this.#ic.getManagementCanister(...args),
-  // // callClientRPC: (...args) => this.#ic.callClientRPC(...args),
-  // // requestBurnXTC: (...args) => this.#ic.requestBurnXTC(...args),
-  // // batchTransactions: (...args) => this.#ic.batchTransactions(...args),
+  // getManagementCanister: (...args) => this.#ic.getManagementCanister(...args),
+  // batchTransactions: (...args) => this.#ic.batchTransactions(...args),
 }
 
 export default AstroXConnector

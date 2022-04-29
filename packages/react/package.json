@@ -1,7 +1,7 @@
 {
   "name": "@connect2ic/react",
   "author": "Mio Quispe",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "types": "./index.tsx",
   "files": [
     "dist"
@@ -24,12 +24,12 @@
     "@connect2ic/core": "*"
   },
   "devDependencies": {
-    "@types/react": "^17.0.37",
-    "@types/react-dom": "^17.0.11",
-    "tsconfig": "*",
+    "@types/react": "^18.0.8",
+    "@types/react-dom": "^18.0.3",
     "config": "*",
-    "typescript": "^4.5.3",
-    "vite": "^2.5.7"
+    "tsconfig": "*",
+    "typescript": "^4.6.4",
+    "vite": "^2.9.6"
   },
   "peerDependencies": {
     "@xstate/react": "^2.0.1",

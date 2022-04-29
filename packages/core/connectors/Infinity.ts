@@ -2,10 +2,6 @@ import { IConnector, IWalletConnector } from "./connectors"
 
 class InfinityConnector implements IConnector, IWalletConnector {
 
-  static readonly id = "infinity"
-  readonly id = "infinity"
-  readonly name = "Infinity Wallet"
-
   #config: {
     whitelist: [string],
     host: string,
@@ -39,15 +35,20 @@ class InfinityConnector implements IConnector, IWalletConnector {
       dev: false,
       ...userConfig,
     }
-    this.#ic = window.ic.infinityWallet
+    this.#ic = window.ic?.infinityWallet
   }
 
   async init() {
-    const isAuthenticated = await this.isAuthenticated()
-    if (isAuthenticated) {
+    if (!this.#ic) {
+      throw Error("Not supported")
+    }
+    const isConnected = await this.isConnected()
+    if (isConnected) {
+      // Otherwise agent doesn't become available. Infinity wallet should fix
+      await this.connect()
       try {
         // TODO: never finishes if user doesnt login back?
-        this.#principal = await (await window.ic.infinityWallet.getPrincipal()).toString()
+        this.#principal = await (await this.#ic.getPrincipal()).toString()
         // const walletAddress = thisIC.wallet
       } catch (e) {
         console.error(e)
@@ -55,29 +56,28 @@ class InfinityConnector implements IConnector, IWalletConnector {
     }
   }
 
-  async isAuthenticated() {
+  async isConnected() {
     // TODO: no window
-    return await window.ic.infinityWallet.isConnected()
+    return await this.#ic?.isConnected()
   }
 
   async createActor(canisterId, idlFactory) {
     // Fetch root key for certificate validation during development
     if (this.#config.dev) {
-      await window.ic.infinityWallet.agent.fetchRootKey()
+      await this.#ic?.agent.fetchRootKey()
     }
 
-    return await window.ic.infinityWallet.createActor({ canisterId, interfaceFactory: idlFactory })
+    return await this.#ic?.createActor({ canisterId, interfaceFactory: idlFactory })
   }
 
 
   async connect() {
-    if (!window.ic.infinityWallet) {
+    if (!this.#ic) {
       window.open("https://chrome.google.com/webstore/detail/infinity-wallet/jnldfbidonfeldmalbflbmlebbipcnle", "_blank")
-      // TODO: throw?
-      return
+      throw Error("Not installed")
     }
     try {
-      await window.ic.infinityWallet.requestConnect(this.#config)
+      await this.#ic.requestConnect(this.#config)
       this.#principal = await (await this.#ic.getPrincipal()).toString()
       // const walletAddress = thisIC.wallet
     } catch
@@ -101,35 +101,25 @@ class InfinityConnector implements IConnector, IWalletConnector {
           }
         }, 0)
       }),
-      this.#ic.disconnect()
+      this.#ic.disconnect(),
     ])
   }
 
-  // address: walletAddress
-
-  requestTransfer(...args) {
-    return this.#ic.requestTransfer(...args)
+  async requestTransfer(...args) {
+    // return this.#ic.requestTransfer(...args)
   }
 
-  queryBalance(...args) {
+  async queryBalance(...args) {
     return this.#ic.requestBalance(...args)
   }
 
-  signMessage(...args) {
+  async signMessage(...args) {
     return this.#ic.signMessage(...args)
   }
-
-  getManagementCanister(...args) {
-    return this.#ic.getManagementCanister(...args)
-  }
-
-  callClientRPC(...args) {
-    return this.#ic.callClientRPC(...args)
-  }
-
-  requestBurnXTC(...args) {
-    return this.#ic.requestBurnXTC(...args)
-  }
+  //
+  // getManagementCanister(...args) {
+  //   return this.#ic.getManagementCanister(...args)
+  // }
 
   batchTransactions(...args) {
     return this.#ic.batchTransactions(...args)

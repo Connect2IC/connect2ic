@@ -6,20 +6,22 @@ export const useBalance = () => {
   const [wallet] = useWallet()
   const [assets, setAssets] = useState()
 
+  const refresh = async () => {
+    const result = await wallet.queryBalance()
+    setAssets(result)
+  }
+
   useEffect(() => {
     if (!wallet) {
+      setAssets(undefined)
       return
     }
-    ;(async () => {
-      // TODO: InfinityWallet doesnt support queryBalance
-      const result = await wallet.queryBalance()
-      setAssets(result)
-    })()
+    refresh()
   }, [wallet])
 
-  // investigate io-ts runtime type checking?
+  // TODO:
   const loading = false
   const error = false
 
-  return [assets, { loading, error }]
+  return [assets, { loading, error, refresh }]
 }

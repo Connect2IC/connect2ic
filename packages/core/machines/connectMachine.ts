@@ -43,29 +43,30 @@ const authStates = {
         id: "init",
         src: (context, event) => async (callback, onReceive) => {
           // TODO: clean up
-          const { connectors, dev, host } = context
-          const connectorsWithConfig = connectors({ dev, host })
-          await Promise.allSettled(connectorsWithConfig.map(p => p.init()))
-          let initializedConnectors = connectorsWithConfig.map(p => new Promise(async (resolve, reject) => {
-            const isAuthenticated = await p.isAuthenticated()
-            isAuthenticated ? resolve(p) : reject()
+          const { providers, dev, host, whitelist } = context
+          const providersWithConfig = providers.map(p => ({
+            ...p,
+            connector: new p.connector({ dev, host, whitelist }),
           }))
-          const authenticatedConnectorPromise = Promise.any(initializedConnectors)
+          await Promise.allSettled(providersWithConfig.map(p => p.connector.init()))
+          let initializedProviders = providersWithConfig.map(p => new Promise(async (resolve, reject) => {
+            const isConnected = await p.connector.isConnected()
+            isConnected ? resolve(p) : reject()
+          }))
+          const authenticatedProviderPromise = Promise.any(initializedProviders)
 
-          authenticatedConnectorPromise.then((authenticatedConnector) => {
+          authenticatedProviderPromise.then((authenticatedProvider) => {
             callback({
               type: "DONE_AND_CONNECTED",
               data: {
-                providers: connectorsWithConfig,
-                provider: authenticatedConnector,
-                identity: authenticatedConnector.identity,
-                principal: authenticatedConnector.principal,
+                providers: providersWithConfig,
+                provider: authenticatedProvider,
+                identity: authenticatedProvider.connector.identity,
+                principal: authenticatedProvider.connector.principal,
               },
             })
           }).catch(e => {
-            // TODO: handle failures
-            // TODO: action
-            callback({ type: "DONE", data: { providers: connectorsWithConfig } })
+            callback({ type: "DONE", data: { providers: providersWithConfig } })
           })
         },
         // onDone: {
@@ -88,14 +89,14 @@ const authStates = {
             const provider = context.providers.find(p => p.id === e.data.provider)
             if (e.type === "CONNECT") {
               try {
-                await provider.connect()
+                await provider.connector.connect()
                 callback({
                   type: "DONE",
                   // TODO: fix?
                   data: {
                     provider,
-                    identity: provider.identity,
-                    principal: provider.principal,
+                    identity: provider.connector.identity,
+                    principal: provider.connector.principal,
                   },
                 })
               } catch (e) {
@@ -167,7 +168,7 @@ const authStates = {
       invoke: {
         id: "disconnect",
         src: (context, event) => async () => {
-          await context.provider.disconnect()
+          await context.provider.connector.disconnect()
           return {}
         },
         onDone: {
@@ -195,7 +196,6 @@ const rootMachine = createMachine({
     dev: false,
     autoConnect: true,
     whitelist: [],
-    connectors: [],
     identity: undefined,
     principal: undefined,
     provider: undefined,
@@ -211,7 +211,7 @@ const rootMachine = createMachine({
           actions: assign((context, event) => ({
             whitelist: event.data.whitelist || [],
             host: event.data.host || window.location.origin,
-            connectors: event.data.connectors || [],
+            providers: event.data.providers || [],
             dev: event.data.dev,
             autoConnect: event.data.autoConnect || true,
           })),
@@ -251,7 +251,11 @@ const rootMachine = createMachine({
     "actorService": (context, _event) => (callback, onReceive) => {
       onReceive(async (e) => {
         if (e.type === "CREATE_ACTOR") {
-          const actor = await context.provider.createActor(e.data.canisterId, e.data.idlFactory)
+          // Already initialized
+          if (context.actors[e.data.canisterName]) {
+            return
+          }
+          const actor = await context.provider.connector.createActor(e.data.canisterId, e.data.idlFactory)
           callback({ type: "SAVE_ACTOR", data: { actor, canisterName: e.data.canisterName } })
         }
       })

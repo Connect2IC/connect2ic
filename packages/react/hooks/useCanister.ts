@@ -13,7 +13,11 @@ export const useCanister = (
   // TODO: support lazy loading canisters?
   const [canister, setCanister] = useState()
   const { canisters, connectService } = useContext(Connect2ICContext)
-  const { status } = useConnect({
+  const anonymousActor = useSelector(connectService, (state) => state.context.anonymousActors[canisterName])
+  const actor = useSelector(connectService, (state) => state.context.actors[canisterName])
+  const initialized = useSelector(connectService, (state) => !!state.value?.idle)
+
+  useConnect({
     onConnect: async () => {
       // TODO: save in machine? not context
       const { canisterId, idlFactory } = canisters[canisterName]
@@ -25,9 +29,6 @@ export const useCanister = (
       }
     },
   })
-  const anonymousActor = useSelector(connectService, (state) => state.context.anonymousActors[canisterName])
-  const actor = useSelector(connectService, (state) => state.context.actors[canisterName])
-  const initialized = useSelector(connectService, (state) => !!state.value?.idle)
 
   useEffect(() => {
     if (!initialized) {

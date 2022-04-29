@@ -4,10 +4,6 @@ import { IConnector } from "./connectors"
 
 class StoicConnector implements IConnector {
 
-  static readonly id = "stoic"
-  readonly id = "stoic"
-  readonly name = "Stoic Wallet"
-
   #config: {
     whitelist: [string],
     providerUrl: string,
@@ -66,7 +62,7 @@ class StoicConnector implements IConnector {
     })
   }
 
-  async isAuthenticated() {
+  async isConnected() {
     const identity = await StoicIdentity.load()
     return !!identity
   }

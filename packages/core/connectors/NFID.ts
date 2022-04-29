@@ -4,10 +4,6 @@ import { IConnector } from "./connectors"
 
 class NFIDConnector implements IConnector {
 
-  static readonly id = "nfid"
-  readonly id = "nfid"
-  readonly name = "NFID"
-
   #config: {
     whitelist: [string],
     host: string,
@@ -43,7 +39,7 @@ class NFIDConnector implements IConnector {
   async init() {
     // TODO: pass in config or not?
     this.#client = await AuthClient.create(this.#config)
-    const isAuthenticated = await this.isAuthenticated()
+    const isAuthenticated = await this.isConnected()
     // // TODO: fix?
     if (isAuthenticated) {
       this.#identity = this.#client.getIdentity()
@@ -51,13 +47,12 @@ class NFIDConnector implements IConnector {
     }
   }
 
-  async isAuthenticated() {
+  async isConnected() {
     return await this.#client.isAuthenticated()
   }
 
   async createActor(canisterId, idlFactory) {
     // TODO: pass identity?
-    console.log("createActor", this.#principal)
     const agent = new HttpAgent({
       ...this.#config,
       identity: this.#identity,

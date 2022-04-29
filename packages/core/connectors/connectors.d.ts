@@ -1,8 +1,6 @@
 export interface IConnector {
-  // readonly id: string
-  readonly name: string
   init: () => Promise<void>
-  isAuthenticated: () => Promise<Boolean>
+  isConnected: () => Promise<Boolean>
   createActor: (string, any) => Promise<any>
   connect: () => Promise<void>
   disconnect: () => Promise<void>

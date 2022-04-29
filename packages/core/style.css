@@ -8,6 +8,16 @@
     padding: 10px;
 }
 
+@media all and (max-width: 300px) {
+    .img-styles {
+        width: 11vw;
+        max-height: 11vw;
+        height: auto;
+        padding: 0;
+        padding-right: 5px;
+    }
+}
+
 .dialog-styles {
     position: fixed;
     top: 0;
@@ -24,6 +34,8 @@
     backdrop-filter: blur(5px);
     cursor: pointer;
     overflow: auto;
+    box-sizing: border-box;
+    padding: 30px;
 }
 
 .dialog-container {
@@ -32,14 +44,16 @@
     padding: 10px;
     background: #f4f4f4;
     border-radius: 15px;
-    overflow: hidden;
+    overflow: auto;
     grid-template-columns: 1fr;
     cursor: initial;
     animation: move-in 0.18s;
+    max-width: 420px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .dark .dialog-container {
-    color: white;
     background: rgb(35 35 39);
 }
 
@@ -73,7 +87,7 @@
 .button-styles {
     background: transparent;
     max-width: 100%;
-    width: 420px;
+    width: 100%;
     height: 75px;
     padding: 10px;
     border: none;
@@ -83,7 +97,6 @@
     transition: transform 0.15s;
     display: flex;
     align-items: center;
-    /*background: rgb(35 35 39);*/
 }
 
 .dark .button-styles {
@@ -96,14 +109,28 @@
     font-size: 21px;
     font-weight: 300;
     color: #424242;
+    text-align: left;
+}
+
+.dark .button-label {
+    color: white;
+}
+
+@media all and (max-width: 300px) {
+    .button-label {
+        font-size: 6vw;
+    }
 }
 
 .button-styles:hover {
     transform: scale(1.02);
-    /*text-decoration: underline;*/
     font-weight: 800!important;
     transition: all 0.2s;
     background: white;
+}
+
+.dark .button-styles:hover {
+    background: #545454;
 }
 
 .button-styles > div {
@@ -112,35 +139,9 @@
     border-radius: 10px;
     font-weight: 400;
     height: 100%;
-    /*width: 100%;*/
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
-}
-
-@media all and (max-width: 640px) {
-    .dialog-container {
-        display: grid;
-        padding: 150px 0;
-        grid-gap: 10px;
-        grid-template-columns: 1fr;
-        cursor: initial;
-        width: 80%;
-    }
-
-    .button-styles {
-        width: 100%;
-        height: 150px;
-    }
-
-    .button-label {
-        font-size: 20px;
-    }
-
-    .img-styles {
-        height: 50px;
-        width: 50px;
-    }
 }
 
 .connect-button {
@@ -159,4 +160,3 @@
     transform: scale(1.03);
     transition: all 0.4s;
 }
-

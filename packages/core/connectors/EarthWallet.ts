@@ -1,10 +1,7 @@
 import { IConnector, IWalletConnector } from "./connectors"
+import { IDL } from "@dfinity/candid"
 
 class EarthWalletConnector implements IConnector, IWalletConnector {
-
-  static readonly id = "earth"
-  readonly id = "earth"
-  readonly name = "Earth Wallet"
 
   #config: {
     whitelist: [string],
@@ -39,101 +36,97 @@ class EarthWalletConnector implements IConnector, IWalletConnector {
       dev: false,
       ...userConfig,
     }
-    this.#ic = window.ic.infinityWallet
+    // TODO: not available
+    this.#ic = window.earth
   }
 
   async init() {
-    const isAuthenticated = await this.isAuthenticated()
-    if (isAuthenticated) {
+    const isConnected = await this.isConnected()
+    if (isConnected) {
       try {
         // TODO: never finishes if user doesnt login back?
-        this.#principal = await (await window.ic.infinityWallet.getPrincipal()).toString()
-        // const walletAddress = thisIC.wallet
+        const {
+          principalId,
+        } = await this.#ic.getAddressMeta()
+        this.#principal = principalId
       } catch (e) {
         console.error(e)
       }
     }
   }
 
-  async isAuthenticated() {
+  async isConnected() {
     // TODO: no window
-    return await window.ic.infinityWallet.isConnected()
+    const { connected } = await window.earth.isConnected()
+    return connected
+    // return await this.#ic.isConnected()
   }
 
   async createActor(canisterId, idlFactory) {
     // Fetch root key for certificate validation during development
     if (this.#config.dev) {
-      await window.ic.infinityWallet.agent.fetchRootKey()
+      // await this.#ic.agent.fetchRootKey()
     }
-
-    return await window.ic.infinityWallet.createActor({ canisterId, interfaceFactory: idlFactory })
+    const ic = this.#ic
+    // TODO: emulate Actor?
+    const service = idlFactory({ IDL })
+    console.log({ service })
+    // const call = (method, args) => {
+    //   ic.sign({
+    //     canisterId,
+    //     method,
+    //     args,
+    //   })
+    // }
+    // return {}
+    // return await this.#ic.createActor({ canisterId, interfaceFactory: idlFactory })
   }
 
 
   async connect() {
-    if (!window.ic.infinityWallet) {
-      window.open("https://chrome.google.com/webstore/detail/infinity-wallet/jnldfbidonfeldmalbflbmlebbipcnle", "_blank")
+    this.#ic = window.earth
+    if (!this.#ic) {
+      window.open("https://www.earthwallet.io/", "_blank")
       // TODO: throw?
-      return
+      throw Error("Not installed")
     }
     try {
-      await window.ic.infinityWallet.requestConnect(this.#config)
-      this.#principal = await (await this.#ic.getPrincipal()).toString()
-      // const walletAddress = thisIC.wallet
-    } catch
-      (e) {
+      await this.#ic.connect(this.#config)
+      const {
+        principalId,
+      } = await this.#ic.getAddressMeta()
+      this.#principal = principalId
+    } catch (e) {
       // TODO: handle
-      return
+      throw e
     }
   }
 
   async disconnect() {
-    await Promise.race([
-      new Promise((resolve, reject) => {
-        // InfinityWallet disconnect promise never resolves despite being disconnected
-        // This is a hacky workaround
-        setTimeout(async () => {
-          const isConnected = await this.#ic.isConnected()
-          if (!isConnected) {
-            resolve(isConnected)
-          } else {
-            reject()
-          }
-        }, 0)
-      }),
-      this.#ic.disconnect()
-    ])
+    // Not available
+    return
   }
 
-  // address: walletAddress
-
-  requestTransfer(...args) {
-    return this.#ic.requestTransfer(...args)
+  async requestTransfer(...args) {
+    return this.#ic.request(...args)
   }
 
-  queryBalance(...args) {
-    return this.#ic.requestBalance(...args)
+  async queryBalance(...args) {
+    // return this.#ic.requestBalance(...args)
+    return []
   }
 
-  signMessage(...args) {
-    return this.#ic.signMessage(...args)
-  }
-
-  getManagementCanister(...args) {
-    return this.#ic.getManagementCanister(...args)
-  }
-
-  callClientRPC(...args) {
-    return this.#ic.callClientRPC(...args)
-  }
-
-  requestBurnXTC(...args) {
-    return this.#ic.requestBurnXTC(...args)
-  }
-
-  batchTransactions(...args) {
-    return this.#ic.batchTransactions(...args)
-  }
+  // signMessage(...args) {
+  //   return this.#ic.signMessage(...args)
+  // }
+  //
+  // getManagementCanister(...args) {
+  //   return this.#ic.getManagementCanister(...args)
+  // }
+  //
+  // batchTransactions(...args) {
+  //   return this.#ic.batchTransactions(...args)
+  // }
 }
 
 export default EarthWalletConnector

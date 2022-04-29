@@ -1,6 +1,7 @@
 {
   "name": "@connect2ic/core",
   "author": "Mio Quispe",
+  "private": false,
   "version": "0.0.1",
   "types": "./index.ts",
   "files": [
