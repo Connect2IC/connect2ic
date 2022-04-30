@@ -11,3 +11,4 @@ dist-ssr
 **/.dfx
 .turbo
 **/package-lock.json
+**/yarn.lock
