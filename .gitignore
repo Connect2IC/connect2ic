@@ -10,3 +10,4 @@ dist-ssr
 **/.idea
 **/.dfx
 .turbo
+**/package-lock.json
