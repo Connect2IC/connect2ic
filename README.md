@@ -1,3 +1,5 @@
+## Note: This project is in an early stage and under heavy development
+
 <img height=340 src="https://i.imgur.com/aGREctC.png" />
 
 # Connect2IC
