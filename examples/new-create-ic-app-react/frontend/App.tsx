@@ -1,10 +1,8 @@
 import React, { useEffect } from "react"
 /*
- * Connect2ic provides essential utilities for IC app development, such as:
- * - Auth
- * - Canisters
+ * Connect2ic provides essential utilities for IC app development
  */
-import { defaultConnectors } from "@connect2ic/core"
+import { defaultProviders } from "@connect2ic/core"
 import { ConnectButton, ConnectDialog, Connect2ICProvider } from "@connect2ic/react"
 import "@connect2ic/core/style.css"
 /*
@@ -68,14 +66,9 @@ export default () => (
       counter,
     }}
     /*
-     * defaultConnectors | walletConnectors
+     * List of providers
      */
-    connectors={defaultConnectors}
-    /*
-     * Additional settings:
-     *
-     * host="http://localhost:3000"
-     */
+    providers={defaultProviders}
   >
     <App />
   </Connect2ICProvider>

@@ -4,7 +4,7 @@ import { Connect2ICContext } from "../context"
 
 const selectState = state => ({
   principal: state.context.principal,
-  activeProvider: state.context.provider,
+  activeProvider: state.context.activeProvider,
   status: state.value.idle,
 })
 

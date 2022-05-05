@@ -1,7 +1,7 @@
 {
   "name": "@connect2ic/react",
   "author": "Mio Quispe",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "types": "./index.tsx",
   "files": [
     "dist"

@@ -23,7 +23,6 @@ const authStates = {
           target: "idle",
           actions: assign((context, event) => ({
             providers: event.data.providers,
-            provider: event.data.provider,
           })),
         },
         DONE_AND_CONNECTED: {
@@ -31,7 +30,7 @@ const authStates = {
           actions: [
             assign((context, event) => ({
               providers: event.data.providers,
-              provider: event.data.provider,
+              activeProvider: event.data.activeProvider,
               identity: event.data.identity,
               principal: event.data.principal,
             })),
@@ -60,7 +59,7 @@ const authStates = {
               type: "DONE_AND_CONNECTED",
               data: {
                 providers: providersWithConfig,
-                provider: authenticatedProvider,
+                activeProvider: authenticatedProvider,
                 identity: authenticatedProvider.connector.identity,
                 principal: authenticatedProvider.connector.principal,
               },
@@ -94,7 +93,7 @@ const authStates = {
                   type: "DONE",
                   // TODO: fix?
                   data: {
-                    provider,
+                    activeProvider: provider,
                     identity: provider.connector.identity,
                     principal: provider.connector.principal,
                   },
@@ -121,7 +120,7 @@ const authStates = {
           target: "connected",
           actions: [
             assign((context, event) => ({
-              provider: event.data.provider,
+              activeProvider: event.data.activeProvider,
               identity: event.data.identity,
               principal: event.data.principal,
             })),
@@ -168,13 +167,17 @@ const authStates = {
       invoke: {
         id: "disconnect",
         src: (context, event) => async () => {
-          await context.provider.connector.disconnect()
-          return {}
+          await context.activeProvider.connector.disconnect()
         },
         onDone: {
           target: "idle",
           // TODO: empty context
-          actions: ["onDisconnect"],
+          actions: [
+            assign((context, event) => ({
+              activeProvider: undefined
+            })),
+            "onDisconnect",
+          ],
         },
         onError: {
           target: "connected",
@@ -198,7 +201,7 @@ const rootMachine = createMachine({
     whitelist: [],
     identity: undefined,
     principal: undefined,
-    provider: undefined,
+    activeProvider: undefined,
     providers: [],
     actors: {},
     anonymousActors: {},
@@ -255,7 +258,7 @@ const rootMachine = createMachine({
           if (context.actors[e.data.canisterName]) {
             return
           }
-          const actor = await context.provider.connector.createActor(e.data.canisterId, e.data.idlFactory)
+          const actor = await context.activeProvider.connector.createActor(e.data.canisterId, e.data.idlFactory)
           callback({ type: "SAVE_ACTOR", data: { actor, canisterName: e.data.canisterName } })
         }
       })

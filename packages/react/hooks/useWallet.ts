@@ -6,9 +6,9 @@ import { Connect2ICContext } from "../context"
 export const useWallet = () => {
   // TODO: check if supported or not
   const { connectService } = useContext(Connect2ICContext)
-  const provider = useSelector(connectService, (state) => state.context.provider)
+  const activeProvider = useSelector(connectService, (state) => state.context.activeProvider)
   const [wallet, setWallet] = useState(undefined)
-  const supportsWallet = !!provider?.requestTransfer
+  const supportsWallet = !!activeProvider?.connector.requestTransfer
   const { status } = useConnect({
     onConnect: async () => {
       // TODO: fix onConnect()
@@ -20,9 +20,10 @@ export const useWallet = () => {
 
   useEffect(() => {
     if (status === "connected") {
+      console.log({ activeProvider })
       if (supportsWallet) {
         // TODO: kind of hacky?
-        setWallet(provider)
+        setWallet(activeProvider.connector)
       }
     }
   }, [status, setWallet])

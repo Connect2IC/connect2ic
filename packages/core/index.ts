@@ -107,6 +107,11 @@ export const walletProviders = [
   PlugWallet,
 ]
 
+// TODO: add to package.json
+// "./providers/astrox": {
+//   "module": "./providers/astrox/dist/providers-astrox.esm.js",
+//     "default": "./providers/astrox/dist/providers-astrox.cjs.js"
+// },
 export * from "./connectors"
 export {
   canisters,

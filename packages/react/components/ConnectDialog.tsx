@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react"
+import React, { useEffect } from "react"
 import { useDialog } from "../hooks"
 import { useProviders } from "../hooks"
 import { useConnect } from "../hooks"
