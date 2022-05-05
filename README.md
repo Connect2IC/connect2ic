@@ -1,9 +1,12 @@
-## Note: This project is in an early stage and under heavy development
 
-<img height=340 src="https://i.imgur.com/aGREctC.png" />
+<img height="100" src="https://connect2ic.github.io/docs/img/connect2ic_logo_light.png" />
 
 # Connect2IC
 A toolkit which makes it trivial to support any wallet or identity provider, and make authenticated calls to canisters.
+
+### Note: This project is in an early stage and under heavy development
+
+
 ## Introduction
 There are many new wallets coming out and adding support for these isn't always easy. Connect2ic allows you to get fully working auth for the most popular providers with only a few lines of code. Use the already styled `<ConnectDialog />` component or feel free to create your own. Connect2ic gives you full control and additionally provides you with convenient helper utilities such as `useCanister()` and `useTransfer()`.
 
@@ -17,6 +20,8 @@ Visit https://connect2ic.github.io/docs/
 - [AstroX ME](https://astrox.me)
 - [Infinity Wallet](https://chrome.google.com/webstore/detail/infinity-wallet/jnldfbidonfeldmalbflbmlebbipcnle)
 - [NFID](https://nfid.one)
+
+
 
 ## Packages
 | package | description |
@@ -85,6 +90,11 @@ function App() {
 }
 
 ```
+
+**4.** Done
+
+<img height=340 src="https://i.imgur.com/aGREctC.png" />
+
 
 ### useConnect
 When you need more control
