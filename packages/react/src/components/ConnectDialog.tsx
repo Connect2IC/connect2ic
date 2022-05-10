@@ -57,7 +57,7 @@ const ConnectDialog = (props) => {
           <div>
             {providers.map((provider) => {
               return (
-                <button onClick={() => connect(provider.id)}
+                <button key={provider.id} onClick={() => connect(provider.id)}
                         className={`button-styles ${provider.id}-styles`} {...props}>
                   <img className={"img-styles"} src={dark ? provider.icon.dark : provider.icon.light} />
                   <div>

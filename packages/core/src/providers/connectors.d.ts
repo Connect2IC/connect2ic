@@ -17,3 +17,7 @@ export interface IWalletConnector {
   // batchTransactions: (any) => Promise<any>
 }
 
+// type ProviderOptions = {
+//   connector: IConnector,
+// }
+

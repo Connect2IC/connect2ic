@@ -3,9 +3,11 @@
   "author": "Mio Quispe",
   "version": "0.0.1",
   "types": "./index.ts",
-  "files": ["dist"],
-  "main": "./dist/connect2ic-svelte.umd.js",
-  "module": "./dist/connect2ic-svelte.es.js",
+  "files": [
+    "dist"
+  ],
+  "main": "dist/connect2ic-svelte.cjs.js",
+  "module": "dist/connect2ic-svelte.esm.js",
   "exports": {
     ".": {
       "import": "./dist/connect2ic-svelte.es.js",
@@ -21,8 +23,6 @@
     "@connect2ic/core": "*"
   },
   "devDependencies": {
-    "tsconfig": "*",
-    "config": "*",
     "typescript": "^4.5.3",
     "vite": "^2.5.7",
     "@sveltejs/vite-plugin-svelte": "next",

@@ -1,6 +1,8 @@
 import { IC } from "@astrox/connection"
 import { PermissionsType } from "@astrox/connection/lib/esm/types"
-import { IConnector, IWalletConnector } from "./connectors"
+import type { IConnector, IWalletConnector } from "./connectors"
+import astroXLogoLight from "../assets/astrox_light.svg"
+import astroXLogoDark from "../assets/astrox.png"
 
 const balanceFromString = (balance: string, decimal = 8): bigint => {
   const list = balance.split(".")
@@ -155,4 +157,12 @@ class AstroXConnector implements IConnector, IWalletConnector {
   // batchTransactions: (...args) => this.#ic.batchTransactions(...args),
 }
 
-export default AstroXConnector
+export default {
+  connector: AstroXConnector,
+  icon: {
+    light: astroXLogoLight,
+    dark: astroXLogoDark,
+  },
+  id: "astrox",
+  name: "AstroX ME",
+}

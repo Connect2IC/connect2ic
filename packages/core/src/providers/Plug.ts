@@ -1,4 +1,6 @@
-import { IConnector, IWalletConnector } from "./connectors"
+import type { IConnector, IWalletConnector } from "./connectors"
+import plugLogoLight from "../assets/plugLight.svg"
+import plugLogoDark from "../assets/plugDark.svg"
 
 class PlugConnector implements IConnector, IWalletConnector {
 
@@ -128,4 +130,12 @@ class PlugConnector implements IConnector, IWalletConnector {
   }
 }
 
-export default PlugConnector
+export default {
+  connector: PlugConnector,
+  icon: {
+    light: plugLogoLight,
+    dark: plugLogoDark,
+  },
+  id: "plug",
+  name: "Plug Wallet",
+}

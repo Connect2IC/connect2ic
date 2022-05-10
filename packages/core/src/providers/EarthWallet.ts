@@ -1,5 +1,7 @@
-import { IConnector, IWalletConnector } from "./connectors"
+import type { IConnector, IWalletConnector } from "./connectors"
 import { IDL } from "@dfinity/candid"
+import earthLogoLight from "../assets/earth.png"
+import earthLogoDark from "../assets/earth.png"
 
 class EarthWalletConnector implements IConnector, IWalletConnector {
 
@@ -129,4 +131,12 @@ class EarthWalletConnector implements IConnector, IWalletConnector {
   // }
 }
 
-export default EarthWalletConnector
+export default {
+  connector: EarthWalletConnector,
+  icon: {
+    light: earthLogoLight,
+    dark: earthLogoDark,
+  },
+  id: "earth",
+  name: "Earth Wallet",
+}

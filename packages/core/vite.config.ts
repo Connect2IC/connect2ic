@@ -3,12 +3,11 @@ import { defineConfig } from "vite"
 // import nodePolyfills from 'rollup-plugin-node-polyfills';
 
 module.exports = defineConfig({
-  plugins: [
-    // TODO: fix in @astrox/connection instead
-    // import { assert } from "console"
-    // breaks it
-    // nodePolyfills()
-  ],
+  // plugins: [
+  //   nodePolyfills({
+  //     crypto: true,
+  //   })
+  // ],
   build: {
     lib: {
       entry: path.resolve(__dirname, "index.ts"),

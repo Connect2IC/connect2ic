@@ -1,4 +1,6 @@
-import { IConnector, IWalletConnector } from "./connectors"
+import type { IConnector, IWalletConnector } from "./connectors"
+import infinityLogoLight from "../assets/infinity.png"
+import infinityLogoDark from "../assets/infinity.png"
 
 class InfinityConnector implements IConnector, IWalletConnector {
 
@@ -126,4 +128,12 @@ class InfinityConnector implements IConnector, IWalletConnector {
   }
 }
 
-export default InfinityConnector
+export default {
+  connector: InfinityConnector,
+  icon: {
+    light: infinityLogoLight,
+    dark: infinityLogoDark,
+  },
+  id: "infinity",
+  name: "Infinity Wallet",
+}

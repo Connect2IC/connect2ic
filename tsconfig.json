@@ -1,14 +1,30 @@
 {
   "compilerOptions": {
+    "allowJs": true,
     "declaration": true,
     "target": "esnext",
-    "module": "esnext",
-    "lib": ["esnext", "dom"],
-    "strict": true,
+    "module": "commonjs",
+    "lib": [
+      "esnext",
+      "dom"
+    ],
+    "strict": false,
     "noImplicitAny": false,
     "esModuleInterop": true,
+    "isolatedModules": true,
     "moduleResolution": "node",
-    "outDir": "dist",
-    "jsx": "react"
+    "resolveJsonModule": true,
+    "skipLibCheck": true,
+    "jsx": "react-jsx"
+  },
+  "include": [
+    "packages/react/src/*",
+    "packages/core/src/*",
+    "packages/core/src/providers/*"
+  ],
+  "exclude": ["node_modules", "**/dist/**", "**/node_modules/**"],
+  "ts-node": {
+    "transpileOnly": true,
+    "transpiler": "ts-node/transpilers/swc-experimental"
   }
 }

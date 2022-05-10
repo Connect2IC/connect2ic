@@ -2,30 +2,36 @@
   "name": "@connect2ic/core",
   "author": "Mio Quispe",
   "private": false,
-  "version": "0.0.3",
-  "types": "./index.ts",
+  "version": "0.0.4",
+  "types": "./dist/declarations/src/index.d.ts",
   "files": [
     "dist",
+    "providers",
     "style.css"
   ],
-  "main": "./dist/connect2ic-core.umd.js",
-  "module": "./dist/connect2ic-core.es.js",
+  "main": "dist/connect2ic-core.cjs.js",
+  "module": "dist/connect2ic-core.esm.js",
   "exports": {
-    "./style.css": {
-      "import": "./style.css",
-      "require": "./style.css"
+    "./package.json": "./package.json",
+    "./style.css": "./src/style.css",
+    "./providers": {
+      "module": "./providers/dist/connect2ic-core-providers.cjs.js",
+      "default": "./providers/dist/connect2ic-core-providers.esm.js"
     },
     ".": {
-      "import": "./dist/connect2ic-core.es.js",
-      "require": "./dist/connect2ic-core.umd.js"
+      "import": "./dist/connect2ic-core.esm.js",
+      "browser": "./dist/connect2ic-core.esm.js",
+      "module": "./dist/connect2ic-core.esm.js",
+      "default": "./dist/connect2ic-core.cjs.js",
+      "require": "./dist/connect2ic-core.cjs.js"
     }
   },
-  "sideEffects": false,
-  "scripts": {
-    "dev": "vite build --watch",
-    "build": "vite build",
-    "serve": "vite preview"
+  "preconstruct": {
+    "entrypoints": [
+      "index.ts"
+    ]
   },
+  "sideEffects": false,
   "dependencies": {
     "@astrox/connection": "^0.0.40",
     "@dfinity/agent": "0.10.4",

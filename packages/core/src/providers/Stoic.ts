@@ -1,6 +1,8 @@
 import { StoicIdentity } from "ic-stoic-identity"
 import { Actor, HttpAgent } from "@dfinity/agent"
-import { IConnector } from "./connectors"
+import type { IConnector } from "./connectors"
+import stoicLogoLight from "../assets/stoic.png"
+import stoicLogoDark from "../assets/stoic.png"
 
 class StoicConnector implements IConnector {
 
@@ -77,4 +79,12 @@ class StoicConnector implements IConnector {
   }
 }
 
-export default StoicConnector
+export default {
+  connector: StoicConnector,
+  icon: {
+    light: stoicLogoLight,
+    dark: stoicLogoDark,
+  },
+  id: "stoic",
+  name: "Stoic Wallet",
+}

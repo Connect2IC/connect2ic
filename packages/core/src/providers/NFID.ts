@@ -1,8 +1,10 @@
 import { AuthClient } from "@dfinity/auth-client"
 import { Actor, HttpAgent } from "@dfinity/agent"
-import { IConnector } from "./connectors"
+import type { IConnector } from "./connectors"
+import nfidLogoLight from "../assets/nfid.png"
+import nfidLogoDark from "../assets/nfid.png"
 
-class InternetIdentityConnector implements IConnector {
+class NFIDConnector implements IConnector {
 
   #config: {
     whitelist: [string],
@@ -30,7 +32,7 @@ class InternetIdentityConnector implements IConnector {
     this.#config = {
       whitelist: [],
       host: window.location.origin,
-      providerUrl: "https://identity.ic0.app",
+      providerUrl: "https://3y5ko-7qaaa-aaaal-aaaaq-cai.ic0.app",
       dev: false,
       ...userConfig,
     }
@@ -39,9 +41,9 @@ class InternetIdentityConnector implements IConnector {
   async init() {
     // TODO: pass in config or not?
     this.#client = await AuthClient.create(this.#config)
-    const isConnected = await this.isConnected()
+    const isAuthenticated = await this.isConnected()
     // // TODO: fix?
-    if (isConnected) {
+    if (isAuthenticated) {
       this.#identity = this.#client.getIdentity()
       this.#principal = this.#identity.getPrincipal().toString()
     }
@@ -77,7 +79,7 @@ class InternetIdentityConnector implements IConnector {
     await new Promise((resolve, reject) => {
       this.#client.login({
         // TODO: local
-        identityProvider: this.#config.providerUrl,
+        identityProvider: this.#config.providerUrl + "/authenticate/?applicationName=Create-IC-App",
         onSuccess: resolve,
         onError: reject,
       })
@@ -93,4 +95,12 @@ class InternetIdentityConnector implements IConnector {
   }
 }
 
-export default InternetIdentityConnector
+export default {
+  connector: NFIDConnector,
+  icon: {
+    light: nfidLogoLight,
+    dark: nfidLogoDark,
+  },
+  id: "nfid",
+  name: "NFID",
+}

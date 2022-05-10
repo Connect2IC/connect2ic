@@ -6,8 +6,8 @@
   "files": [
     "dist"
   ],
-  "main": "./dist/connect2ic-canisters.umd.js",
-  "module": "./dist/connect2ic-canisters.es.js",
+  "main": "dist/connect2ic-canisters.cjs.js",
+  "module": "dist/connect2ic-canisters.esm.js",
   "exports": {
     ".": {
       "import": "./dist/connect2ic-canisters.es.js",

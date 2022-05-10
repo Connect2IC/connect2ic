@@ -3,9 +3,11 @@
   "author": "Mio Quispe",
   "version": "0.0.1",
   "types": "./index.ts",
-  "files": ["dist"],
-  "main": "./dist/connect2ic-vue.umd.js",
-  "module": "./dist/connect2ic-vue.es.js",
+  "files": [
+    "dist"
+  ],
+  "main": "dist/connect2ic-vue.cjs.js",
+  "module": "dist/connect2ic-vue.esm.js",
   "exports": {
     ".": {
       "import": "./dist/connect2ic-vue.es.js",
@@ -21,8 +23,6 @@
     "@connect2ic/core": "*"
   },
   "devDependencies": {
-    "tsconfig": "*",
-    "config": "*",
     "typescript": "^4.5.3",
     "vite": "^2.5.7",
     "@vitejs/plugin-vue": "^2.2.4",
