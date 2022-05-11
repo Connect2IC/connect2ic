@@ -4,7 +4,11 @@
 //
 module.exports = {
   presets: ["@babel/preset-typescript", "@babel/preset-react"],
-  plugins: ["file-loader"],
+  plugins: [
+    ["inline-import-data-uri", {
+      "extensions": [".png", ".svg", ".jpg"],
+    }],
+  ],
 
   overrides: [
     {

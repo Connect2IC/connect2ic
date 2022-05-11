@@ -131,7 +131,7 @@ class EarthWalletConnector implements IConnector, IWalletConnector {
   // }
 }
 
-export default {
+export const EarthWallet = {
   connector: EarthWalletConnector,
   icon: {
     light: earthLogoLight,

@@ -1,0 +1,4 @@
+{
+  "main": "dist/connect2ic-core-providers-nfid.cjs.js",
+  "module": "dist/connect2ic-core-providers-nfid.esm.js"
+}

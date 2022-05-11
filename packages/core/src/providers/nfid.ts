@@ -33,6 +33,7 @@ class NFIDConnector implements IConnector {
       whitelist: [],
       host: window.location.origin,
       providerUrl: "https://3y5ko-7qaaa-aaaal-aaaaq-cai.ic0.app",
+      appName: "my-ic-app",
       dev: false,
       ...userConfig,
     }
@@ -42,7 +43,6 @@ class NFIDConnector implements IConnector {
     // TODO: pass in config or not?
     this.#client = await AuthClient.create(this.#config)
     const isAuthenticated = await this.isConnected()
-    // // TODO: fix?
     if (isAuthenticated) {
       this.#identity = this.#client.getIdentity()
       this.#principal = this.#identity.getPrincipal().toString()
@@ -79,7 +79,7 @@ class NFIDConnector implements IConnector {
     await new Promise((resolve, reject) => {
       this.#client.login({
         // TODO: local
-        identityProvider: this.#config.providerUrl + "/authenticate/?applicationName=Create-IC-App",
+        identityProvider: this.#config.providerUrl + `/authenticate/?applicationName=${this.#config.appName}`,
         onSuccess: resolve,
         onError: reject,
       })
@@ -95,7 +95,7 @@ class NFIDConnector implements IConnector {
   }
 }
 
-export default {
+export const NFID = {
   connector: NFIDConnector,
   icon: {
     light: nfidLogoLight,

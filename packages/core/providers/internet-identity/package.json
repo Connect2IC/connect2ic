@@ -1,0 +1,4 @@
+{
+  "main": "dist/connect2ic-core-providers-internet-identity.cjs.js",
+  "module": "dist/connect2ic-core-providers-internet-identity.esm.js"
+}

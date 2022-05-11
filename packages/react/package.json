@@ -1,21 +1,17 @@
 {
   "name": "@connect2ic/react",
   "author": "Mio Quispe",
-  "version": "0.0.4",
-  "types": "./index.tsx",
+  "version": "0.0.4-beta.0",
   "files": [
-    "dist"
+    "/dist"
   ],
   "sideEffects": false,
   "main": "dist/connect2ic-react.cjs.js",
   "module": "dist/connect2ic-react.esm.js",
   "exports": {
     ".": {
-      "import": "./dist/connect2ic-react.esm.js",
-      "browser": "./dist/connect2ic-react.esm.js",
       "module": "./dist/connect2ic-react.esm.js",
-      "default": "./dist/connect2ic-react.cjs.js",
-      "require": "./dist/connect2ic-react.cjs.js"
+      "default": "./dist/connect2ic-react.cjs.js"
     }
   },
   "preconstruct": {
@@ -29,9 +25,7 @@
   },
   "devDependencies": {
     "@types/react": "^18.0.8",
-    "@types/react-dom": "^18.0.3",
-    "typescript": "^4.6.4",
-    "vite": "^2.9.6"
+    "@types/react-dom": "^18.0.3"
   },
   "peerDependencies": {
     "react": "*",

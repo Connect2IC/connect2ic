@@ -130,7 +130,7 @@ class PlugConnector implements IConnector, IWalletConnector {
   }
 }
 
-export default {
+export const PlugWallet = {
   connector: PlugConnector,
   icon: {
     light: plugLogoLight,

@@ -1,0 +1,4 @@
+{
+  "main": "dist/connect2ic-core-providers-plug-wallet.cjs.js",
+  "module": "dist/connect2ic-core-providers-plug-wallet.esm.js"
+}

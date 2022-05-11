@@ -68,14 +68,8 @@ const authStates = {
             callback({ type: "DONE", data: { providers: providersWithConfig } })
           })
         },
-        // onDone: {
-        //   // TODO: => "connected"?
-        //   actions: assign((context, event) => ({
-        //     providers: event.data.providers,
-        //   })),
-        //   target: "idle",
-        // },
       },
+      exit: ["onInit"]
     },
 
     "idle": {
@@ -196,7 +190,7 @@ const rootMachine = createMachine({
   initial: "inactive",
   context: {
     host: window.location.origin,
-    dev: false,
+    dev: true,
     autoConnect: true,
     whitelist: [],
     identity: undefined,
@@ -254,10 +248,6 @@ const rootMachine = createMachine({
     "actorService": (context, _event) => (callback, onReceive) => {
       onReceive(async (e) => {
         if (e.type === "CREATE_ACTOR") {
-          // Already initialized
-          if (context.actors[e.data.canisterName]) {
-            return
-          }
           const actor = await context.activeProvider.connector.createActor(e.data.canisterId, e.data.idlFactory)
           callback({ type: "SAVE_ACTOR", data: { actor, canisterName: e.data.canisterName } })
         }

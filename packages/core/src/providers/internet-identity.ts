@@ -95,7 +95,7 @@ class InternetIdentityConnector implements IConnector {
   }
 }
 
-export default {
+export const InternetIdentity = {
   connector: InternetIdentityConnector,
   icon: {
     light: dfinityLogoLight,

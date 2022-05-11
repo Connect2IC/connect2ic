@@ -101,34 +101,35 @@ class InfinityConnector implements IConnector, IWalletConnector {
           } else {
             reject()
           }
-        }, 0)
+        }, 10)
       }),
       this.#ic.disconnect(),
     ])
   }
 
-  async requestTransfer(...args) {
-    // return this.#ic.requestTransfer(...args)
-  }
+  // async requestTransfer(...args) {
+  //   // return this.#ic.requestTransfer(...args)
+  // }
 
-  async queryBalance(...args) {
-    return this.#ic.requestBalance(...args)
-  }
+  // async queryBalance(...args) {
+  //   return this.#ic.requestBalance(...args)
+  // }
 
-  async signMessage(...args) {
-    return this.#ic.signMessage(...args)
-  }
+  // async signMessage(...args) {
+  //   return this.#ic.signMessage(...args)
+  // }
+
   //
   // getManagementCanister(...args) {
   //   return this.#ic.getManagementCanister(...args)
   // }
 
-  batchTransactions(...args) {
-    return this.#ic.batchTransactions(...args)
-  }
+  // batchTransactions(...args) {
+  //   return this.#ic.batchTransactions(...args)
+  // }
 }
 
-export default {
+export const InfinityWallet = {
   connector: InfinityConnector,
   icon: {
     light: infinityLogoLight,

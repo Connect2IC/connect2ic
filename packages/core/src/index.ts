@@ -1,7 +1,7 @@
 import { connectMachine } from "./machines/connectMachine"
 // import * as canisters from "../canisters"
 
-export * from "./providers"
+// export * from "./providers"
 
 // import astroXLogoDark from "./assets/astrox.png"
 // import astroXLogoLight from "./assets/astrox_light.svg"

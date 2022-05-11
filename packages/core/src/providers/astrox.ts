@@ -157,7 +157,7 @@ class AstroXConnector implements IConnector, IWalletConnector {
   // batchTransactions: (...args) => this.#ic.batchTransactions(...args),
 }
 
-export default {
+export const AstroX = {
   connector: AstroXConnector,
   icon: {
     light: astroXLogoLight,

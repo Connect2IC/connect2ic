@@ -79,7 +79,7 @@ class StoicConnector implements IConnector {
   }
 }
 
-export default {
+export const StoicWallet = {
   connector: StoicConnector,
   icon: {
     light: stoicLogoLight,
