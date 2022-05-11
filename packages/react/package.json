@@ -1,7 +1,7 @@
 {
   "name": "@connect2ic/react",
   "author": "Mio Quispe",
-  "version": "0.0.4-beta.0",
+  "version": "0.0.4",
   "files": [
     "/dist"
   ],
