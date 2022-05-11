@@ -13,6 +13,10 @@ There are many new wallets coming out and adding support for these isn't always 
 ## Documentation
 Visit https://connect2ic.github.io/docs/
 
+## Community
+You can ask us questions directly :)
+https://discord.com/invite/4kqMVknpgZ
+
 ## Supported providers
 - [Internet Identity](https://identity.ic0.app/)
 - [Stoic Wallet](https://plugwallet.ooo/)
