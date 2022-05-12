@@ -12,7 +12,6 @@ class EarthWalletConnector implements IConnector, IWalletConnector {
   }
   #identity?: any
   #principal?: string
-  #client?: any
   #ic?: any
 
   get identity() {
@@ -21,10 +20,6 @@ class EarthWalletConnector implements IConnector, IWalletConnector {
 
   get principal() {
     return this.#principal
-  }
-
-  get client() {
-    return this.#client
   }
 
   get ic() {
@@ -43,10 +38,10 @@ class EarthWalletConnector implements IConnector, IWalletConnector {
   }
 
   async init() {
-    const isConnected = await this.isConnected()
+    // const isConnected = await this.isConnected()
+    const isConnected = false
     if (isConnected) {
       try {
-        // TODO: never finishes if user doesnt login back?
         const {
           principalId,
         } = await this.#ic.getAddressMeta()
@@ -59,8 +54,9 @@ class EarthWalletConnector implements IConnector, IWalletConnector {
 
   async isConnected() {
     // TODO: no window
-    const { connected } = await window.earth.isConnected()
-    return connected
+    return false
+    // const { connected } = await window.earth.isConnected()
+    // return connected
     // return await this.#ic.isConnected()
   }
 
@@ -69,19 +65,21 @@ class EarthWalletConnector implements IConnector, IWalletConnector {
     if (this.#config.dev) {
       // await this.#ic.agent.fetchRootKey()
     }
-    const ic = this.#ic
-    // TODO: emulate Actor?
-    const service = idlFactory({ IDL })
-    console.log({ service })
-    // const call = (method, args) => {
-    //   ic.sign({
-    //     canisterId,
-    //     method,
-    //     args,
-    //   })
-    // }
-    // return {}
-    // return await this.#ic.createActor({ canisterId, interfaceFactory: idlFactory })
+    // const service = idlFactory({ IDL })
+    const proxy = new Proxy({}, {
+      get(target, method, receiver) {
+        return async (...args) => {
+          const response = await window.earth.sign({
+            canisterId,
+            method,
+            args,
+          })
+          return response
+        }
+      },
+    })
+
+    return proxy
   }
 
 
@@ -89,7 +87,6 @@ class EarthWalletConnector implements IConnector, IWalletConnector {
     this.#ic = window.earth
     if (!this.#ic) {
       window.open("https://www.earthwallet.io/", "_blank")
-      // TODO: throw?
       throw Error("Not installed")
     }
     try {
@@ -109,14 +106,14 @@ class EarthWalletConnector implements IConnector, IWalletConnector {
     return
   }
 
-  async requestTransfer(...args) {
-    return this.#ic.request(...args)
-  }
+  // async requestTransfer(...args) {
+  //   return this.#ic.request(...args)
+  // }
 
-  async queryBalance(...args) {
-    // return this.#ic.requestBalance(...args)
-    return []
-  }
+  // async queryBalance(...args) {
+  //   // return this.#ic.requestBalance(...args)
+  //   return []
+  // }
 
   // signMessage(...args) {
   //   return this.#ic.signMessage(...args)

@@ -6,13 +6,13 @@
   "files": [
     "/dist",
     "/providers",
-    "style.css"
+    "/style.css"
   ],
   "main": "dist/connect2ic-core.cjs.js",
   "module": "dist/connect2ic-core.esm.js",
   "exports": {
     "./package.json": "./package.json",
-    "./style.css": "./src/style.css",
+    "./style.css": "./style.css",
     ".": {
       "module": "./dist/connect2ic-core.esm.js",
       "default": "./dist/connect2ic-core.cjs.js"

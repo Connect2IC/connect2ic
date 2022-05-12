@@ -44,11 +44,14 @@ class PlugConnector implements IConnector, IWalletConnector {
     if (!this.#ic) {
       throw Error("Not supported")
     }
+    // TODO: returns true even if plug is locked
+    // Fleek should fix
     const isConnected = await this.isConnected()
     if (isConnected) {
       try {
-        await this.#ic.createAgent(this.#config)
-        // TODO: never finishes if user doesnt login back?
+        this.#ic.createAgent(this.#config)
+        // TODO: never finishes if user doesnt login back / plug is locked?
+        // Fleek should fix
         this.#principal = await (await this.#ic.getPrincipal()).toString()
         // TODO: return identity?
         // const walletAddress = thisIC.wallet

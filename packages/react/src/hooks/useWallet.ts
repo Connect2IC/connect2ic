@@ -8,6 +8,7 @@ export const useWallet = () => {
   const { connectService } = useContext(Connect2ICContext)
   const activeProvider = useSelector(connectService, (state) => state.context.activeProvider)
   const [wallet, setWallet] = useState(undefined)
+  // TODO: kind of hacky?
   const supportsWallet = !!activeProvider?.connector.requestTransfer
   const { status } = useConnect({
     onConnect: async () => {
@@ -20,9 +21,7 @@ export const useWallet = () => {
 
   useEffect(() => {
     if (status === "connected") {
-      console.log({ activeProvider })
       if (supportsWallet) {
-        // TODO: kind of hacky?
         setWallet(activeProvider.connector)
       }
     }

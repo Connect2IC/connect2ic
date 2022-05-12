@@ -1,17 +1,20 @@
-import {AstroX} from "./astrox"
-import {InternetIdentity} from "./internet-identity"
-import {PlugWallet} from "./plug-wallet"
-import {StoicWallet} from "./stoic-wallet"
-import {InfinityWallet} from "./infinity-wallet"
-import {NFID} from "./nfid"
-// import EarthWallet from "./EarthWallet"
-// import { IConnector } from "./connectors"
+import { AstroX } from "./astrox"
+import { InternetIdentity } from "./internet-identity"
+import { PlugWallet } from "./plug-wallet"
+import { StoicWallet } from "./stoic-wallet"
+import { InfinityWallet } from "./infinity-wallet"
+import { NFID } from "./nfid"
+import { EarthWallet } from "./earth-wallet"
+import type { IConnector } from "./connectors"
 
-// type ProviderOptions = {
-//   connector: IConnector,
-// }
+type ProviderOptions = {
+  connector: IConnector,
+  icon: any,
+  id: string,
+  name: string,
+}
 
-export const defaultProviders: any = [
+export const defaultProviders: Array<ProviderOptions> = [
   AstroX,
   // EarthWallet,
   InfinityWallet,
@@ -28,7 +31,7 @@ export const walletProviders: any = [
 
 export {
   AstroX,
-  // EarthWalletConnector,
+  EarthWallet,
   InfinityWallet,
   InternetIdentity,
   NFID,

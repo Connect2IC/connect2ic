@@ -69,7 +69,7 @@ const authStates = {
           })
         },
       },
-      exit: ["onInit"]
+      exit: ["onInit"],
     },
 
     "idle": {
@@ -168,7 +168,7 @@ const authStates = {
           // TODO: empty context
           actions: [
             assign((context, event) => ({
-              activeProvider: undefined
+              activeProvider: undefined,
             })),
             "onDisconnect",
           ],
