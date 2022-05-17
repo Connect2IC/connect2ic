@@ -4,11 +4,20 @@ import { PlugWallet } from "./plug-wallet"
 import { StoicWallet } from "./stoic-wallet"
 import { InfinityWallet } from "./infinity-wallet"
 import { NFID } from "./nfid"
-import { EarthWallet } from "./earth-wallet"
-import type { IConnector } from "./connectors"
+// import { EarthWallet } from "./earth-wallet"
+import type { IConnector, IWalletConnector } from "./connectors"
 
-type ProviderOptions = {
-  connector: IConnector,
+type ConnectorClass = { new(...args: any[]): IConnector & Partial<IWalletConnector>; };
+
+export type ProviderOptions = {
+  connector: ConnectorClass,
+  icon: any,
+  id: string,
+  name: string,
+}
+
+export type Provider = {
+  connector: IConnector & Partial<IWalletConnector>
   icon: any,
   id: string,
   name: string,
@@ -24,14 +33,14 @@ export const defaultProviders: Array<ProviderOptions> = [
   StoicWallet,
 ]
 
-export const walletProviders: any = [
+export const walletProviders: Array<ProviderOptions> = [
   AstroX,
   PlugWallet,
 ]
 
 export {
   AstroX,
-  EarthWallet,
+  // EarthWallet,
   InfinityWallet,
   InternetIdentity,
   NFID,

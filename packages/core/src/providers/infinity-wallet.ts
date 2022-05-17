@@ -1,18 +1,34 @@
 import type { IConnector, IWalletConnector } from "./connectors"
+import type { ActorSubclass, Agent, Identity } from "@dfinity/agent"
+import type { IDL } from "@dfinity/candid"
+// @ts-ignore
 import infinityLogoLight from "../assets/infinity.png"
+// @ts-ignore
 import infinityLogoDark from "../assets/infinity.png"
+import type { Principal } from "@dfinity/principal"
 
-class InfinityConnector implements IConnector, IWalletConnector {
+type Config = {
+  whitelist: Array<string>,
+  host: string,
+  dev: Boolean,
+}
 
-  #config: {
-    whitelist: [string],
-    host: string,
-    dev: Boolean,
-  }
+type IC = {
+  createActor: <T>(args: { canisterId: string, interfaceFactory: IDL.InterfaceFactory }) => Promise<ActorSubclass<T>>
+  agent: Agent
+  getPrincipal: () => Promise<Principal>
+  isConnected: () => Promise<boolean>
+  disconnect: () => Promise<any>
+  requestConnect: (Config) => Promise<boolean>
+}
+
+class InfinityConnector implements IConnector {
+
+  #config: Config
   #identity?: any
   #principal?: string
   #client?: any
-  #ic?: any
+  #ic?: IC
 
   get identity() {
     return this.#identity
@@ -50,26 +66,26 @@ class InfinityConnector implements IConnector, IWalletConnector {
       await this.connect()
       try {
         // TODO: never finishes if user doesnt login back?
-        this.#principal = await (await this.#ic.getPrincipal()).toString()
+        this.#principal = (await this.#ic.getPrincipal()).toString()
         // const walletAddress = thisIC.wallet
       } catch (e) {
         console.error(e)
       }
     }
+    return true
   }
 
   async isConnected() {
-    // TODO: no window
-    return await this.#ic?.isConnected()
+    return this.#ic!.isConnected()
   }
 
-  async createActor(canisterId, idlFactory) {
+  async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory): Promise<ActorSubclass<Service> | undefined> {
     // Fetch root key for certificate validation during development
     if (this.#config.dev) {
       await this.#ic?.agent.fetchRootKey()
     }
 
-    return await this.#ic?.createActor({ canisterId, interfaceFactory: idlFactory })
+    return this.#ic?.createActor({ canisterId, interfaceFactory: idlFactory })
   }
 
 
@@ -80,12 +96,13 @@ class InfinityConnector implements IConnector, IWalletConnector {
     }
     try {
       await this.#ic.requestConnect(this.#config)
-      this.#principal = await (await this.#ic.getPrincipal()).toString()
+      this.#principal = (await this.#ic.getPrincipal()).toString()
+      return true
       // const walletAddress = thisIC.wallet
     } catch
       (e) {
       // TODO: handle
-      return
+      return false
     }
   }
 
@@ -95,7 +112,7 @@ class InfinityConnector implements IConnector, IWalletConnector {
         // InfinityWallet disconnect promise never resolves despite being disconnected
         // This is a hacky workaround
         setTimeout(async () => {
-          const isConnected = await this.#ic.isConnected()
+          const isConnected = await this.#ic?.isConnected()
           if (!isConnected) {
             resolve(isConnected)
           } else {
@@ -103,8 +120,9 @@ class InfinityConnector implements IConnector, IWalletConnector {
           }
         }, 10)
       }),
-      this.#ic.disconnect(),
+      this.#ic?.disconnect(),
     ])
+    return true
   }
 
   // async requestTransfer(...args) {

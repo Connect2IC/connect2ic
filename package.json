@@ -35,6 +35,7 @@
     ]
   },
   "dependencies": {
-    "babel-plugin-file-loader": "^2.0.0"
+    "babel-plugin-file-loader": "^2.0.0",
+    "fp-ts": "^2.12.1"
   }
 }

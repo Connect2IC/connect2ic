@@ -1,28 +1,32 @@
-import React, { useEffect } from "react"
+import React, { PropsWithChildren, useEffect } from "react"
 import { useDialog } from "../hooks"
 import { useProviders } from "../hooks"
 import { useConnect } from "../hooks"
 
-const ConnectDialog = (props) => {
+type Props = {
+  onClose?: () => void
+  dark?: boolean
+}
+
+const ConnectDialog: React.FC<PropsWithChildren<Props>> = (props) => {
   const {
     onClose = () => {
       dialog.close()
     },
     children,
     dark,
-    title,
   } = props
 
   const dialog = useDialog()
   const providers = useProviders()
 
-  const { connect, status } = useConnect()
+  const { connect, isConnected } = useConnect()
 
   useEffect(() => {
-    if (status === "connected") {
+    if (isConnected) {
       dialog.close()
     }
-  }, [status])
+  }, [isConnected])
 
   useEffect(() => {
     if (dialog.isOpen) {

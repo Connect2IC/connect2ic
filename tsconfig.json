@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "allowJs": true,
+    "allowJs": false,
     "declaration": true,
     "target": "esnext",
     "module": "commonjs",
@@ -8,7 +8,7 @@
       "esnext",
       "dom"
     ],
-    "strict": false,
+    "strict": true,
     "noImplicitAny": false,
     "esModuleInterop": true,
     "isolatedModules": true,

@@ -1,18 +1,56 @@
 import type { IConnector, IWalletConnector } from "./connectors"
+// @ts-ignore
 import plugLogoLight from "../assets/plugLight.svg"
+// @ts-ignore
 import plugLogoDark from "../assets/plugDark.svg"
+import { IDL } from "@dfinity/candid"
+import { ActorSubclass, Agent } from "@dfinity/agent"
+import { Principal } from "@dfinity/principal"
+
+type Plug = {
+  createActor: <T>(args: { canisterId: string, interfaceFactory: IDL.InterfaceFactory }) => Promise<ActorSubclass<T>>
+  agent: Agent
+  createAgent: (options: { host: string, whitelist: Array<string> }) => Promise<Agent>
+  getPrincipal: () => Promise<Principal>
+  isConnected: () => Promise<boolean>
+  disconnect: () => Promise<void>
+  requestConnect: (Config) => Promise<boolean>
+  requestTransfer: (args: {
+    to: string,
+    amount: number,
+    opts?: {
+      fee?: number,
+      memo?: string,
+      from_subaccount?: Number,
+      created_at_time?: {
+        timestamp_nanos: number
+      },
+    },
+  }) => Promise<{
+    height: Number
+  }>
+  requestBalance: () => Promise<Array<{
+    amount: number
+    canisterId: string
+    decimals: number
+    image?: string
+    name: string
+    symbol: string
+  }>>
+  getManagementCanister: () => Promise<ActorSubclass | undefined>
+}
 
 class PlugConnector implements IConnector, IWalletConnector {
 
   #config: {
-    whitelist: [string],
+    whitelist: Array<string>,
     host: string,
-    dev: Boolean,
+    dev: boolean,
   }
   #identity?: any
   #principal?: string
   #client?: any
-  #ic?: any
+  #ic?: Plug
 
   get identity() {
     return this.#identity
@@ -49,30 +87,32 @@ class PlugConnector implements IConnector, IWalletConnector {
     const isConnected = await this.isConnected()
     if (isConnected) {
       try {
-        this.#ic.createAgent(this.#config)
+        await this.#ic.createAgent({
+          host: this.#config.host,
+          whitelist: this.#config.whitelist,
+        })
         // TODO: never finishes if user doesnt login back / plug is locked?
         // Fleek should fix
-        this.#principal = await (await this.#ic.getPrincipal()).toString()
-        // TODO: return identity?
-        // const walletAddress = thisIC.wallet
+        this.#principal = (await this.#ic.getPrincipal()).toString()
       } catch (e) {
         console.error(e)
       }
     }
+    return true
   }
 
   async isConnected() {
     // TODO: no window
-    return await this.#ic?.isConnected()
+    return await this.#ic!.isConnected()
   }
 
-  async createActor(canisterId, idlFactory) {
+  async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory): Promise<ActorSubclass<Service> | undefined> {
     // Fetch root key for certificate validation during development
     if (this.#config.dev) {
-      await this.#ic.agent.fetchRootKey()
+      await this.#ic?.agent.fetchRootKey()
     }
 
-    return await this.#ic.createActor({ canisterId, interfaceFactory: idlFactory })
+    return this.#ic?.createActor({ canisterId, interfaceFactory: idlFactory })
   }
 
   // TODO: handle Plug account switching
@@ -83,7 +123,8 @@ class PlugConnector implements IConnector, IWalletConnector {
     }
     try {
       await this.#ic.requestConnect(this.#config)
-      this.#principal = await (await this.#ic.getPrincipal()).toString()
+      this.#principal = (await this.#ic.getPrincipal()).toString()
+      return true
     } catch (e) {
       throw e
     }
@@ -91,7 +132,8 @@ class PlugConnector implements IConnector, IWalletConnector {
 
   async disconnect() {
     // TODO: should be awaited but never finishes, tell Plug to fix
-    this.#ic.disconnect()
+    this.#ic?.disconnect()
+    return true
   }
 
   address() {
@@ -101,36 +143,40 @@ class PlugConnector implements IConnector, IWalletConnector {
     }
   }
 
-  requestTransfer(args) {
-    return this.#ic.requestTransfer({
-      ...args,
-      amount: args.amount * 100000000,
+
+  async requestTransfer({
+                          amount,
+                          to,
+                          // TODO: fix return type
+                        }: { amount: number, to: string }): Promise<boolean> {
+    return !!this.#ic?.requestTransfer({
+      to,
+      amount: amount * 100000000,
     })
   }
 
-  queryBalance(...args) {
-    return this.#ic.requestBalance(...args)
+  async queryBalance(): Promise<Array<{
+    amount: number
+    canisterId: string
+    decimals: number
+    image?: string
+    name: string
+    symbol: string
+  }> | undefined> {
+    return this.#ic?.requestBalance()
   }
 
-  signMessage(...args) {
-    return this.#ic.signMessage(...args)
+  // signMessage({ message }) {
+  //   return this.#ic?.signMessage({message})
+  // }
+
+  async getManagementCanister() {
+    return this.#ic?.getManagementCanister()
   }
 
-  getManagementCanister(...args) {
-    return this.#ic.getManagementCanister(...args)
-  }
-
-  callClientRPC(...args) {
-    return this.#ic.callClientRPC(...args)
-  }
-
-  requestBurnXTC(...args) {
-    return this.#ic.requestBurnXTC(...args)
-  }
-
-  batchTransactions(...args) {
-    return this.#ic.batchTransactions(...args)
-  }
+  // batchTransactions(...args) {
+  //   return this.#ic?.batchTransactions(...args)
+  // }
 }
 
 export const PlugWallet = {

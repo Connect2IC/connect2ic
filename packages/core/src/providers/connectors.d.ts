@@ -1,16 +1,34 @@
+import { ActorSubclass } from "@dfinity/agent"
+import { Result } from "fp-ts"
+
 export interface IConnector {
-  init: () => Promise<void>
-  isConnected: () => Promise<Boolean>
-  createActor: (string, any) => Promise<any>
-  connect: () => Promise<void>
-  disconnect: () => Promise<void>
+  init: () => Promise<boolean>
+  isConnected: () => Promise<boolean>
+  // TODO: Result type
+  createActor: <Service>(canisterId: string, interfaceFactory: IDL.InterfaceFactory) => Promise<ActorSubclass<Service> | undefined>
+  // TODO: Result type
+  connect: () => Promise<boolean>
+  // TODO: Result type
+  disconnect: () => Promise<boolean>
+  principal: string | undefined
 }
 
 export interface IWalletConnector {
-  // address: walletAddress,
-  requestTransfer: (any) => Promise<any>
-  queryBalance: (any) => Promise<any>
-  signMessage: (any) => Promise<any>
+  // TODO: Result type?
+  address: () => {
+    principal?: string
+    accountId?: string
+  },
+  requestTransfer: ({ amount: number, from: string, to: string }) => Promise<any>
+  queryBalance: () => Promise<Array<{
+    amount: number
+    canisterId: string
+    decimals: number
+    image?: string
+    name: string
+    symbol: string
+  }> | undefined>
+  signMessage?: (any) => Promise<any>
   // getManagementCanister: (any) => Promise<any>
   // callClientRPC: (any) => Promise<any>
   // requestBurnXTC: (any) => Promise<any>

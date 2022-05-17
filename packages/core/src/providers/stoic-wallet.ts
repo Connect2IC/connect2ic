@@ -1,13 +1,16 @@
 import { StoicIdentity } from "ic-stoic-identity"
-import { Actor, HttpAgent } from "@dfinity/agent"
+import { Actor, ActorSubclass, HttpAgent } from "@dfinity/agent"
 import type { IConnector } from "./connectors"
+// @ts-ignore
 import stoicLogoLight from "../assets/stoic.png"
+// @ts-ignore
 import stoicLogoDark from "../assets/stoic.png"
+import { IDL } from "@dfinity/candid"
 
 class StoicConnector implements IConnector {
 
   #config: {
-    whitelist: [string],
+    whitelist: Array<string>,
     providerUrl: string,
     host: string,
     dev: Boolean,
@@ -40,9 +43,10 @@ class StoicConnector implements IConnector {
       this.#identity = identity
       this.#principal = identity.getPrincipal().toText()
     }
+    return true
   }
 
-  async createActor(canisterId, idlFactory) {
+  async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory): Promise<ActorSubclass<Service> | undefined> {
     // TODO: pass identity
     const agent = new HttpAgent({
       ...this.#config,
@@ -72,10 +76,12 @@ class StoicConnector implements IConnector {
   async connect() {
     this.#identity = await StoicIdentity.connect()
     this.#principal = this.#identity.getPrincipal().toText()
+    return true
   }
 
   async disconnect() {
     await StoicIdentity.disconnect()
+    return true
   }
 }
 

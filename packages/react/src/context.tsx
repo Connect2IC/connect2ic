@@ -1,12 +1,47 @@
-import React, { createContext, useEffect, useState } from "react"
+import React, { createContext, useEffect, useState, PropsWithChildren } from "react"
 import { useInterpret, useSelector } from "@xstate/react"
+import type { Interpreter } from "xstate"
 import { connectMachine } from "@connect2ic/core"
+import type { RootContext, RootEvent, ProviderOptions } from "@connect2ic/core"
+import type { IDL } from "@dfinity/candid"
 
-const Connect2ICContext = createContext({})
+type CanisterMap = {
+  [canisterName: string]: {
+    canisterId: string,
+    idlFactory: IDL.InterfaceFactory
+  }
+}
 
-const Connect2ICProvider = ({ children, canisters, host, dev, ...options }) => {
-  // Hacky...
-  const [action, setAction] = useState()
+const Connect2ICContext = createContext<{
+  connectService: Interpreter<RootContext, any, RootEvent, any, any>
+  dialog: {
+    open: () => void
+    close: () => void
+    isOpen: boolean
+  }
+  action?: { type: string, event: RootEvent, context: RootContext }
+  canisters: CanisterMap
+}>({} as any)
+
+type Props = {
+  canisters?: CanisterMap,
+  whitelist?: Array<string>
+  host?: string,
+  dev?: boolean,
+  providers: Array<ProviderOptions>,
+  autoConnect?: boolean
+}
+
+const Connect2ICProvider: React.FC<PropsWithChildren<Props>> = ({
+                                                                  children,
+                                                                  canisters = {},
+                                                                  whitelist,
+                                                                  host,
+                                                                  dev,
+                                                                  providers,
+                                                                  autoConnect,
+                                                                }) => {
+  const [action, setAction] = useState<{ type: string, context: RootContext, event: RootEvent }>()
   const connectService = useInterpret(connectMachine, {
     devTools: true,
     actions: {
@@ -28,7 +63,7 @@ const Connect2ICProvider = ({ children, canisters, host, dev, ...options }) => {
       },
     },
   })
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState<boolean>(false)
 
   const dialog = {
     open: () => setOpen(true),
@@ -37,23 +72,25 @@ const Connect2ICProvider = ({ children, canisters, host, dev, ...options }) => {
   }
 
   useEffect(() => {
+    // TODO: on options change?
     connectService.send({
       type: "INIT",
       data: {
         dev,
-        whitelist: options.whitelist || Object.values(canisters).map(canister => (canister as any).canisterId),
+        whitelist: whitelist ?? Object.values(canisters).map(canister => (canister as any).canisterId),
         host,
-        canisters,
-        ...options,
+        providers,
+        autoConnect,
       },
     })
-  }, [connectService, options])
+  }, [connectService])
 
   return (
     <Connect2ICContext.Provider value={{
       connectService,
       dialog,
-      action
+      action,
+      canisters,
     }}>
       {children}
     </Connect2ICContext.Provider>

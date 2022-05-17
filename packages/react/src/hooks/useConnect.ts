@@ -2,25 +2,27 @@ import React, { useContext, useEffect } from "react"
 import { useSelector } from "@xstate/react"
 import { Connect2ICContext } from "../context"
 
-const selectState = state => ({
-  principal: state.context.principal,
-  activeProvider: state.context.activeProvider,
-  status: state.value.idle,
-})
+type Props = {
+  onConnect: ({ provider: string }) => void
+  onDisconnect: () => void
+}
 
-export const useConnect = (props = {}) => {
+export const useConnect = (props?: Props) => {
   // TODO: handle
   const {
     onConnect = () => {
     },
     onDisconnect = () => {
     },
-  } = props
+  } = props ?? {}
   const {
     connectService,
     action,
   } = useContext(Connect2ICContext)
-  const { principal, activeProvider, status } = useSelector(connectService, selectState)
+  const { principal, activeProvider } = useSelector(connectService, (state) => ({
+    principal: state.context.principal,
+    activeProvider: state.context.activeProvider,
+  }))
 
   useEffect(() => {
     // TODO: Some other workaround? useSelector still has old state when action fires.
@@ -35,17 +37,16 @@ export const useConnect = (props = {}) => {
   return {
     principal,
     activeProvider,
-    status,
-    isConnected: status === "connected",
-    isConnecting: status === "connecting",
-    isDisconnecting: status === "disconnecting",
-    isIdle: status === "idle",
+    isConnected: connectService.state?.matches({ idle: "connected" }) ?? false,
+    isConnecting: connectService.state?.matches({ idle: "connecting" }) ?? false,
+    isDisconnecting: connectService.state?.matches({ idle: "disconnecting" }) ?? false,
+    isIdle: connectService.state?.matches({ idle: "idle" }) ?? false,
     connect: (provider) => {
       connectService.send({ type: "CONNECT", data: { provider } })
     },
     disconnect: () => {
       connectService.send({ type: "DISCONNECT" })
     },
-  }
+  } as const
 }
 

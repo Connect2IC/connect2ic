@@ -1,9 +1,15 @@
-import React, { useEffect, useState } from "react"
+import React, { CSSProperties, PropsWithChildren, useEffect, useState } from "react"
 import {
   useConnect, useDialog,
 } from "../index"
 
-const ConnectButton = (props) => {
+type Props = {
+  style?: CSSProperties
+  dark?: boolean
+  onConnect?: () => void
+  onDisconnect?: () => void
+}
+const ConnectButton: React.FC<PropsWithChildren<Props>> = (props) => {
   const {
     style = {},
     dark = false,

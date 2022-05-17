@@ -1,16 +1,16 @@
-import { useContext, useEffect, useState } from "react"
+import { useContext } from "react"
 import { useSelector } from "@xstate/react"
 import { useConnect } from "./useConnect"
 import { Connect2ICContext } from "../context"
 
 export const useCanister = (
-  canisterName,
-  options = {
+  canisterName: string,
+  options: { mode: string } = {
     mode: "auto", // "anonymous" | "connected"
   },
 ) => {
   const { mode } = options
-  const { canisters, connectService } = useContext(Connect2ICContext)
+  const { connectService } = useContext(Connect2ICContext)
   const anonymousActor = useSelector(connectService, (state) => state.context.anonymousActors[canisterName])
   const actor = useSelector(connectService, (state) => state.context.actors[canisterName])
   const { isConnected } = useConnect()
@@ -21,5 +21,5 @@ export const useCanister = (
   const loading = !canister
   const error = false
 
-  return [canister, { error, loading }]
+  return [canister, { error, loading }] as const
 }

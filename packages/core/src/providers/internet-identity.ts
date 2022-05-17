@@ -1,24 +1,24 @@
 import { AuthClient } from "@dfinity/auth-client"
-import { Actor, HttpAgent } from "@dfinity/agent"
+import { Actor, ActorSubclass, HttpAgent } from "@dfinity/agent"
+import type { Identity } from "@dfinity/agent"
 import type { IConnector } from "./connectors"
+// @ts-ignore
 import dfinityLogoLight from "../assets/dfinity.svg"
+// @ts-ignore
 import dfinityLogoDark from "../assets/dfinity.svg"
+import { IDL } from "@dfinity/candid"
 
 class InternetIdentityConnector implements IConnector {
 
   #config: {
-    whitelist: [string],
+    whitelist: Array<string>,
     host: string,
     providerUrl: string,
-    dev: Boolean,
+    dev: boolean,
   }
-  #identity?: any
+  #identity?: Identity
   #principal?: string
-  #client?: any
-
-  get identity() {
-    return this.#identity
-  }
+  #client?: AuthClient
 
   get principal() {
     return this.#principal
@@ -39,21 +39,21 @@ class InternetIdentityConnector implements IConnector {
   }
 
   async init() {
-    // TODO: pass in config or not?
-    this.#client = await AuthClient.create(this.#config)
+    this.#client = await AuthClient.create()
     const isConnected = await this.isConnected()
     // // TODO: fix?
     if (isConnected) {
       this.#identity = this.#client.getIdentity()
-      this.#principal = this.#identity.getPrincipal().toString()
+      this.#principal = this.#identity?.getPrincipal().toString()
     }
+    return true
   }
 
-  async isConnected() {
-    return await this.#client.isAuthenticated()
+  async isConnected(): Promise<boolean> {
+    return await this.#client!.isAuthenticated()
   }
 
-  async createActor(canisterId, idlFactory) {
+  async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory): Promise<ActorSubclass<Service> | undefined> {
     // TODO: pass identity?
     const agent = new HttpAgent({
       ...this.#config,
@@ -77,21 +77,23 @@ class InternetIdentityConnector implements IConnector {
 
   async connect() {
     await new Promise((resolve, reject) => {
-      this.#client.login({
+      this.#client?.login({
         // TODO: local
         identityProvider: this.#config.providerUrl,
-        onSuccess: resolve,
+        onSuccess: () => resolve(true),
         onError: reject,
       })
     })
-    const identity = this.#client.getIdentity()
-    const principal = identity.getPrincipal().toString()
+    const identity = this.#client?.getIdentity()
+    const principal = identity?.getPrincipal().toString()
     this.#identity = identity
     this.#principal = principal
+    return true
   }
 
   async disconnect() {
-    await this.#client.logout()
+    await this.#client?.logout()
+    return true
   }
 }
 

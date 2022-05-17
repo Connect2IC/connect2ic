@@ -1,22 +1,22 @@
-import { useEffect, useState } from "react"
 import { useWallet } from "./useWallet"
 
-export const useSignMessage = ({ message }) => {
+type Props = {
+  message?: string
+}
+
+export const useSignMessage = ({ message }: Props) => {
   // TODO: check if supported or not
   const [wallet] = useWallet()
-  const signMessage = () => {
-    wallet.signMessage({ message })
-  }
 
-  useEffect(() => {
+  const signMessage = () => {
     if (!wallet) {
       return
     }
-  }, [wallet])
+    wallet.signMessage?.({ message })
+  }
 
-  // investigate io-ts runtime type checking?
   const loading = false
   const error = false
 
-  return [signMessage, { loading, error }]
+  return [signMessage, { loading, error }] as const
 }

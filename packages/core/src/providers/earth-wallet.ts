@@ -1,12 +1,14 @@
 import type { IConnector, IWalletConnector } from "./connectors"
 import { IDL } from "@dfinity/candid"
+// @ts-ignore
 import earthLogoLight from "../assets/earth.png"
+// @ts-ignore
 import earthLogoDark from "../assets/earth.png"
 
 class EarthWalletConnector implements IConnector, IWalletConnector {
 
   #config: {
-    whitelist: [string],
+    whitelist: Array<string>,
     host: string,
     dev: Boolean,
   }
@@ -103,7 +105,7 @@ class EarthWalletConnector implements IConnector, IWalletConnector {
 
   async disconnect() {
     // Not available
-    return
+    return true
   }
 
   // async requestTransfer(...args) {

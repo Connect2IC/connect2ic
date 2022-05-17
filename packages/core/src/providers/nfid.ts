@@ -1,13 +1,17 @@
 import { AuthClient } from "@dfinity/auth-client"
-import { Actor, HttpAgent } from "@dfinity/agent"
+import { Actor, ActorSubclass, HttpAgent } from "@dfinity/agent"
 import type { IConnector } from "./connectors"
+// @ts-ignore
 import nfidLogoLight from "../assets/nfid.png"
+// @ts-ignore
 import nfidLogoDark from "../assets/nfid.png"
+import { IDL } from "@dfinity/candid"
 
 class NFIDConnector implements IConnector {
 
   #config: {
-    whitelist: [string],
+    whitelist: Array<string>,
+    appName: string,
     host: string,
     providerUrl: string,
     dev: Boolean,
@@ -41,19 +45,20 @@ class NFIDConnector implements IConnector {
 
   async init() {
     // TODO: pass in config or not?
-    this.#client = await AuthClient.create(this.#config)
+    this.#client = await AuthClient.create()
     const isAuthenticated = await this.isConnected()
     if (isAuthenticated) {
       this.#identity = this.#client.getIdentity()
       this.#principal = this.#identity.getPrincipal().toString()
     }
+    return true
   }
 
   async isConnected() {
     return await this.#client.isAuthenticated()
   }
 
-  async createActor(canisterId, idlFactory) {
+  async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory): Promise<ActorSubclass<Service> | undefined> {
     // TODO: pass identity?
     const agent = new HttpAgent({
       ...this.#config,
@@ -88,10 +93,12 @@ class NFIDConnector implements IConnector {
     const principal = identity.getPrincipal().toString()
     this.#identity = identity
     this.#principal = principal
+    return true
   }
 
   async disconnect() {
     await this.#client.logout()
+    return true
   }
 }
 
