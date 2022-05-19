@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { useWallet } from "./useWallet"
+import { useConnect } from "./useConnect"
 
 type Props = {
   amount: number,
@@ -9,19 +9,19 @@ type Props = {
 
 export const useTransfer = ({ amount, to, from = undefined }: Props) => {
   // TODO: check if supported or not
-  const [wallet] = useWallet()
+  const { isWallet, activeProvider, principal } = useConnect()
   const [loading, setLoading] = useState<boolean>(false)
   const [error, setError] = useState<Error | undefined>()
 
   const transfer = async () => {
-    if (!wallet) {
+    if (!isWallet || !activeProvider) {
       return
     }
     setLoading(true)
-    await wallet.requestTransfer!({
+    await activeProvider.requestTransfer({
       amount,
       to,
-      from: from ?? wallet.principal,
+      from: from ?? principal,
     }).catch(e => {
       setError(e)
     })

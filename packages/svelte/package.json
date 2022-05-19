@@ -15,19 +15,20 @@
     }
   },
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "serve": "vite preview"
+    "build": "rollup -c"
   },
   "dependencies": {
     "@connect2ic/core": "*"
   },
   "devDependencies": {
-    "typescript": "^4.5.3",
-    "vite": "^2.5.7",
+    "@rollup/plugin-node-resolve": "^13.3.0",
     "@sveltejs/vite-plugin-svelte": "next",
+    "rollup": "^2.73.0",
+    "rollup-plugin-svelte": "^7.1.0",
     "svelte": "^3.42.5",
-    "svelte-preprocess": "^4.9.4"
+    "svelte-preprocess": "^4.9.4",
+    "typescript": "^4.5.3",
+    "vite": "^2.5.7"
   },
   "peerDependencies": {
     "@xstate/svelte": "^0.2.1"

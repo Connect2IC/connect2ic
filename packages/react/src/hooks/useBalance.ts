@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { useWallet } from "./useWallet"
+import { useConnect } from "./useConnect"
 
 type Asset = {
   amount: number
@@ -12,28 +12,28 @@ type Asset = {
 
 export const useBalance = () => {
   // TODO: check if supported or not
-  const [wallet] = useWallet()
+  const {isWallet, activeProvider} = useConnect()
   const [assets, setAssets] = useState<Array<Asset>>()
   const [loading, setLoading] = useState(true)
   // TODO:
   const [error, setError] = useState(false)
 
   const refresh = async () => {
-    if (!wallet) {
+    if (!isWallet || !activeProvider) {
       return
     }
-    const result = await wallet.queryBalance?.()
+    const result = await activeProvider.queryBalance?.()
     setAssets(result)
     setLoading(false)
   }
 
   useEffect(() => {
-    if (!wallet) {
+    if (!isWallet) {
       setAssets(undefined)
       return
     }
     refresh()
-  }, [wallet])
+  }, [isWallet])
 
   return [assets, { loading, error, refresh }] as const
 }

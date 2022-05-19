@@ -1,17 +1,18 @@
 import "../core/style.css"
-import { connectMachine } from "../core/machines/connectMachine"
 import { useSelector } from "@xstate/svelte"
-import { interpret } from "xstate"
+import { getContext } from "svelte"
+import { contextKey } from "../context"
 
-const createAuth = ({
+const useConnect = ({
                       // providers = {},
                       onConnect = () => {
                       },
                       onDisconnect = () => {
                       },
                     }) => {
-  const authService = interpret(connectMachine, { devTools: true }).start()
-  const state = useSelector(authService, state => {
+  // const connectService = interpret(connectMachine, { devTools: true }).start()
+  const { connectService } = getContext(contextKey)
+  const state = useSelector(connectService, state => {
     return {
       identity: state.context.identity,
       principal: state.context.principal,
@@ -19,8 +20,8 @@ const createAuth = ({
       // TODO: get machine status?
     }
   })
-
-  authService.send({ type: "INIT" })
+  //
+  // authService.send({ type: "INIT", data: {} })
 
   return {
     subscribe: state.subscribe,
@@ -33,4 +34,4 @@ const createAuth = ({
   }
 }
 
-export default createAuth
+export { useConnect }

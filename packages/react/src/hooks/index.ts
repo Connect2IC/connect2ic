@@ -1,6 +1,5 @@
 import { useConnect } from "./useConnect"
 import { useCanister } from "./useCanister"
-import { useWallet } from "./useWallet"
 import { useBalance } from "./useBalance"
 import { useDialog } from "./useDialog"
 import { useProviders } from "./useProviders"
@@ -11,7 +10,6 @@ export {
   useConnect,
   useCanister,
   useBalance,
-  useWallet,
   useDialog,
   useProviders,
   useSignMessage,

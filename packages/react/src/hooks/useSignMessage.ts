@@ -1,4 +1,4 @@
-import { useWallet } from "./useWallet"
+import { useConnect } from "./useConnect"
 
 type Props = {
   message?: string
@@ -6,13 +6,13 @@ type Props = {
 
 export const useSignMessage = ({ message }: Props) => {
   // TODO: check if supported or not
-  const [wallet] = useWallet()
+  const {activeProvider, isWallet} = useConnect()
 
   const signMessage = () => {
-    if (!wallet) {
+    if (!isWallet || !activeProvider) {
       return
     }
-    wallet.signMessage?.({ message })
+    activeProvider.signMessage?.({ message })
   }
 
   const loading = false
