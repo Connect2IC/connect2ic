@@ -7,25 +7,10 @@ import type { IConnector, IWalletConnector } from "@connect2ic/core"
 export const useWallet = () => {
   const { connectService } = useContext(Connect2ICContext)
   const activeProvider = useSelector(connectService, (state) => state.context.activeProvider)
-  const [wallet, setWallet] = useState<IConnector & Partial<IWalletConnector>>()
   // TODO: kind of hacky
   const supportsWallet = !!activeProvider?.connector.requestTransfer
-  const { isConnected } = useConnect({
-    onConnect: async () => {
-    },
-    onDisconnect: () => {
-      setWallet(undefined)
-    },
-  })
-
-  useEffect(() => {
-    if (isConnected) {
-      if (supportsWallet) {
-        setWallet(activeProvider.connector)
-      }
-    }
-  }, [setWallet])
-
+  const { isConnected } = useConnect()
+  const wallet = isConnected && supportsWallet ? (activeProvider.connector as IConnector & Partial<IWalletConnector>) : undefined
   const loading = false
   const error = false
 
