@@ -8,7 +8,7 @@ import type { IDL } from "@dfinity/candid"
 type CanisterMap = {
   [canisterName: string]: {
     canisterId: string,
-    idlFactory: IDL.InterfaceFactory
+    idlFactory: IDL.InterfaceFactory,
   }
 }
 
@@ -41,6 +41,7 @@ const Connect2ICProvider: React.FC<PropsWithChildren<Props>> = ({
                                                                   providers,
                                                                   autoConnect,
                                                                 }) => {
+
   const [action, setAction] = useState<{ type: string, context: RootContext, event: RootEvent }>()
   const connectService = useInterpret(connectMachine, {
     devTools: true,

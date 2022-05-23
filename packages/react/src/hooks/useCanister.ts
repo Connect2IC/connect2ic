@@ -10,7 +10,8 @@ export const useCanister = (
   },
 ) => {
   const { mode } = options
-  const { connectService } = useContext(Connect2ICContext)
+  const { connectService, canisters } = useContext(Connect2ICContext)
+
   const anonymousActor = useSelector(connectService, (state) => state.context.anonymousActors[canisterName])
   const actor = useSelector(connectService, (state) => state.context.actors[canisterName])
   const { isConnected } = useConnect()

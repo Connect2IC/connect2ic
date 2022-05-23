@@ -1,5 +1,5 @@
-import { useConnect } from "./useConnect"
 import { useWallet } from "./useWallet"
+import { derived, writable, get } from "svelte/store"
 
 type Props = {
   message?: string
@@ -7,18 +7,18 @@ type Props = {
 
 export const useSignMessage = ({ message }: Props) => {
   // TODO: check if supported or not
-  const {activeProvider} = useConnect()
   const [wallet] = useWallet()
 
   const signMessage = () => {
-    if (!wallet || !activeProvider) {
+    const $wallet = get(wallet)
+    if (!$wallet) {
       return
     }
-    activeProvider.signMessage?.({ message })
+    $wallet.signMessage?.({ message })
   }
 
-  const loading = false
-  const error = false
+  const loading = writable(false)
+  const error = writable(false)
 
   return [signMessage, { loading, error }] as const
 }
