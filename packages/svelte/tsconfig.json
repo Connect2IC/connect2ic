@@ -15,7 +15,6 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "jsx": "react-jsx",
     "outDir": "dist",
     "declarationDir": "dist",
     "importsNotUsedAsValues": "error",

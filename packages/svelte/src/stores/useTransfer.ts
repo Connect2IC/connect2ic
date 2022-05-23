@@ -1,4 +1,3 @@
-import { useState } from "react"
 import { useConnect } from "./useConnect"
 import { useWallet } from "./useWallet"
 import { derived, writable, get } from "svelte/store"

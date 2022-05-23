@@ -1,0 +1,24 @@
+{
+  "name": "new-create-ic-app-svelte",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "serve": "vite preview"
+  },
+  "dependencies": {
+    "@connect2ic/core": "0.0.7",
+    "@connect2ic/svelte": "^0.0.9",
+    "@dfinity/agent": "^0.11.2"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "next",
+    "@types/node": "^17.0.34",
+    "@xstate/inspect": "^0.7.0",
+    "buffer": "^6.0.3",
+    "svelte": "^3.42.5",
+    "svelte-preprocess": "^4.9.4",
+    "typescript": "^4.4.3",
+    "vite": "^2.9.9"
+  }
+}
