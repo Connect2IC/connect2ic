@@ -9,7 +9,7 @@ module.exports = {
       "extensions": [".png", ".svg", ".jpg"],
     }],
   ],
-  extensions: [".js", ".mjs", ".svelte", ".html", ".vue", ".ts", ".jsx", ".tsx"],
+  // extensions: [".js", ".mjs", ".svelte", ".html", ".vue", ".ts", ".jsx", ".tsx"],
 
   overrides: [
     {

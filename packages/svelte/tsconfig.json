@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "allowJs": false,
+    "allowJs": true,
     "declaration": true,
     "target": "esnext",
-    "module": "commonjs",
+    "module": "esnext",
     "lib": [
       "esnext",
       "dom"
@@ -15,13 +15,14 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+    "outDir": "dist",
+    "declarationDir": "dist",
+    "importsNotUsedAsValues": "error",
+    "preserveValueImports": true
   },
   "include": [
-    "packages/react/src/*",
-    "packages/svelte/src/*",
-    "packages/core/src/*",
-    "packages/core/src/providers/*"
+    "src/**/*"
   ],
   "exclude": ["node_modules", "**/dist/**", "**/node_modules/**"],
   "ts-node": {

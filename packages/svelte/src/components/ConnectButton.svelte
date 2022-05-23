@@ -1,48 +1,28 @@
-<script>
-  import {
-    ConnectDialog,
-    useConnect,
-  } from "./index"
+<script lang="ts">
+  import { useConnect, useDialog } from "../stores/index.ts"
 
-  export const onConnect = (connection) => {
+  export const onConnect: () => void = () => {
   }
-  export const onDisconnect = () => {
+  export const onDisconnect: () => void = () => {
   }
-  export const dark = false
-  export const style = ""
-  export const config = {
-    ii: {},
-    plug: {},
-    stoic: {},
-    metamask: {},
-  }
+  export const dark: boolean = false
+  export const style: string = ""
 
-  const connect = useConnect({
-    // providers,
+  const { open } = useDialog()
+  const { isConnected, disconnect } = useConnect({
     onConnect,
     onDisconnect,
   })
-
-  let showDialog = false
-  $: if ($connect.isConnected) {
-    showDialog = false
-  }
 </script>
 
-{#if $connect.isConnected}
-  <button style={style} class="connect-button" on:click={() => connect.disconnect()}>
+{#if $isConnected}
+  <button style={style} class="connect-button" on:click={() => disconnect()}>
     Disconnect
   </button>
 {/if}
 
-{#if $connect.isConnected}
-  <button style={style} class="connect-button" on:click={() => showDialog = true}>
-    ConnectButton
+{#if !$isConnected}
+  <button style={style} class="connect-button" on:click={() => open()}>
+    Connect
   </button>
-{/if}
-
-{#if showDialog}
-  <ConnectDialog onClose={() => showDialog = false}>
-<!--    <IIButton on:click={() => connect.connect("ii")} dark={dark} />-->
-  </COnnectDialog>
 {/if}

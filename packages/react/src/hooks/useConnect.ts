@@ -23,7 +23,6 @@ export const useConnect = (props?: Props) => {
     principal: state.context.principal,
     activeProvider: state.context.activeProvider,
   }))
-  const isWallet = !!activeProvider?.connector.requestTransfer
 
   useEffect(() => {
     // TODO: Some other workaround? useSelector still has old state when action fires.
@@ -38,7 +37,6 @@ export const useConnect = (props?: Props) => {
   return {
     principal,
     activeProvider,
-    isWallet,
     isConnected: connectService.state?.matches({ idle: "connected" }) ?? false,
     isConnecting: connectService.state?.matches({ idle: "connecting" }) ?? false,
     isDisconnecting: connectService.state?.matches({ idle: "disconnecting" }) ?? false,

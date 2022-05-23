@@ -1,6 +1,8 @@
 import { useState } from "react"
 import { useConnect } from "./useConnect"
 import { useWallet } from "./useWallet"
+import { derived, writable, get } from "svelte/store"
+import type { Readable } from "svelte/store"
 
 type Props = {
   amount: number,
@@ -12,22 +14,23 @@ export const useTransfer = ({ amount, to, from = undefined }: Props) => {
   // TODO: check if supported or not
   const [wallet] = useWallet()
   const { activeProvider, principal } = useConnect()
-  const [loading, setLoading] = useState<boolean>(false)
-  const [error, setError] = useState<Error | undefined>()
+  const loading = writable(true)
+  const error = writable()
 
   const transfer = async () => {
-    if (!wallet || !activeProvider) {
+    const $wallet = get(wallet)
+    if (!$wallet) {
       return
     }
-    setLoading(true)
-    await activeProvider.requestTransfer({
+    loading.set(true)
+    await $wallet.requestTransfer?.({
       amount,
       to,
       from: from ?? principal,
     }).catch(e => {
-      setError(e)
+      error.set(e)
     })
-    setLoading(false)
+    loading.set(false)
   }
 
   return [transfer, { loading, error }] as const
