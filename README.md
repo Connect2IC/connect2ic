@@ -146,7 +146,7 @@ Programmatically control the prestyled `<Dialog />` or check its state
 ```jsx
 import { useDialog } from "@connect2ic/react"
 
-const [dialog] = useDialog()
+const dialog = useDialog()
 
 dialog.open()
 
