@@ -2,7 +2,7 @@ import React, { useEffect } from "react"
 /*
  * Connect2ic provides essential utilities for IC app development
  */
-import { defaultProviders } from "@connect2ic/core"
+import { defaultProviders } from "@connect2ic/core/providers"
 import { ConnectButton, ConnectDialog, Connect2ICProvider } from "@connect2ic/react"
 import "@connect2ic/core/style.css"
 /*
