@@ -109,6 +109,7 @@ class AstroXConnector implements IConnector, IWalletConnector {
       identityProvider: `${this.#config.providerUrl}/login#authorize`,
       permissions: [PermissionsType.identity, PermissionsType.wallet],
       ledgerCanisterId: this.#config.ledgerCanisterId,
+      ledgerHost: this.#config.ledgerHost,
       onAuthenticated: (icInstance: IC) => {
         this.#ic = window.ic.astrox ?? icInstance
         this.#principal = this.#ic!.principal.toText()
@@ -156,9 +157,9 @@ class AstroXConnector implements IConnector, IWalletConnector {
     name: string
     symbol: string
   }>> {
-    const ICPBalance = await this.#ic?.queryBalance() ?? 0
+    const ICPBalance = Number(await this.#ic?.queryBalance()) ?? 0
     return [{
-      amount: Number(ICPBalance) / 100000000,
+      amount: ICPBalance / 100000000,
       canisterId: this.#config.ledgerCanisterId,
       decimals: 8,
       // TODO: fix

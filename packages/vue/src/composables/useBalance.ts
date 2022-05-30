@@ -1,7 +1,5 @@
-import { useConnect } from "./useConnect"
 import { useWallet } from "./useWallet"
-import { derived, writable, get } from "svelte/store"
-import type { Readable } from "svelte/store"
+import { ref, watch } from "vue"
 
 type Asset = {
   amount: number
@@ -16,23 +14,25 @@ export const useBalance = () => {
   // TODO: check if supported or not
   const [wallet] = useWallet()
   // TODO:
-  const error = writable()
-  const loading = writable(true)
-  const assets = writable()
+  const error = ref()
+  const loading = ref(true)
+  const assets = ref()
 
+  // TODO: fix
   const refetch = async () => {
-    const $wallet = get(wallet)
+    const $wallet = wallet.value
     if (!$wallet) {
-      assets.set(undefined)
+      assets.value = undefined
       return
     }
     const result = await $wallet.queryBalance?.()
-    assets.set(result)
-    loading.set(false)
-    // TODO:
+    assets.value = result
+    loading.value = false
   }
 
-  refetch()
+  watch(wallet, ($wallet) => {
+    refetch()
+  })
 
   return [assets, { loading, error, refetch }] as const
 }

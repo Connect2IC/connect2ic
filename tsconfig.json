@@ -9,6 +9,7 @@
       "dom"
     ],
     "strict": true,
+    "jsx": "react-jsx",
     "noImplicitAny": false,
     "esModuleInterop": true,
     "isolatedModules": true,

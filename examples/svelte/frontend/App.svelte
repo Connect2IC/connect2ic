@@ -12,7 +12,7 @@
 <Connect2ICProvider
   dev={import.meta.env.DEV}
   canisters={{
-      counter,
+      counter
     }}
   providers={defaultProviders}
 >

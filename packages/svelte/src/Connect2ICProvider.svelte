@@ -1,14 +1,15 @@
 <script lang="ts">
-  import { connectMachine, ProviderOptions } from "@connect2ic/core"
-  import type { RootContext, RootEvent } from "@connect2ic/core"
+  import { connectMachine } from "@connect2ic/core"
+  import type { RootContext, RootEvent, ProviderOptions } from "@connect2ic/core"
   import type { State } from "xstate"
   import { contextKey } from "./context.ts"
   import type { ContextState } from "./context.ts"
   import { setContext } from "svelte"
-  import { Readable, readable, writable } from "svelte/store"
+  import { readable, writable } from "svelte/store"
+  import type { Readable } from "svelte/store"
   import { useMachine } from "@xstate/svelte"
-  import { Interpreter } from "xstate"
-  import { IDL } from "@dfinity/candid"
+  import type { Interpreter } from "xstate"
+  import type { IDL } from "@dfinity/candid"
 
   type CanisterMap = {
     [canisterName: string]: {

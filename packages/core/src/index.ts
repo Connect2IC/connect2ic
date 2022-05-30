@@ -1,5 +1,6 @@
-import { connectMachine, RootEvent, RootContext } from "./machines/connectMachine"
-import { IConnector, IWalletConnector } from "./providers/connectors"
+import { connectMachine } from "./machines/connectMachine"
+import type { RootEvent, RootContext } from "./machines/connectMachine"
+import type { IConnector, IWalletConnector } from "./providers/connectors"
 import type { ProviderOptions, Provider } from "./providers"
 
 export type {

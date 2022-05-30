@@ -2,17 +2,13 @@ import {
   createMachine,
   assign,
   forwardTo,
-  MachineConfig,
-  MachineOptions,
-  StateConfig,
-  StateNodeConfig,
-  StateSchema, Actions, InvokeConfig,
 } from "xstate"
-import { createModel } from "xstate/lib/model"
-import { Actor, HttpAgent, ActorSubclass } from "@dfinity/agent"
-import { ProviderOptions } from "../providers/index"
+import type { MachineConfig, } from "xstate"
+import { Actor, HttpAgent } from "@dfinity/agent"
+import type { ActorSubclass } from "@dfinity/agent"
+import type { ProviderOptions } from "../providers/index"
 import type { IDL } from "@dfinity/candid"
-import { IConnector, IWalletConnector } from "../providers/connectors"
+import type { IConnector, IWalletConnector } from "../providers/connectors"
 
 type Provider = {
   icon: any

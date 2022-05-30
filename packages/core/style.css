@@ -6,6 +6,7 @@
     height: 55px;
     width: 55px;
     padding: 10px;
+    box-sizing: content-box;
 }
 
 @media all and (max-width: 300px) {

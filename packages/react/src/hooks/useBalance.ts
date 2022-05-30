@@ -22,6 +22,7 @@ export const useBalance = () => {
 
   const refetch = async () => {
     if (!wallet || !activeProvider) {
+      setAssets(undefined)
       return
     }
     const result = await activeProvider.queryBalance?.()
