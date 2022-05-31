@@ -8,8 +8,8 @@
   },
   "dependencies": {
     "@connect2ic/canisters": "*",
-    "@connect2ic/core": "*",
-    "@connect2ic/react": "*",
+    "@connect2ic/core": "0.0.9",
+    "@connect2ic/react": "0.0.7",
     "@dfinity/agent": "0.10.0",
     "@dfinity/auth-client": "0.10.0",
     "@dfinity/authentication": "0.10.0",

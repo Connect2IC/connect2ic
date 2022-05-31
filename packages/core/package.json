@@ -2,7 +2,7 @@
   "name": "@connect2ic/core",
   "author": "Mio Quispe",
   "private": false,
-  "version": "0.0.8",
+  "version": "0.0.9",
   "files": [
     "/dist",
     "/providers",
@@ -65,7 +65,7 @@
   },
   "sideEffects": false,
   "dependencies": {
-    "@astrox/connection": "^0.0.40",
+    "@astrox/connection": "^0.0.41",
     "@dfinity/agent": "0.10.4",
     "@dfinity/auth-client": "0.10.4",
     "@dfinity/authentication": "0.10.4",
