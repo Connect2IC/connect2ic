@@ -103,6 +103,7 @@ class PlugConnector implements IConnector, IWalletConnector {
 
   async isConnected() {
     // TODO: no window
+    if (!this.#ic?.isConnected) return false;
     return await this.#ic!.isConnected()
   }
 
