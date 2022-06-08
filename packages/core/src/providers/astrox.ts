@@ -92,12 +92,6 @@ class AstroXConnector implements IConnector, IWalletConnector {
   async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory): Promise<ActorSubclass<Service> | undefined> {
     // TODO: move from @astrox/connection here?
     // // Fetch root key for certificate validation during development
-    // // if(process.env.NODE_ENV !== "production") {
-    // agent.fetchRootKey().catch(err => {
-    //   console.warn("Unable to fetch root key. Check to ensure that your local replica is running")
-    //   console.error(err)
-    // })
-    // // }
     return this.#ic?.createActor<Service>(idlFactory, canisterId)
   }
 

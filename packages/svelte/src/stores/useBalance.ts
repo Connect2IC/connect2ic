@@ -1,7 +1,5 @@
-import { useConnect } from "./useConnect"
 import { useWallet } from "./useWallet"
 import { derived, writable, get } from "svelte/store"
-import type { Readable } from "svelte/store"
 
 type Asset = {
   amount: number
@@ -18,7 +16,7 @@ export const useBalance = () => {
   // TODO:
   const error = writable()
   const loading = writable(true)
-  const assets = writable()
+  const assets = writable<Array<Asset> | undefined>()
 
   const refetch = async () => {
     const $wallet = get(wallet)
@@ -32,7 +30,10 @@ export const useBalance = () => {
     // TODO:
   }
 
-  refetch()
+  // TODO: refetch when wallet
+  derived(wallet, ($wallet) => {
+    refetch()
+  })
 
   return [assets, { loading, error, refetch }] as const
 }

@@ -37,7 +37,7 @@ const Connect2ICProvider: React.FC<PropsWithChildren<Props>> = ({
                                                                   canisters = {},
                                                                   whitelist,
                                                                   host,
-                                                                  dev,
+                                                                  dev = true,
                                                                   providers,
                                                                   autoConnect,
                                                                 }) => {

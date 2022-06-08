@@ -3,7 +3,7 @@ import {
   assign,
   forwardTo,
 } from "xstate"
-import type { MachineConfig, } from "xstate"
+import type { MachineConfig } from "xstate"
 import { Actor, HttpAgent } from "@dfinity/agent"
 import type { ActorSubclass } from "@dfinity/agent"
 import type { ProviderOptions } from "../providers/index"
@@ -232,6 +232,8 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
           actions: [
             assign((context, event) => ({
               activeProvider: undefined,
+              actors: {},
+              principal: undefined,
             })),
             "onDisconnect",
           ],

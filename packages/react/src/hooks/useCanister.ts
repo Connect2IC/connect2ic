@@ -2,8 +2,12 @@ import { useContext } from "react"
 import { useSelector } from "@xstate/react"
 import { useConnect } from "./useConnect"
 import { Connect2ICContext } from "../context"
+import type { IDL } from "@dfinity/candid"
+import { ActorSubclass } from "@dfinity/agent"
 
-export const useCanister = (
+// TODO: Figure out ts error
+// @ts-ignore
+export const useCanister: (canisterName: string, options?: { mode: string }) => readonly [ActorSubclass, { canisterDefinition: { canisterId: string; idlFactory: IDL.InterfaceFactory }; error: boolean; loading: boolean }] = (
   canisterName: string,
   options: { mode: string } = {
     mode: "auto", // "anonymous" | "connected"
@@ -22,5 +26,5 @@ export const useCanister = (
   const loading = !canister
   const error = false
 
-  return [canister, { error, loading }] as const
+  return [canister, { error, loading, canisterDefinition: canisters[canisterName] }] as const
 }

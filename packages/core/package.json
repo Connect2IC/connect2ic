@@ -66,18 +66,18 @@
   "sideEffects": false,
   "dependencies": {
     "@astrox/connection": "^0.0.41",
-    "@dfinity/agent": "0.10.4",
-    "@dfinity/auth-client": "0.10.4",
-    "@dfinity/authentication": "0.10.4",
-    "@dfinity/candid": "0.10.4",
-    "@dfinity/identity": "0.10.4",
-    "@dfinity/principal": "0.10.4",
+    "@dfinity/agent": "^0.11.3",
+    "@dfinity/auth-client": "^0.11.3",
+    "@dfinity/authentication": "^0.11.3",
+    "@dfinity/candid": "^0.11.3",
+    "@dfinity/identity": "^0.11.3",
+    "@dfinity/principal": "^0.11.3",
     "ic-stoic-identity": "^2.0.0",
     "secp256k1": "^4.0.3",
-    "xstate": "^4.30.5"
+    "xstate": "^4.32.1"
   },
   "devDependencies": {
     "buffer": "^6.0.3",
-    "typescript": "^4.4.3"
+    "typescript": "^4.7.3"
   }
 }
