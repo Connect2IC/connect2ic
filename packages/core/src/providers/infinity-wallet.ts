@@ -76,7 +76,7 @@ class InfinityConnector implements IConnector {
   }
 
   async isConnected() {
-    return this.#ic!.isConnected()
+    return this.#ic ? this.#ic!.isConnected() : false
   }
 
   async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory): Promise<ActorSubclass<Service> | undefined> {
