@@ -1,31 +1,27 @@
-import React, { useEffect } from "react"
-/*
- * Connect2ic provides essential utilities for IC app development
- */
-import { defaultProviders } from "@connect2ic/core/providers"
-import { ConnectButton, ConnectDialog, Connect2ICProvider } from "@connect2ic/react"
-import "@connect2ic/core/style.css"
-/*
- * Import canister definitions like this:
- */
-import * as counter from "canisters/counter"
-/*
- * Some examples to get you started
- */
+import React from "react"
 import { Counter } from "./components/Counter"
 import { Transfer } from "./components/Transfer"
 import { Profile } from "./components/Profile"
 import logo from "./assets/dfinity.svg"
+import * as counter from "canisters/counter"
+
+import { createClient } from "@connect2ic/core"
+import { defaultProviders } from "@connect2ic/core/providers"
+import { ConnectButton, ConnectDialog, Connect2ICProvider, useConnect } from "@connect2ic/react"
+import "@connect2ic/core/style.css"
 
 function App() {
 
+  const { principal } = useConnect()
+
   return (
     <div className="App">
-
       <div className="auth-section">
         <ConnectButton />
       </div>
       <ConnectDialog />
+
+      <h1>{principal}</h1>
 
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />
@@ -48,28 +44,18 @@ function App() {
   )
 }
 
+const client = createClient({
+  canisters: {
+    counter,
+  },
+  providers: defaultProviders,
+  globalProviderConfig: {
+    dev: import.meta.env.DEV,
+  },
+})
+
 export default () => (
-  <Connect2ICProvider
-    /*
-     * Disables dev mode in production
-     * Should be enabled when using local canisters
-     */
-    dev={import.meta.env.DEV}
-    /*
-     * Can be consumed throughout your app like this:
-     *
-     * const [counter] = useCanister("counter")
-     *
-     * The key is used as the name. So { canisterName } becomes useCanister("canisterName")
-     */
-    canisters={{
-      counter,
-    }}
-    /*
-     * List of providers
-     */
-    providers={defaultProviders}
-  >
+  <Connect2ICProvider client={client}>
     <App />
   </Connect2ICProvider>
 )

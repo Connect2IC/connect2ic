@@ -20,7 +20,7 @@ export const useTransfer = ({ amount, to, from = undefined }: Props) => {
       return
     }
     setLoading(true)
-    await activeProvider.requestTransfer({
+    const result = await activeProvider.requestTransfer({
       amount,
       to,
       from: from ?? principal,
@@ -28,6 +28,7 @@ export const useTransfer = ({ amount, to, from = undefined }: Props) => {
       setError(e)
     })
     setLoading(false)
+    return result
   }
 
   return [transfer, { loading, error }] as const

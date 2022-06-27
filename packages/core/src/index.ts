@@ -1,5 +1,5 @@
-import { connectMachine } from "./machines/connectMachine"
-import type { RootEvent, RootContext } from "./machines/connectMachine"
+import { createClient } from "./client"
+import type { RootEvent, RootContext } from "./client"
 import type { IConnector, IWalletConnector } from "./providers/connectors"
 import type { ProviderOptions, Provider } from "./providers"
 
@@ -13,5 +13,5 @@ export type {
 }
 
 export {
-  connectMachine,
+  createClient
 }

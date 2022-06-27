@@ -11,6 +11,7 @@ type ConnectorClass = { new(...args: any[]): IConnector & Partial<IWalletConnect
 
 export type ProviderOptions = {
   connector: ConnectorClass,
+  features: Array<string>,
   icon: any,
   id: string,
   name: string,
@@ -18,25 +19,41 @@ export type ProviderOptions = {
 
 export type Provider = {
   connector: IConnector & Partial<IWalletConnector>
+  features: Array<string>,
   icon: any,
   id: string,
   name: string,
 }
 
-export const defaultProviders: Array<ProviderOptions> = [
-  AstroX,
-  // EarthWallet,
-  InfinityWallet,
-  InternetIdentity,
-  NFID,
-  PlugWallet,
-  StoicWallet,
-]
+type Config = {
+  whitelist: Array<string>
+  host?: string
+  dev?: boolean
+  autoConnect?: boolean
+  providerUrl: string
+  ledgerCanisterId: string
+  ledgerHost?: string
+  appName?: string
+}
 
-export const walletProviders: Array<ProviderOptions> = [
-  AstroX,
-  PlugWallet,
-]
+export const defaultProviders: (config: Config) => Array<Provider> = (config) => {
+  return [
+    new AstroX(config),
+    // EarthWallet,
+    new InfinityWallet(config),
+    new InternetIdentity(config),
+    new NFID(config),
+    new PlugWallet(config),
+    new StoicWallet(config),
+  ]
+}
+
+export const walletProviders: (Config) => Array<Provider> = (config) => {
+  return [
+    new AstroX(config),
+    new PlugWallet(config),
+  ]
+}
 
 export {
   AstroX,

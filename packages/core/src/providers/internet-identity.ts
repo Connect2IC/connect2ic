@@ -8,7 +8,17 @@ import dfinityLogoLight from "../assets/dfinity.svg"
 import dfinityLogoDark from "../assets/dfinity.svg"
 import { IDL } from "@dfinity/candid"
 
-class InternetIdentityConnector implements IConnector {
+class InternetIdentity implements IConnector {
+
+  public meta = {
+    features: [],
+    icon: {
+      light: dfinityLogoLight,
+      dark: dfinityLogoDark,
+    },
+    id: "ii",
+    name: "Internet Identity",
+  }
 
   #config: {
     whitelist: Array<string>,
@@ -33,9 +43,17 @@ class InternetIdentityConnector implements IConnector {
       whitelist: [],
       host: window.location.origin,
       providerUrl: "https://identity.ic0.app",
-      dev: false,
+      dev: true,
       ...userConfig,
     }
+  }
+
+  set config(config) {
+    this.#config = { ...this.#config, ...config }
+  }
+
+  get config() {
+    return this.#config
   }
 
   async init() {
@@ -97,12 +115,6 @@ class InternetIdentityConnector implements IConnector {
   }
 }
 
-export const InternetIdentity = {
-  connector: InternetIdentityConnector,
-  icon: {
-    light: dfinityLogoLight,
-    dark: dfinityLogoDark,
-  },
-  id: "ii",
-  name: "Internet Identity",
+export {
+  InternetIdentity
 }

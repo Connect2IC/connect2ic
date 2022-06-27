@@ -7,7 +7,17 @@ import stoicLogoLight from "../assets/stoic.png"
 import stoicLogoDark from "../assets/stoic.png"
 import { IDL } from "@dfinity/candid"
 
-class StoicConnector implements IConnector {
+class StoicWallet implements IConnector {
+
+  public meta = {
+    features: [],
+    icon: {
+      light: stoicLogoLight,
+      dark: stoicLogoDark,
+    },
+    id: "stoic",
+    name: "Stoic Wallet",
+  }
 
   #config: {
     whitelist: Array<string>,
@@ -31,9 +41,17 @@ class StoicConnector implements IConnector {
       whitelist: [],
       host: window.location.origin,
       providerUrl: "https://www.stoicwallet.com",
-      dev: false,
+      dev: true,
       ...userConfig,
     }
+  }
+
+  set config(config) {
+    this.#config = { ...this.#config, ...config }
+  }
+
+  get config() {
+    return this.#config
   }
 
   async init() {
@@ -85,12 +103,6 @@ class StoicConnector implements IConnector {
   }
 }
 
-export const StoicWallet = {
-  connector: StoicConnector,
-  icon: {
-    light: stoicLogoLight,
-    dark: stoicLogoDark,
-  },
-  id: "stoic",
-  name: "Stoic Wallet",
+export {
+  StoicWallet
 }

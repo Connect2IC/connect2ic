@@ -61,11 +61,11 @@ const ConnectDialog: React.FC<PropsWithChildren<Props>> = (props) => {
           <div>
             {providers.map((provider) => {
               return (
-                <button key={provider.id} onClick={() => connect(provider.id)}
-                        className={`button-styles ${provider.id}-styles`} {...props}>
-                  <img className={"img-styles"} src={dark ? provider.icon.dark : provider.icon.light} />
+                <button key={provider.meta.id} onClick={() => connect(provider.meta.id)}
+                        className={`button-styles ${provider.meta.id}-styles`} {...props}>
+                  <img className={"img-styles"} src={dark ? provider.meta.icon.dark : provider.meta.icon.light} />
                   <div>
-                    <span className="button-label">{provider.name}</span>
+                    <span className="button-label">{provider.meta.name}</span>
                   </div>
                 </button>
               )

@@ -6,6 +6,7 @@ import { useProviders } from "./useProviders"
 import { useSignMessage } from "./useSignMessage"
 import { useTransfer } from "./useTransfer"
 import { useWallet } from "./useWallet"
+import { useClient } from "./useClient"
 
 export {
   useWallet,
@@ -16,4 +17,5 @@ export {
   useProviders,
   useSignMessage,
   useTransfer,
+  useClient,
 }

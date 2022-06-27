@@ -22,7 +22,17 @@ type IC = {
   requestConnect: (Config) => Promise<boolean>
 }
 
-class InfinityConnector implements IConnector {
+class InfinityWallet implements IConnector {
+
+  public meta = {
+    features: [],
+    icon: {
+      light: infinityLogoLight,
+      dark: infinityLogoDark,
+    },
+    id: "infinity",
+    name: "Infinity Wallet",
+  }
 
   #config: Config
   #identity?: any
@@ -50,10 +60,18 @@ class InfinityConnector implements IConnector {
     this.#config = {
       whitelist: [],
       host: window.location.origin,
-      dev: false,
+      dev: true,
       ...userConfig,
     }
     this.#ic = window.ic?.infinityWallet
+  }
+
+  set config(config) {
+    this.#config = { ...this.#config, ...config }
+  }
+
+  get config() {
+    return this.#config
   }
 
   async init() {
@@ -67,7 +85,7 @@ class InfinityConnector implements IConnector {
       try {
         // TODO: never finishes if user doesnt login back?
         this.#principal = (await this.#ic.getPrincipal()).toString()
-        // const walletAddress = thisIC.wallet
+        // console.log(this.#principal)
       } catch (e) {
         console.error(e)
       }
@@ -76,13 +94,12 @@ class InfinityConnector implements IConnector {
   }
 
   async isConnected() {
-    return this.#ic!.isConnected()
+    return this.#ic ? await this.#ic.isConnected() : false
   }
 
   async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory): Promise<ActorSubclass<Service> | undefined> {
-    // Fetch root key for certificate validation during development
     if (this.#config.dev) {
-      await this.#ic?.agent.fetchRootKey()
+      // Not possible to fetch root key
     }
 
     return this.#ic?.createActor({ canisterId, interfaceFactory: idlFactory })
@@ -99,8 +116,8 @@ class InfinityConnector implements IConnector {
       this.#principal = (await this.#ic.getPrincipal()).toString()
       return true
       // const walletAddress = thisIC.wallet
-    } catch
-      (e) {
+    } catch (e) {
+      console.error(e)
       // TODO: handle
       return false
     }
@@ -147,12 +164,6 @@ class InfinityConnector implements IConnector {
   // }
 }
 
-export const InfinityWallet = {
-  connector: InfinityConnector,
-  icon: {
-    light: infinityLogoLight,
-    dark: infinityLogoDark,
-  },
-  id: "infinity",
-  name: "Infinity Wallet",
+export {
+  InfinityWallet,
 }

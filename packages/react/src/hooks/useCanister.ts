@@ -14,17 +14,26 @@ export const useCanister: (canisterName: string, options?: { mode: string }) => 
   },
 ) => {
   const { mode } = options
-  const { connectService, canisters } = useContext(Connect2ICContext)
+  const { client } = useContext(Connect2ICContext)
 
-  const anonymousActor = useSelector(connectService, (state) => state.context.anonymousActors[canisterName])
-  const actor = useSelector(connectService, (state) => state.context.actors[canisterName])
+  const anonymousActor = useSelector(client._service, (state) => state.context.anonymousActors[canisterName])
+  const actor = useSelector(client._service, (state) => state.context.actors[canisterName])
+  const canisterDefinition = useSelector(client._service, (state) => state.context.canisters[canisterName])
   const { isConnected } = useConnect()
 
-  const canister = (isConnected && actor && mode !== "anonymous") ? actor : anonymousActor
+  const signedIn = (isConnected && actor && mode !== "anonymous")
+  const canister = signedIn ? actor : anonymousActor
 
   // TODO:
   const loading = !canister
   const error = false
 
-  return [canister, { error, loading, canisterDefinition: canisters[canisterName] }] as const
+  return [
+    canister,
+    {
+      error,
+      loading,
+      canisterDefinition,
+    },
+  ] as const
 }

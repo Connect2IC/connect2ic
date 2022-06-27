@@ -70,6 +70,7 @@ export default defineConfig({
     alias: {
       // Here we tell Vite the "fake" modules that we want to define
       ...aliases,
+      "react": path.resolve("./node_modules/react")
     },
   },
   server: {

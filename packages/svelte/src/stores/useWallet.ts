@@ -9,13 +9,12 @@ import type { Readable } from "svelte/store"
 
 export const useWallet = () => {
   const { isConnected, activeProvider } = useConnect()
-  // TODO: kind of hacky
-  const supportsWallet = derived(activeProvider, ($activeProvider, set) => set(!!$activeProvider?.connector.requestTransfer))
+  const supportsWallet = derived(activeProvider, ($activeProvider, set) => set(!!$activeProvider?.features.includes("wallet")))
   const wallet: Readable<IConnector & Partial<IWalletConnector> | undefined> = derived(
     [isConnected, supportsWallet, activeProvider],
     ([$isConnected, $supportsWallet, $activeProvider], set) => {
       set(
-        $isConnected && $supportsWallet && $activeProvider ? ($activeProvider.connector as IConnector & Partial<IWalletConnector>) : undefined,
+        $isConnected && $supportsWallet && $activeProvider ? ($activeProvider as IConnector & Partial<IWalletConnector>) : undefined,
       )
     },
   )

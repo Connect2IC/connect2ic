@@ -3,6 +3,7 @@ import { Result } from "fp-ts"
 
 export interface IConnector {
   init: () => Promise<boolean>
+  config: any
   isConnected: () => Promise<boolean>
   // TODO: Result type
   createActor: <Service>(canisterId: string, interfaceFactory: IDL.InterfaceFactory) => Promise<ActorSubclass<Service> | undefined>
@@ -19,7 +20,7 @@ export interface IWalletConnector {
     principal?: string
     accountId?: string
   },
-  requestTransfer: ({ amount: number, from: string, to: string }) => Promise<any>
+  requestTransfer: ({ amount: number, to: string }) => Promise<any>
   queryBalance: () => Promise<Array<{
     amount: number
     canisterId: string

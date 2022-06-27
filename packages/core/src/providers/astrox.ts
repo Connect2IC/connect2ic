@@ -2,7 +2,10 @@ import { IC } from "@astrox/connection"
 import type { IDL } from "@dfinity/candid"
 import type { ActorSubclass, Identity } from "@dfinity/agent"
 import {
-  PermissionsType, SignerResponseSuccess,
+  PermissionsType,
+} from "@astrox/connection/lib/esm/types"
+import type {
+  SignerResponseSuccess,
   TransactionResponseFailure,
   TransactionResponseSuccess,
 } from "@astrox/connection/lib/esm/types"
@@ -26,7 +29,18 @@ const balanceFromString = (balance: string, decimal = 8): bigint => {
   return aboveZeroBigInt + belowZeroBigInt
 }
 
-class AstroXConnector implements IConnector, IWalletConnector {
+class AstroX implements IConnector, IWalletConnector {
+
+  public meta = {
+    features: ["wallet"],
+    icon: {
+      light: astroXLogoLight,
+      dark: astroXLogoDark,
+    },
+    id: "astrox",
+    name: "AstroX ME",
+  }
+
   #config: {
     whitelist: Array<string>,
     providerUrl: string,
@@ -39,6 +53,10 @@ class AstroXConnector implements IConnector, IWalletConnector {
   #principal?: string
   #ic?: IC
 
+  // set config(config) {
+  //   this.#config = config
+  // }
+
   get identity(): Identity | undefined {
     return this.#ic?.identity
   }
@@ -50,13 +68,22 @@ class AstroXConnector implements IConnector, IWalletConnector {
   constructor(userConfig = {}) {
     this.#config = {
       whitelist: [],
-      providerUrl: "https://63k2f-nyaaa-aaaah-aakla-cai.raw.ic0.app",
+      // providerUrl: "https://63k2f-nyaaa-aaaah-aakla-cai.raw.ic0.app",
+      providerUrl: "https://zwbmf-zyaaa-aaaai-acjaq-cai.raw.ic0.app",
       ledgerCanisterId: "ryjl3-tyaaa-aaaaa-aaaba-cai",
       ledgerHost: "https://boundary.ic0.app/",
       host: window.location.origin,
-      dev: false,
+      dev: true,
       ...userConfig,
     }
+  }
+
+  set config(config) {
+    this.#config = { ...this.#config, ...config }
+  }
+
+  get config() {
+    return this.#config
   }
 
   async init() {
@@ -129,17 +156,29 @@ class AstroXConnector implements IConnector, IWalletConnector {
 
   async requestTransfer({
                           amount,
-                          from,
                           to,
                           // TODO: fix return type
-                        }: { amount: number, from: string, to: string }): Promise<string | TransactionResponseSuccess | undefined> {
-    return this.#ic?.requestTransfer({
-      amount: balanceFromString(String(amount)),
-      from,
-      to,
-      // TODO: ?
-      sendOpts: {},
-    })
+                        }: { amount: number, to: string }): Promise<{ height: number } | false> {
+    let result
+    try {
+      result = await this.#ic?.requestTransfer({
+        amount: balanceFromString(String(amount)),
+        to,
+        // TODO: ?
+        sendOpts: {},
+      })
+    } catch (e) {
+      return false
+    }
+
+    switch (result.kind) {
+      case "transaction-client-success":
+        return {
+          height: Number(result.payload.blockHeight),
+        }
+      default:
+        return false
+    }
   }
 
   // TODO: gets called often
@@ -174,12 +213,6 @@ class AstroXConnector implements IConnector, IWalletConnector {
   // batchTransactions: (...args) => this.#ic.batchTransactions(...args),
 }
 
-export const AstroX = {
-  connector: AstroXConnector,
-  icon: {
-    light: astroXLogoLight,
-    dark: astroXLogoDark,
-  },
-  id: "astrox",
-  name: "AstroX ME",
+export {
+  AstroX,
 }

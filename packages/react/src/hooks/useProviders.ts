@@ -4,8 +4,8 @@ import { Connect2ICContext } from "../context"
 import type { Provider } from "@connect2ic/core"
 
 export const useProviders = (): Array<Provider> => {
-  const { connectService } = useContext(Connect2ICContext)
-  const providers = useSelector(connectService, (state) => state.context.initializedProviders)
+  const { client } = useContext(Connect2ICContext)
+  const providers = useSelector(client._service, (state) => state.context.providers)
 
   return providers ?? [] as const
 }

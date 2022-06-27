@@ -25,7 +25,8 @@ export const useBalance = () => {
       setAssets(undefined)
       return
     }
-    const result = await activeProvider.connector.queryBalance?.()
+    // TODO: errors
+    const result = await activeProvider.queryBalance?.()
     setAssets(result)
     setLoading(false)
   }

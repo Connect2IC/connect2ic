@@ -2,20 +2,17 @@ import {
   createMachine,
   assign,
   forwardTo,
+  interpret,
 } from "xstate"
 import type { MachineConfig } from "xstate"
 import { Actor, HttpAgent } from "@dfinity/agent"
+import Emitter from "event-e3"
 import type { ActorSubclass } from "@dfinity/agent"
-import type { ProviderOptions } from "../providers/index"
+// import type { ProviderOptions } from "../providers/index"
 import type { IDL } from "@dfinity/candid"
 import type { IConnector, IWalletConnector } from "../providers/connectors"
 
-type Provider = {
-  icon: any
-  connector: IConnector & Partial<IWalletConnector>
-  name: string
-  id: string
-}
+type Provider = IConnector & Partial<IWalletConnector>
 
 export type RootContext = {
   host: string
@@ -24,8 +21,8 @@ export type RootContext = {
   whitelist: Array<string>
   principal?: string
   activeProvider?: Provider
-  providers: Array<ProviderOptions>
-  initializedProviders: Array<Provider>
+  providers: Array<Provider>
+  canisters: any
   actors: {
     [canisterName: string]: ActorSubclass
   }
@@ -40,13 +37,13 @@ type InitEvent = {
   data: {
     whitelist: Array<string>
     host?: string,
-    providers: Array<ProviderOptions>
+    providers: Array<Provider>
     dev?: boolean,
     autoConnect?: boolean,
   }
 }
-type DoneEvent = { type: "DONE", data: { initializedProviders: Array<Provider> } }
-type DoneAndConnectedEvent = { type: "DONE_AND_CONNECTED", data: { activeProvider: Provider, initializedProviders: Array<Provider>, principal: string } }
+type DoneEvent = { type: "DONE", data: { providers: Array<Provider> } }
+type DoneAndConnectedEvent = { type: "DONE_AND_CONNECTED", data: { activeProvider: Provider, providers: Array<Provider>, principal: string } }
 type ConnectEvent = { type: "CONNECT", data: { provider: string } }
 type ConnectDoneEvent = { type: "CONNECT_DONE", data: { activeProvider: Provider, principal: string } }
 type DisconnectEvent = { type: "DISCONNECT" }
@@ -93,49 +90,43 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
         DONE: {
           target: "idle",
           actions: assign((context, event) => ({
-            initializedProviders: event.data.initializedProviders,
+            providers: event.data.providers,
           })),
         },
         DONE_AND_CONNECTED: {
           target: "connected",
           actions: [
             assign((context, event) => ({
-              initializedProviders: event.data.initializedProviders,
+              providers: event.data.providers,
               activeProvider: event.data.activeProvider,
               principal: event.data.principal,
             })),
           ],
         },
-        ...anonymousActorActions,
       },
       invoke: {
         id: "init",
         src: (context, event: InitEvent) => async (callback, onReceive) => {
           // TODO: clean up
-          const { dev, host, whitelist } = context
-          const initializedProviders = event.data.providers.map(p => ({
-            ...p,
-            connector: new p.connector({ dev, host, whitelist }),
-          }))
-          await Promise.allSettled(initializedProviders.map(p => p.connector.init()))
-          let connectedProviders = initializedProviders.map(p => new Promise<Provider>(async (resolve, reject) => {
-            const isConnected = await p.connector.isConnected()
+          const { providers } = context
+          await Promise.allSettled(providers.map(p => p.init()))
+          let connectedProviders = providers.map(p => new Promise<Provider>(async (resolve, reject) => {
+            const isConnected = await p.isConnected()
             isConnected ? resolve(p) : reject()
           }))
-          const connectedProviderPromise = Promise.any(connectedProviders)
 
-          connectedProviderPromise.then((connectedProvider) => {
+          // TODO: split into 2?
+          Promise.any(connectedProviders).then((connectedProvider) => {
             callback({
               type: "DONE_AND_CONNECTED",
               data: {
-                initializedProviders,
+                providers,
                 activeProvider: connectedProvider,
-                principal: connectedProvider.connector.principal!,
+                principal: connectedProvider.principal!,
               },
             })
           }).catch(e => {
-            // ???
-            callback({ type: "DONE", data: { initializedProviders } })
+            callback({ type: "DONE", data: { providers } })
           })
         },
       },
@@ -148,16 +139,16 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
         src: (context, _event) => (callback, onReceive) => {
           onReceive(async (e) => {
             // TODO: Handle cancellation with AbortController?
-            const provider = context.initializedProviders.find(p => p.id === e.data.provider)
+            const provider = context.providers.find(p => p.meta.id === e.data.provider)
             if (e.type === "CONNECT") {
               try {
-                await provider!.connector.connect()
+                await provider.connect()
                 callback({
                   type: "CONNECT_DONE",
                   // TODO: fix?
                   data: {
-                    activeProvider: provider!,
-                    principal: provider!.connector.principal!,
+                    activeProvider: provider,
+                    principal: provider.principal,
                   },
                 })
               } catch (e) {
@@ -194,7 +185,6 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
           //   })
           // }),
         },
-        ...anonymousActorActions,
       },
     },
     connected: {
@@ -205,9 +195,6 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
         autoForward: true,
       },
       on: {
-        CREATE_ACTOR: {
-          actions: forwardTo("actorService"),
-        },
         DISCONNECT: {
           target: "disconnecting",
           // TODO: pass provider?
@@ -217,14 +204,13 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
             actors: { ...context.actors, [event.data.canisterName]: event.data.actor },
           })),
         },
-        ...anonymousActorActions,
       },
     },
     disconnecting: {
       invoke: {
         id: "disconnect",
         src: (context, event) => async () => {
-          await context.activeProvider?.connector.disconnect()
+          await context.activeProvider?.disconnect()
         },
         onDone: {
           target: "idle",
@@ -243,87 +229,168 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
           actions: [],
         },
       },
-      on: {
-        ...anonymousActorActions,
-      },
     },
   },
 }
 
+type Config = {
+  whitelist?: Array<string>
+  host?: string
+  dev?: boolean
+  autoConnect?: boolean
+  providerUrl?: string
+  ledgerCanisterId?: string
+  ledgerHost?: string
+  appName?: string
+}
 
-const rootMachine = createMachine<RootContext, RootEvent>({
-  id: "root",
-  initial: "inactive",
-  context: {
-    host: window.location.origin,
+type ClientOptions = {
+  providers: Array<Provider> | ((config: Config) => Array<Provider>)
+  canisters: {
+    [canisterName: string]: {
+      canisterId: string
+      idlFactory: IDL.InterfaceFactory
+    }
+  }
+  globalProviderConfig: {
+    whitelist?: Array<string>
+    host?: string
+    dev?: boolean
+    autoConnect?: boolean
+    ledgerCanisterId?: string
+    ledgerHost?: string
+    appName?: string
+  }
+}
+
+const createClient = ({
+                        canisters = {},
+                        providers: p = [],
+                        globalProviderConfig = {},
+                      }: ClientOptions) => {
+  const config = {
     dev: true,
     autoConnect: true,
-    whitelist: [],
-    principal: undefined,
-    activeProvider: undefined,
-    providers: [],
-    initializedProviders: [],
-    actors: {},
-    anonymousActors: {},
-  },
-  schema: {
-    context: {} as RootContext,
-    events: {} as RootEvent,
-  },
-  states: {
-    inactive: {
-      on: {
-        INIT: {
-          target: "idle",
-          actions: assign((context, event) => ({
-            whitelist: event.data.whitelist || [],
-            host: event.data.host || window.location.origin,
-            providers: event.data.providers || [],
-            dev: event.data.dev,
-            autoConnect: event.data.autoConnect || true,
-          })),
-        },
+    host: window.location.origin,
+    whitelist: Object.values(canisters).map(canister => (canister as any).canisterId),
+    ...globalProviderConfig,
+  }
+  const providers = typeof p === "function" ? p(config) : p
+
+  providers.forEach(p => p.config = config)
+
+  const anonymousActors = Object.entries(canisters).map(([canisterName, val]) => {
+    const { canisterId, idlFactory } = val
+    const agent = new HttpAgent({ host: config.host })
+    // Fetch root key for certificate validation during development
+    if (config.dev) {
+      agent.fetchRootKey().catch(err => {
+        console.warn("Unable to fetch root key. Check to ensure that your local replica is running")
+        console.error(err)
+      })
+    }
+    const actor = Actor.createActor(idlFactory, {
+      agent,
+      canisterId,
+    })
+    return { actor, canisterName, idlFactory, canisterId }
+  }).reduce((acc, { canisterName, actor }) => ({
+    ...acc,
+    [canisterName]: actor,
+  }), {})
+
+  const emitter = new Emitter()
+
+  const rootMachine = createMachine<RootContext, RootEvent>({
+    id: "root",
+    initial: "idle",
+    context: {
+      ...config,
+      providers,
+      anonymousActors,
+      canisters,
+      actors: {},
+      principal: undefined,
+      activeProvider: undefined,
+    },
+    schema: {
+      context: {} as RootContext,
+      events: {} as RootEvent,
+    },
+    states: {
+      idle: {
+        ...authStates,
+        invoke: { id: "anonymousActorService", src: "anonymousActorService" },
       },
     },
-    idle: {
-      ...authStates,
-      invoke: { id: "anonymousActorService", src: "anonymousActorService" },
-    },
-  },
-}, {
-  services: {
-    anonymousActorService: (context, _event) => (callback, onReceive) => {
-      onReceive(async (e: RootEvent) => {
-        if (e.type === "CREATE_ANONYMOUS_ACTOR") {
-          const { host } = context
-          const agent = new HttpAgent({ host })
-
-          // Fetch root key for certificate validation during development
-          if (context.dev) {
-            agent.fetchRootKey().catch(err => {
-              console.warn("Unable to fetch root key. Check to ensure that your local replica is running")
-              console.error(err)
-            })
+  }, {
+    services: {
+      actorService: (context, _event) => (callback, onReceive) => {
+        onReceive(async (e: RootEvent) => {
+          if (e.type === "CREATE_ACTOR") {
+            const actor = (await context.activeProvider.createActor(e.data.canisterId, e.data.idlFactory) as ActorSubclass)
+            callback({ type: "SAVE_ACTOR", data: { actor, canisterName: e.data.canisterName } })
           }
-
-          const actor = Actor.createActor(e.data.idlFactory, {
-            agent,
-            canisterId: e.data.canisterId,
-          })
-          callback({ type: "SAVE_ANONYMOUS_ACTOR", data: { actor, canisterName: e.data.canisterName } })
-        }
-      })
+        })
+        Object.entries(context.canisters).forEach(async ([canisterName, val]) => {
+          const { canisterId, idlFactory } = val
+          const actor = (await context.activeProvider.createActor(canisterId, idlFactory) as ActorSubclass)
+          callback({ type: "SAVE_ACTOR", data: { actor, canisterName } })
+        })
+      },
     },
-
-    actorService: (context, _event) => (callback, onReceive) => {
-      onReceive(async (e: RootEvent) => {
-        if (e.type === "CREATE_ACTOR") {
-          const actor = (await context.activeProvider!.connector.createActor(e.data.canisterId, e.data.idlFactory) as ActorSubclass)
-          callback({ type: "SAVE_ACTOR", data: { actor, canisterName: e.data.canisterName } })
-        }
-      })
+    actions: {
+      onDisconnect: (context, event) => {
+        emitter.emit("disconnect")
+      },
+      onConnect: (context, event) => {
+        emitter.emit("connect", event.data)
+      },
     },
-  },
-})
+  })
 
-export { rootMachine as connectMachine }
+  const service = interpret(rootMachine, { devTools: true })
+
+  service.start()
+
+  return {
+    _service: service,
+    on: (evt, fn) => {
+      emitter.on(evt, fn)
+      return () => emitter.off(evt, fn)
+    },
+    subscribe: (state) => {
+      const sub = service.subscribe(state)
+      return sub.unsubscribe
+    },
+    connect: (provider) => {
+      service.send({ type: "CONNECT", data: { provider } })
+    },
+    disconnect: () => {
+      service.send({ type: "DISCONNECT" })
+    },
+    get providers() {
+      return service.state.context.providers
+    },
+    get activeProvider() {
+      return service.state.context.activeProvider
+    },
+    get principal() {
+      return service.state.context.principal
+    },
+    get actors() {
+      return service.state.context.actors
+    },
+    get anonymousActors() {
+      return service.state.context.anonymousActors
+    },
+    get status() {
+      return service.state.value.idle
+    },
+    get config() {
+      return config
+    },
+  }
+}
+
+export { createClient }

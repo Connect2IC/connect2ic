@@ -7,7 +7,17 @@ import nfidLogoLight from "../assets/nfid.png"
 import nfidLogoDark from "../assets/nfid.png"
 import { IDL } from "@dfinity/candid"
 
-class NFIDConnector implements IConnector {
+class NFID implements IConnector {
+
+  public meta = {
+    features: [],
+    icon: {
+      light: nfidLogoLight,
+      dark: nfidLogoDark,
+    },
+    id: "nfid",
+    name: "NFID",
+  }
 
   #config: {
     whitelist: Array<string>,
@@ -36,11 +46,19 @@ class NFIDConnector implements IConnector {
     this.#config = {
       whitelist: [],
       host: window.location.origin,
-      providerUrl: "https://3y5ko-7qaaa-aaaal-aaaaq-cai.ic0.app",
+      providerUrl: "https://nfid.one",
       appName: "my-ic-app",
-      dev: false,
+      dev: true,
       ...userConfig,
     }
+  }
+
+  set config(config) {
+    this.#config = { ...this.#config, ...config }
+  }
+
+  get config() {
+    return this.#config
   }
 
   async init() {
@@ -102,12 +120,6 @@ class NFIDConnector implements IConnector {
   }
 }
 
-export const NFID = {
-  connector: NFIDConnector,
-  icon: {
-    light: nfidLogoLight,
-    dark: nfidLogoDark,
-  },
-  id: "nfid",
-  name: "NFID",
+export {
+  NFID
 }

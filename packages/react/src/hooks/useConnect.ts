@@ -3,8 +3,8 @@ import { useSelector } from "@xstate/react"
 import { Connect2ICContext } from "../context"
 
 type Props = {
-  onConnect: ({ provider: string }) => void
-  onDisconnect: () => void
+  onConnect?: ({ provider: string }) => void
+  onDisconnect?: () => void
 }
 
 export const useConnect = (props?: Props) => {
@@ -16,36 +16,36 @@ export const useConnect = (props?: Props) => {
     },
   } = props ?? {}
   const {
-    connectService,
-    action,
+    client,
   } = useContext(Connect2ICContext)
-  const { principal, activeProvider } = useSelector(connectService, (state) => ({
+  const { principal, activeProvider, status } = useSelector(client._service, (state) => ({
     principal: state.context.principal,
     activeProvider: state.context.activeProvider,
+    status: state.value.idle,
   }))
 
   useEffect(() => {
-    // TODO: Some other workaround? useSelector still has old state when action fires.
-    if (action?.type === "onConnect" && activeProvider) {
-      onConnect({ provider: activeProvider })
+    const unsub = client.on("connect", onConnect)
+    const unsub2 = client.on("disconnect", onDisconnect)
+    return () => {
+      unsub()
+      unsub2()
     }
-    if (action?.type === "onDisconnect") {
-      onDisconnect()
-    }
-  }, [action, activeProvider])
+  }, [client])
 
   return {
     principal,
     activeProvider,
-    isConnected: connectService.state?.matches({ idle: "connected" }) ?? false,
-    isConnecting: connectService.state?.matches({ idle: "connecting" }) ?? false,
-    isDisconnecting: connectService.state?.matches({ idle: "disconnecting" }) ?? false,
-    isIdle: connectService.state?.matches({ idle: "idle" }) ?? false,
+    status,
+    isConnected: client._service.state?.matches({ idle: "connected" }) ?? false,
+    isConnecting: client._service.state?.matches({ idle: "connecting" }) ?? false,
+    isDisconnecting: client._service.state?.matches({ idle: "disconnecting" }) ?? false,
+    isIdle: client._service.state?.matches({ idle: "idle" }) ?? false,
     connect: (provider) => {
-      connectService.send({ type: "CONNECT", data: { provider } })
+      client.connect(provider)
     },
     disconnect: () => {
-      connectService.send({ type: "DISCONNECT" })
+      client.disconnect()
     },
   } as const
 }

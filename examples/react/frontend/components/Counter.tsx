@@ -1,12 +1,8 @@
-import { useCanister } from "@connect2ic/react"
 import React, { useEffect, useState } from "react"
+import { useCanister } from "@connect2ic/react"
 
 const Counter = () => {
-  /*
-  * This how you use canisters throughout your app.
-  * "counter" is the name we pass in to <ConnectProvider canisters={canisterMap} />
-  */
-  const [counter, { loading }] = useCanister("counter")
+  const [counter] = useCanister("counter")
   const [count, setCount] = useState()
 
   const refreshCounter = async () => {
@@ -20,11 +16,11 @@ const Counter = () => {
   }
 
   useEffect(() => {
-    if (loading) {
+    if (!counter) {
       return
     }
     refreshCounter()
-  }, [counter, loading])
+  }, [counter])
 
   return (
     <div className="example">

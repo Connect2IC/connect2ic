@@ -1,22 +1,16 @@
+import React from "react"
 import { useWallet, useTransfer } from "@connect2ic/react"
-import React, { useState } from "react"
 
 const Transfer = () => {
-  /*
-  * This how you use canisters throughout your app.
-  * "counter" is the name we pass in to <ConnectProvider canisters={canisterMap} />
-  */
-  // TODO: wallet still there after logging out?
+
   const [wallet] = useWallet()
-  const [amount, setAmount] = useState(5)
   const [transfer] = useTransfer({
-    from: "fdbe41c9e8589e115e6187038fc99e3b0c6fea116b1084b95c0da152520db3d1",
-    to: "fdbe41c9e8589e115e6187038fc99e3b0c6fea116b1084b95c0da152520db3d1",
-    amount: Number(amount),
+    to: "9dd04c8ba6039018a7b6d569cf6192efc596a0435fdc7f6fdb2d017518360409",
+    amount: Number(0.01),
   })
 
-  const onPurchase = () => {
-    transfer()
+  const onPurchase = async () => {
+    const { height } = await transfer()
   }
 
   return (

@@ -5,10 +5,9 @@ import type { Ref } from "vue"
 
 export const useWallet = () => {
   const { isConnected, activeProvider } = useConnect()
-  // TODO: kind of hacky
-  const supportsWallet = computed(() => !!activeProvider.value?.connector.requestTransfer)
+  const supportsWallet = computed(() => !!activeProvider.value?.features.includes("wallet"))
   const wallet: Ref<IConnector & Partial<IWalletConnector> | undefined> = computed(() => {
-    return isConnected.value && supportsWallet.value && activeProvider.value ? (activeProvider.value.connector as IConnector & Partial<IWalletConnector>) : undefined
+    return isConnected.value && supportsWallet.value && activeProvider.value ? (activeProvider.value as IConnector & Partial<IWalletConnector>) : undefined
   })
   const loading = ref(true)
   const error = ref(false)

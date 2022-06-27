@@ -5,7 +5,17 @@ import earthLogoLight from "../assets/earth.png"
 // @ts-ignore
 import earthLogoDark from "../assets/earth.png"
 
-class EarthWalletConnector implements IConnector, IWalletConnector {
+class EarthWallet implements IConnector, IWalletConnector {
+
+  public meta = {
+    features: [],
+    icon: {
+      light: earthLogoLight,
+      dark: earthLogoDark,
+    },
+    id: "earth",
+    name: "Earth Wallet",
+  }
 
   #config: {
     whitelist: Array<string>,
@@ -32,11 +42,19 @@ class EarthWalletConnector implements IConnector, IWalletConnector {
     this.#config = {
       whitelist: [],
       host: window.location.origin,
-      dev: false,
+      dev: true,
       ...userConfig,
     }
     // TODO: not available
     this.#ic = window.earth
+  }
+
+  set config(config) {
+    this.#config = { ...this.#config, ...config }
+  }
+
+  get config() {
+    return this.#config
   }
 
   async init() {
@@ -52,6 +70,7 @@ class EarthWalletConnector implements IConnector, IWalletConnector {
         console.error(e)
       }
     }
+    return true
   }
 
   async isConnected() {
@@ -130,12 +149,6 @@ class EarthWalletConnector implements IConnector, IWalletConnector {
   // }
 }
 
-export const EarthWallet = {
-  connector: EarthWalletConnector,
-  icon: {
-    light: earthLogoLight,
-    dark: earthLogoDark,
-  },
-  id: "earth",
-  name: "Earth Wallet",
+export {
+  EarthWallet,
 }

@@ -27,7 +27,7 @@ type Plug = {
       },
     },
   }) => Promise<{
-    height: Number
+    height: number
   }>
   requestBalance: () => Promise<Array<{
     amount: number
@@ -40,7 +40,17 @@ type Plug = {
   getManagementCanister: () => Promise<ActorSubclass | undefined>
 }
 
-class PlugConnector implements IConnector, IWalletConnector {
+class PlugWallet implements IConnector, IWalletConnector {
+
+  public meta = {
+    features: ["wallet"],
+    icon: {
+      light: plugLogoLight,
+      dark: plugLogoDark,
+    },
+    id: "plug",
+    name: "Plug Wallet",
+  }
 
   #config: {
     whitelist: Array<string>,
@@ -72,10 +82,18 @@ class PlugConnector implements IConnector, IWalletConnector {
     this.#config = {
       whitelist: [],
       host: window.location.origin,
-      dev: false,
+      dev: true,
       ...userConfig,
     }
     this.#ic = window.ic?.plug
+  }
+
+  set config(config) {
+    this.#config = { ...this.#config, ...config }
+  }
+
+  get config() {
+    return this.#config
   }
 
   async init() {
@@ -103,8 +121,7 @@ class PlugConnector implements IConnector, IWalletConnector {
 
   async isConnected() {
     // TODO: no window
-    if (!this.#ic?.isConnected) return false;
-    return await this.#ic!.isConnected()
+    return this.#ic ? await this.#ic.isConnected() : false
   }
 
   async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory): Promise<ActorSubclass<Service> | undefined> {
@@ -149,11 +166,19 @@ class PlugConnector implements IConnector, IWalletConnector {
                           amount,
                           to,
                           // TODO: fix return type
-                        }: { amount: number, to: string }): Promise<boolean> {
-    return !!this.#ic?.requestTransfer({
+                        }: { amount: number, to: string }): Promise<{ height: number } | false> {
+    const result = await this.#ic?.requestTransfer({
       to,
       amount: amount * 100000000,
     })
+
+    switch (!!result) {
+      case true:
+        return { height: result!.height }
+      default:
+        // TODO: kind
+        return false
+    }
   }
 
   async queryBalance(): Promise<Array<{
@@ -180,12 +205,6 @@ class PlugConnector implements IConnector, IWalletConnector {
   // }
 }
 
-export const PlugWallet = {
-  connector: PlugConnector,
-  icon: {
-    light: plugLogoLight,
-    dark: plugLogoDark,
-  },
-  id: "plug",
-  name: "Plug Wallet",
+export {
+  PlugWallet,
 }

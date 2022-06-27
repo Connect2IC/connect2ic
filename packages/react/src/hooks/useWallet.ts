@@ -5,14 +5,11 @@ import { Connect2ICContext } from "../context"
 import type { IConnector, IWalletConnector } from "@connect2ic/core"
 
 export const useWallet = () => {
-  const { connectService } = useContext(Connect2ICContext)
-  const activeProvider = useSelector(connectService, (state) => state.context.activeProvider)
-  // TODO: kind of hacky
-  const supportsWallet = !!activeProvider?.connector.requestTransfer
+  const { client } = useContext(Connect2ICContext)
+  const activeProvider = useSelector(client._service, (state) => state.context.activeProvider)
+  const supportsWallet = !!activeProvider?.meta.features.includes("wallet")
   const { isConnected } = useConnect()
-  const wallet = isConnected && supportsWallet ? (activeProvider.connector as IConnector & Partial<IWalletConnector>) : undefined
-  const loading = false
-  const error = false
+  const wallet = isConnected && supportsWallet ? (activeProvider as IConnector & Partial<IWalletConnector>) : undefined
 
-  return [wallet, { loading, error }] as const
+  return [wallet] as const
 }
