@@ -45,11 +45,11 @@
     <div on:click={onClickInside} class="dialog-container">
       <div>
         {#each $providers as provider}
-          <button key={provider.id} on:click={() => connect(provider.id)}
-                  class={`button-styles ${provider.id}-styles`}>
-            <img class={"img-styles"} src={dark ? provider.icon.dark : provider.icon.light} />
+          <button key={provider.meta.id} on:click={() => connect(provider.meta.id)}
+                  class={`button-styles ${provider.meta.id}-styles`}>
+            <img class={"img-styles"} src={dark ? provider.meta.icon.dark : provider.meta.icon.light} />
             <div>
-              <span class="button-label">{provider.name}</span>
+              <span class="button-label">{provider.meta.name}</span>
             </div>
           </button>
         {/each}

@@ -9,7 +9,7 @@ import type { Readable } from "svelte/store"
 
 export const useWallet = () => {
   const { isConnected, activeProvider } = useConnect()
-  const supportsWallet = derived(activeProvider, ($activeProvider, set) => set(!!$activeProvider?.features.includes("wallet")))
+  const supportsWallet = derived(activeProvider, ($activeProvider, set) => set(!!$activeProvider?.meta.features.includes("wallet")))
   const wallet: Readable<IConnector & Partial<IWalletConnector> | undefined> = derived(
     [isConnected, supportsWallet, activeProvider],
     ([$isConnected, $supportsWallet, $activeProvider], set) => {

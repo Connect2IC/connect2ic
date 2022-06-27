@@ -3,6 +3,8 @@ import { getContext, onMount } from "svelte"
 import { contextKey } from "../context"
 import type { ContextState } from "../context"
 import { derived, readable } from "svelte/store"
+import type { Readable } from "svelte/store"
+import { useEffect } from "react"
 
 type Props = {
   onConnect?: () => void
@@ -16,38 +18,40 @@ const useConnect = (props: Props = {}) => {
     onDisconnect = () => {
     },
   } = props
-  const { connectService, action, connectState } = getContext<ContextState>(contextKey)
-  const principal = useSelector(connectService, state => state.context.principal)
-  const activeProvider = useSelector(connectService, state => state.context.activeProvider)
-  const isConnected = derived(connectState, ($connectState, set) => {
-    set($connectState.matches({ idle: "connected" }) ?? false)
+  const { client } = getContext<ContextState>(contextKey)
+  const principal = useSelector(client._service, state => state.context.principal)
+  const activeProvider = useSelector(client._service, state => state.context.activeProvider)
+  const state = useSelector(client._service, state => state)
+  const isConnected: Readable<boolean> = derived(state, ($state, set) => {
+    set($state.matches({ idle: "connected" }) ?? false)
   })
-  const isConnecting = derived(connectState, ($connectState, set) => set($connectState.matches({ idle: "connecting" }) ?? false))
-  const isDisconnecting = derived(connectState, ($connectState, set) => set($connectState.matches({ idle: "disconnecting" }) ?? false))
-  const isIdle = derived(connectState, ($connectState, set) => set($connectState.matches({ idle: "idle" }) ?? false))
+  const isConnecting: Readable<boolean> = derived(state, ($state, set) => set($state.matches({ idle: "connecting" }) ?? false))
+  const isInitializing: Readable<boolean> = derived(state, ($state, set) => set($state.matches({ idle: "intializing" }) ?? false))
+  const isDisconnecting: Readable<boolean> = derived(state, ($state, set) => set($state.matches({ idle: "disconnecting" }) ?? false))
+  const isIdle: Readable<boolean> = derived(state, ($state, set) => set($state.matches({ idle: "idle" }) ?? false))
 
-  action!.subscribe(($action) => {
-    if ($action?.type === "onConnect") {
-      // TODO: fires twice
-      onConnect()
-    }
-    if ($action?.type === "onDisconnect") {
-      onDisconnect()
+  onMount(() => {
+    const unsub = client.on("connect", onConnect)
+    const unsub2 = client.on("disconnect", onDisconnect)
+    return () => {
+      unsub()
+      unsub2()
     }
   })
 
   return {
     principal,
     activeProvider,
+    isInitializing,
     isConnected,
     isConnecting,
     isDisconnecting,
     isIdle,
     connect: (provider) => {
-      connectService.send({ type: "CONNECT", data: { provider } })
+      client._service.send({ type: "CONNECT", data: { provider } })
     },
     disconnect: () => {
-      connectService.send({ type: "DISCONNECT" })
+      client._service.send({ type: "DISCONNECT" })
     },
   }
 }

@@ -37,6 +37,7 @@ export const useConnect = (props?: Props) => {
     principal,
     activeProvider,
     status,
+    isInitializing: client._service.state?.matches({ idle: "initializing" }) ?? false,
     isConnected: client._service.state?.matches({ idle: "connected" }) ?? false,
     isConnecting: client._service.state?.matches({ idle: "connecting" }) ?? false,
     isDisconnecting: client._service.state?.matches({ idle: "disconnecting" }) ?? false,

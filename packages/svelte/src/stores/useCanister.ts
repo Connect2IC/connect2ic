@@ -14,11 +14,12 @@ export const useCanister = (
   },
 ) => {
   const { mode } = options
-  const { connectService } = getContext<ContextState>(contextKey)
-  const anonymousActor = useSelector(connectService, (state) => state.context.anonymousActors[canisterName])
-  const actor = useSelector(connectService, (state) => state.context.actors[canisterName])
+  const { client } = getContext<ContextState>(contextKey)
+  const anonymousActor = useSelector(client._service, (state) => state.context.anonymousActors[canisterName])
+  const actor = useSelector(client._service, (state) => state.context.actors[canisterName])
   const { isConnected } = useConnect()
   const canister: Readable<ActorSubclass> = derived([isConnected, actor, anonymousActor], ([$isConnected, $actor, $anonymousActor], set) => {
+    // @ts-ignore
     set($isConnected && $actor && mode !== "anonymous" ? $actor : $anonymousActor)
   })
   // TODO:

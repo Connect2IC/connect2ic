@@ -1,4 +1,5 @@
 import { useWallet } from "./useWallet"
+import { useConnect } from "./useConnect"
 import { derived, writable, get } from "svelte/store"
 
 type Asset = {
@@ -13,6 +14,7 @@ type Asset = {
 export const useBalance = () => {
   // TODO: check if supported or not
   const [wallet] = useWallet()
+  const { activeProvider } = useConnect()
   // TODO:
   const error = writable()
   const loading = writable(true)
@@ -20,19 +22,22 @@ export const useBalance = () => {
 
   const refetch = async () => {
     const $wallet = get(wallet)
-    if (!$wallet) {
+    const $activeProvider = get(activeProvider)
+    if (!$wallet || !$activeProvider) {
       assets.set(undefined)
       return
     }
-    const result = await $wallet.queryBalance?.()
+    const result = await $activeProvider.queryBalance?.()
     assets.set(result)
     loading.set(false)
     // TODO:
   }
 
-  // TODO: refetch when wallet
-  derived(wallet, ($wallet) => {
-    refetch()
+  wallet.subscribe(() => {
+    const $wallet = get(wallet)
+    if ($wallet) {
+      refetch()
+    }
   })
 
   return [assets, { loading, error, refetch }] as const

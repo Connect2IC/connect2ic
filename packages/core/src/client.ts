@@ -66,17 +66,6 @@ export type RootEvent =
   | CreateAnonymousActorEvent
   | SaveAnonymousActorEvent
 
-const anonymousActorActions = {
-  CREATE_ANONYMOUS_ACTOR: {
-    actions: forwardTo<RootContext, CreateAnonymousActorEvent>("anonymousActorService"),
-  },
-  SAVE_ANONYMOUS_ACTOR: {
-    actions: assign<RootContext, SaveAnonymousActorEvent>((context, event) => ({
-      anonymousActors: { ...context.anonymousActors, [event.data.canisterName]: event.data.actor },
-    })),
-  },
-}
-
 const authStates: MachineConfig<RootContext, any, RootEvent> = {
   id: "auth",
   initial: "initializing",
@@ -320,7 +309,6 @@ const createClient = ({
     states: {
       idle: {
         ...authStates,
-        invoke: { id: "anonymousActorService", src: "anonymousActorService" },
       },
     },
   }, {
@@ -342,6 +330,9 @@ const createClient = ({
     actions: {
       onDisconnect: (context, event) => {
         emitter.emit("disconnect")
+      },
+      onInit: (context, event) => {
+        emitter.emit("init")
       },
       onConnect: (context, event) => {
         emitter.emit("connect", event.data)

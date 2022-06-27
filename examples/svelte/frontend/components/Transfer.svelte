@@ -3,12 +3,13 @@
 
   const [wallet] = useWallet()
   const [transfer] = useTransfer({
-    to: "fdbe41c9e8589e115e6187038fc99e3b0c6fea116b1084b95c0da152520db3d1",
-    amount: Number(5),
+    to: "k6jaa-yr3je-rx4ge-wwk7y-sysc4-cluwg-y4fuu-lkl5h-uutjg-tcy3q-rae",
+    amount: Number(0.01),
   })
 
-  const onPurchase = () => {
-    transfer()
+  const onPurchase = async () => {
+    const result = await transfer()
+    console.log(result)
   }
 </script>
 <div class="example">

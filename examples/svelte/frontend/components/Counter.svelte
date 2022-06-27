@@ -22,6 +22,6 @@
 
 </script>
 <div class="example">
-  <p style={{ fontSize: "2.5em" }}>{count?.toString()}</p>
+  <p style="font-size: 2.5em;">{count?.toString()}</p>
   <button class="connect-button" on:click={increment}>+</button>
 </div>

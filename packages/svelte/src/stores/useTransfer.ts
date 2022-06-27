@@ -9,7 +9,7 @@ type Props = {
   from?: string,
 }
 
-export const useTransfer = ({ amount, to, from = undefined }: Props) => {
+export const useTransfer = ({ amount, to }: Props) => {
   // TODO: check if supported or not
   const [wallet] = useWallet()
   const { activeProvider, principal } = useConnect()
@@ -18,18 +18,19 @@ export const useTransfer = ({ amount, to, from = undefined }: Props) => {
 
   const transfer = async () => {
     const $wallet = get(wallet)
-    if (!$wallet) {
+    const $activeProvider = get(activeProvider)
+    if (!$wallet || !$activeProvider) {
       return
     }
     loading.set(true)
-    await $wallet.requestTransfer?.({
+    const result = await $activeProvider.requestTransfer?.({
       amount,
       to,
-      from: from ?? principal,
     }).catch(e => {
       error.set(e)
     })
     loading.set(false)
+    return result
   }
 
   return [transfer, { loading, error }] as const
