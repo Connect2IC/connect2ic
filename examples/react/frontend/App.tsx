@@ -12,7 +12,14 @@ import "@connect2ic/core/style.css"
 
 function App() {
 
-  const { principal } = useConnect()
+  const { principal } = useConnect({
+    onConnect: () => {
+      console.log("connected!")
+    },
+    onDisconnect: () => {
+      console.log("disconnected!")
+    }
+  })
 
   return (
     <div className="App">
@@ -20,8 +27,6 @@ function App() {
         <ConnectButton />
       </div>
       <ConnectDialog />
-
-      <h1>{principal}</h1>
 
       <header className="App-header">
         <img src={logo} className="App-logo" alt="logo" />

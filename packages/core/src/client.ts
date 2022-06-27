@@ -350,8 +350,8 @@ const createClient = ({
       emitter.on(evt, fn)
       return () => emitter.off(evt, fn)
     },
-    subscribe: (state) => {
-      const sub = service.subscribe(state)
+    subscribe: (fn) => {
+      const sub = service.subscribe(fn)
       return sub.unsubscribe
     },
     connect: (provider) => {

@@ -7,8 +7,8 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "@connect2ic/core": "file:../../packages/core",
-    "@connect2ic/vue": "file:../../packages/vue",
+    "@connect2ic/core": "^0.1.0",
+    "@connect2ic/vue": "^0.1.0",
     "@dfinity/agent": "^0.11.3",
     "@dfinity/candid": "^0.11.3",
     "@dfinity/principal": "^0.11.3",
