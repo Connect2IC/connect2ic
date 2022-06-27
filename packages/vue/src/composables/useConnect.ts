@@ -1,4 +1,4 @@
-import { inject, computed, watch } from "vue"
+import { inject, computed, watch, onMounted, onUnmounted } from "vue"
 import { useSelector } from "@xstate/vue"
 import { contextKey } from "../context"
 import { useActor } from "@xstate/vue"
@@ -15,37 +15,43 @@ const useConnect = (props: Props = {}) => {
     onDisconnect = () => {
     },
   } = props
-  const { connectService, action } = inject(contextKey)
-  const principal = useSelector(connectService, state => state.context.principal)
-  const activeProvider = useSelector(connectService, state => state.context.activeProvider)
-  const { state } = useActor(connectService)
+  const { client } = inject(contextKey)
+  const principal = useSelector(client._service, state => state.context.principal)
+  const activeProvider = useSelector(client._service, state => state.context.activeProvider)
+  // @ts-ignore
+  const status = useSelector(client._service, state => state.value.idle)
+  const { state } = useActor(client._service)
   const isConnected = computed(() => state.value.matches({ idle: "connected" }) ?? false)
+  const isInitializing = computed(() => state.value.matches({ idle: "initializing" }) ?? false)
   const isConnecting = computed(() => state.value.matches({ idle: "connecting" }) ?? false)
   const isDisconnecting = computed(() => state.value.matches({ idle: "disconnecting" }) ?? false)
   const isIdle = computed(() => state.value.matches({ idle: "idle" }) ?? false)
 
-  watch(action, ($action) => {
-    if ($action?.type === "onConnect") {
-      // TODO: fires twice
-      onConnect()
-    }
-    if ($action?.type === "onDisconnect") {
-      onDisconnect()
-    }
+  let unsub
+  let unsub2
+  onMounted(() => {
+    unsub = client.on("connect", onConnect)
+    unsub2 = client.on("disconnect", onDisconnect)
+  })
+  onUnmounted(() => {
+    unsub()
+    unsub2()
   })
 
   return {
     principal,
+    status,
     activeProvider,
     isConnected,
     isConnecting,
     isDisconnecting,
+    isInitializing,
     isIdle,
     connect: (provider) => {
-      connectService.send({ type: "CONNECT", data: { provider } })
+      client._service.send({ type: "CONNECT", data: { provider } })
     },
     disconnect: () => {
-      connectService.send({ type: "DISCONNECT" })
+      client._service.send({ type: "DISCONNECT" })
     },
   }
 }

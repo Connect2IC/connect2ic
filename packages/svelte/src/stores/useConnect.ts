@@ -22,6 +22,7 @@ const useConnect = (props: Props = {}) => {
   const principal = useSelector(client._service, state => state.context.principal)
   const activeProvider = useSelector(client._service, state => state.context.activeProvider)
   const state = useSelector(client._service, state => state)
+  const status = useSelector(client._service, state => state.value.idle)
   const isConnected: Readable<boolean> = derived(state, ($state, set) => {
     set($state.matches({ idle: "connected" }) ?? false)
   })
@@ -41,6 +42,7 @@ const useConnect = (props: Props = {}) => {
 
   return {
     principal,
+    status,
     activeProvider,
     isInitializing,
     isConnected,

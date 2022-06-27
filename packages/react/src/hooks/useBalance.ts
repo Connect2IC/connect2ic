@@ -29,6 +29,7 @@ export const useBalance = () => {
     const result = await activeProvider.queryBalance?.()
     setAssets(result)
     setLoading(false)
+    return result
   }
 
   useEffect(() => {

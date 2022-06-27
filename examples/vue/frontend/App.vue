@@ -5,16 +5,23 @@ import Profile from "./components/Profile.vue"
 import Transfer from "./components/Transfer.vue"
 import logo from "./assets/dfinity.svg"
 import { defaultProviders } from "@connect2ic/core/providers"
+import { createClient } from "@connect2ic/core"
 import { ConnectButton, ConnectDialog, Connect2ICProvider } from "@connect2ic/vue"
 import "@connect2ic/core/style.css"
+
+const client = createClient({
+  canisters: {
+    counter,
+  },
+  providers: defaultProviders,
+  globalProviderConfig: {
+    dev: import.meta.env.DEV,
+  },
+})
 </script>
 
 <template>
-  <Connect2ICProvider
-    :dev="import.meta.env.DEV"
-    :canisters="{counter}"
-    :providers="defaultProviders"
-  >
+  <Connect2ICProvider :client="client">
     <div class="App">
       <div class="auth-section">
         <ConnectButton />
@@ -82,10 +89,9 @@ button {
 
 .examples {
   padding: 30px 100px;
+  display: grid;
   grid-gap: 30px;
-  display: flex;
-  justify-content: center;
-  flex-wrap: wrap;
+  grid-template-columns: 1fr 1fr 1fr;
 }
 
 .examples-title {
@@ -95,8 +101,8 @@ button {
 }
 
 .example {
+  padding: 50px 50px;
   min-height: 300px;
-  min-width: 300px;
   display: flex;
   flex-direction: column;
   align-items: center;

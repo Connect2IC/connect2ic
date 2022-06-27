@@ -12,10 +12,11 @@ export const useCanister = (
   },
 ) => {
   const { mode } = options
-  const { connectService } = inject(contextKey)
-  const anonymousActor = useSelector(connectService, (state) => state.context.anonymousActors[canisterName])
-  const actor = useSelector(connectService, (state) => state.context.actors[canisterName])
+  const { client } = inject(contextKey)
+  const anonymousActor = useSelector(client._service, (state) => state.context.anonymousActors[canisterName])
+  const actor = useSelector(client._service, (state) => state.context.actors[canisterName])
   const { isConnected } = useConnect()
+  // @ts-ignore
   const canister: Ref<ActorSubclass> = computed(() => {
     return isConnected.value && actor.value && mode !== "anonymous" ? actor.value : anonymousActor.value
   })

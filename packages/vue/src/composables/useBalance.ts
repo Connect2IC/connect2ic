@@ -28,6 +28,7 @@ export const useBalance = () => {
     const result = await $wallet.queryBalance?.()
     assets.value = result
     loading.value = false
+    return result
   }
 
   watch(wallet, ($wallet) => {

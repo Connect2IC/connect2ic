@@ -11,15 +11,6 @@ const props = defineProps({
     type: String,
     default: "",
   },
-  config: {
-    type: Object,
-    default: {
-      ii: {},
-      plug: {},
-      stoic: {},
-      metamask: {},
-    },
-  },
 })
 
 const { open } = useDialog()

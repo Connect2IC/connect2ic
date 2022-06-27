@@ -16,7 +16,7 @@ const increment = async () => {
 }
 
 watchEffect(() => {
-  if (!loading.value && counter.value) {
+  if (counter.value) {
     refreshCounter()
   }
 })

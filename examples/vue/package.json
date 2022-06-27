@@ -7,21 +7,21 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "@connect2ic/core": "0.0.9",
-    "@connect2ic/vue": "0.0.2",
-    "@dfinity/agent": "^0.11.2",
-    "@dfinity/candid": "^0.11.2",
-    "@dfinity/principal": "^0.11.2",
-    "vue": "^3.0.5"
+    "@connect2ic/core": "file:../../packages/core",
+    "@connect2ic/vue": "file:../../packages/vue",
+    "@dfinity/agent": "^0.11.3",
+    "@dfinity/candid": "^0.11.3",
+    "@dfinity/principal": "^0.11.3",
+    "vue": "^3.2.37"
   },
   "devDependencies": {
-    "@types/node": "^17.0.35",
+    "@types/node": "^18.0.0",
     "@vitejs/plugin-vue": "^2.3.3",
-    "@vue/compiler-sfc": "^3.0.5",
+    "@vue/compiler-sfc": "^3.2.37",
     "@xstate/inspect": "^0.7.0",
     "buffer": "^6.0.3",
-    "typescript": "^4.4.3",
-    "vite": "^2.9.9",
-    "vue-tsc": "^0.34.16"
+    "typescript": "^4.7.4",
+    "vite": "^2.9.13",
+    "vue-tsc": "^0.38.2"
   }
 }

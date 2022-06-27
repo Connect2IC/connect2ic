@@ -31,6 +31,7 @@ export const useBalance = () => {
     assets.set(result)
     loading.set(false)
     // TODO:
+    return result
   }
 
   wallet.subscribe(() => {

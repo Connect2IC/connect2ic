@@ -21,14 +21,14 @@ export const useTransfer = ({ amount, to, from = undefined }: Props) => {
       return
     }
     loading.value = true
-    await $wallet.requestTransfer?.({
+    const result = await $wallet.requestTransfer?.({
       amount,
       to,
-      from: from ?? principal,
     }).catch(e => {
       error.value = e
     })
     loading.value = false
+    return result
   }
 
   return [transfer, { loading, error }] as const
