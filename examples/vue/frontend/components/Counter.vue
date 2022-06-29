@@ -3,7 +3,7 @@ import { useCanister } from "@connect2ic/vue"
 import { ref, watchEffect } from "vue"
 
 let count = ref()
-const [counter, { loading }] = useCanister("counter")
+const [counter] = useCanister("counter")
 
 const refreshCounter = async () => {
   const freshCount = await counter.value.getValue()

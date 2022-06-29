@@ -44,7 +44,6 @@ function App() {
         <Profile />
         <Transfer />
       </div>
-
     </div>
   )
 }

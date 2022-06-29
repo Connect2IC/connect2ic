@@ -8,8 +8,7 @@
   })
 
   const onPurchase = async () => {
-    const result = await transfer()
-    console.log(result)
+    const { height } = await transfer()
   }
 </script>
 <div class="example">

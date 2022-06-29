@@ -7,14 +7,13 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "@connect2ic/core": "^0.1.0",
-    "@connect2ic/svelte": "^0.1.0",
+    "@connect2ic/core": "^0.1.2",
+    "@connect2ic/svelte": "^0.1.2",
     "@dfinity/agent": "^0.11.3"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "next",
     "@types/node": "^18.0.0",
-    "@xstate/inspect": "^0.7.0",
     "buffer": "^6.0.3",
     "svelte": "^3.42.5",
     "svelte-preprocess": "^4.10.7",

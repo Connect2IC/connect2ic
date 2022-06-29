@@ -68,8 +68,7 @@ class AstroX implements IConnector, IWalletConnector {
   constructor(userConfig = {}) {
     this.#config = {
       whitelist: [],
-      // providerUrl: "https://63k2f-nyaaa-aaaah-aakla-cai.raw.ic0.app",
-      providerUrl: "https://zwbmf-zyaaa-aaaai-acjaq-cai.raw.ic0.app",
+      providerUrl: "https://63k2f-nyaaa-aaaah-aakla-cai.raw.ic0.app",
       ledgerCanisterId: "ryjl3-tyaaa-aaaaa-aaaba-cai",
       ledgerHost: "https://boundary.ic0.app/",
       host: window.location.origin,

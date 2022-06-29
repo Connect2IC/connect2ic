@@ -130,8 +130,8 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
             // TODO: Handle cancellation with AbortController?
             const provider = context.providers.find(p => p.meta.id === e.data.provider)
             if (e.type === "CONNECT") {
-              try {
-                await provider.connect()
+              const connected = await provider.connect()
+              if (connected) {
                 callback({
                   type: "CONNECT_DONE",
                   // TODO: fix?
@@ -140,9 +140,8 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
                     principal: provider.principal,
                   },
                 })
-              } catch (e) {
+              } else {
                 callback({
-                  // TODO: or cancel?
                   type: "ERROR",
                   data: {
                     error: e,
@@ -235,13 +234,13 @@ type Config = {
 
 type ClientOptions = {
   providers: Array<Provider> | ((config: Config) => Array<Provider>)
-  canisters: {
+  canisters?: {
     [canisterName: string]: {
       canisterId: string
       idlFactory: IDL.InterfaceFactory
     }
   }
-  globalProviderConfig: {
+  globalProviderConfig?: {
     whitelist?: Array<string>
     host?: string
     dev?: boolean
@@ -261,7 +260,10 @@ const createClient = ({
     dev: true,
     autoConnect: true,
     host: window.location.origin,
-    whitelist: Object.values(canisters).map(canister => (canister as any).canisterId),
+    whitelist: Object.values(canisters).map(canister => (canister as {
+      canisterId: string
+      idlFactory: IDL.InterfaceFactory
+    }).canisterId),
     ...globalProviderConfig,
   }
   const providers = typeof p === "function" ? p(config) : p

@@ -1,13 +1,22 @@
 <script setup lang="ts">
+import logo from "./assets/dfinity.svg"
+/*
+ * Connect2ic provides essential utilities for IC app development
+ */
+import { createClient } from "@connect2ic/core"
+import { defaultProviders } from "@connect2ic/core/providers"
+import { ConnectButton, ConnectDialog, Connect2ICProvider } from "@connect2ic/vue"
+import "@connect2ic/core/style.css"
+/*
+ * Import canister definitions like this:
+ */
 import * as counter from "../.dfx/local/canisters/counter"
+/*
+ * Some examples to get you started
+ */
 import Counter from "./components/Counter.vue"
 import Profile from "./components/Profile.vue"
 import Transfer from "./components/Transfer.vue"
-import logo from "./assets/dfinity.svg"
-import { defaultProviders } from "@connect2ic/core/providers"
-import { createClient } from "@connect2ic/core"
-import { ConnectButton, ConnectDialog, Connect2ICProvider } from "@connect2ic/vue"
-import "@connect2ic/core/style.css"
 
 const client = createClient({
   canisters: {
@@ -95,7 +104,7 @@ button {
 }
 
 .examples-title {
-  font-Size: 1.3em;
+  font-size: 1.3em;
   margin-bottom: 0;
   text-align: center;
 }

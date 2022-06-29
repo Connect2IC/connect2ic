@@ -4,7 +4,6 @@ import { contextKey } from "../context"
 import type { ContextState } from "../context"
 import { derived, readable } from "svelte/store"
 import type { Readable } from "svelte/store"
-import { useEffect } from "react"
 
 type Props = {
   onConnect?: () => void

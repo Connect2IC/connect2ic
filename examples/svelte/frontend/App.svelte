@@ -93,7 +93,7 @@
     }
 
     .examples-title {
-        font-Size: 1.3em;
+        font-size: 1.3em;
         margin-bottom: 0;
         text-align: center;
     }
