@@ -1,7 +1,7 @@
 {
   "name": "@connect2ic/vue",
   "author": "Mio Quispe",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "types": "./index.ts",
   "files": [
     "dist"

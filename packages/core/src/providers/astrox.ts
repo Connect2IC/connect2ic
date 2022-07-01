@@ -156,13 +156,15 @@ class AstroX implements IConnector, IWalletConnector {
   async requestTransfer({
                           amount,
                           to,
+                          from,
                           // TODO: fix return type
-                        }: { amount: number, to: string }): Promise<{ height: number } | false> {
+                        }: { amount: number, to: string, from?: string }): Promise<{ height: number } | false> {
     let result
     try {
       result = await this.#ic?.requestTransfer({
         amount: balanceFromString(String(amount)),
         to,
+        from,
         // TODO: ?
         sendOpts: {},
       })

@@ -2,11 +2,11 @@
   "name": "@connect2ic/core",
   "author": "Mio Quispe",
   "private": false,
-  "version": "0.1.2",
+  "version": "0.1.4",
   "files": [
-    "/dist",
-    "/providers",
-    "/style.css"
+    "dist",
+    "providers",
+    "style.css"
   ],
   "main": "dist/connect2ic-core.cjs.js",
   "module": "dist/connect2ic-core.esm.js",
