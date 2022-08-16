@@ -61,6 +61,7 @@ class PlugWallet implements IConnector, IWalletConnector {
     whitelist: Array<string>,
     host: string,
     dev: boolean,
+    onConnectionUpdate: () => void,
   }
   #identity?: any
   #principal?: string
@@ -88,6 +89,11 @@ class PlugWallet implements IConnector, IWalletConnector {
       whitelist: [],
       host: window.location.origin,
       dev: true,
+      onConnectionUpdate: () => {
+        const { agent, principal, accountId } = window.ic.plug.sessionManager.sessionData
+        // TODO: recreate actors
+        // TODO: handle account switching
+      },
       ...userConfig,
     }
     this.#ic = window.ic?.plug
@@ -105,26 +111,40 @@ class PlugWallet implements IConnector, IWalletConnector {
     // TODO: handle account switching
     try {
       if (!this.#ic) {
-        // TODO: correct kind of error?
         return err({ kind: InitError.NotInstalled })
       }
-      // TODO: returns true even if plug is locked
-      // const isConnected = await Promise.race([this.isConnected(), new Promise((resolve) => setTimeout(() => resolve(false),1000))]) ?
-      // Fleek should fix
-      const isConnected = await this.isConnected()
-      if (isConnected) {
+      const status = await this.status()
+
+      if (status !== "disconnected") {
         await this.#ic.createAgent({
           host: this.#config.host,
           whitelist: this.#config.whitelist,
         })
-        // TODO: never finishes if user doesnt login back / plug is locked?
-        // Fleek should fix
+      }
+      if (status === "connected") {
+        // Never finishes if locked
         this.#principal = (await this.#ic.getPrincipal()).toString()
       }
-      return ok({ isConnected })
+      return ok({ isConnected: false })
     } catch (e) {
       console.error(e)
       return err({ kind: InitError.InitFailed })
+    }
+  }
+
+  async status() {
+    if (!this.#ic) {
+      return "disconnected"
+    }
+    try {
+      return await Promise.race([
+        this.#ic.isConnected().then((c) => {
+          return c ? "connected" : "disconnected"
+        }),
+        new Promise((resolve) => setTimeout(() => resolve("locked"), 1000)),
+      ])
+    } catch (e) {
+      return "disconnected"
     }
   }
 
@@ -160,21 +180,17 @@ class PlugWallet implements IConnector, IWalletConnector {
     }
   }
 
-  // TODO: handle Plug account switching
   async connect() {
     try {
       if (!this.#ic) {
         window.open("https://plugwallet.ooo/", "_blank")
-        // TODO: enum
         return err({ kind: ConnectError.NotInstalled })
       }
       await this.#ic.requestConnect(this.#config)
       this.#principal = (await this.#ic.getPrincipal()).toString()
       if (this.#principal) {
-        // return status?
         return ok(true)
       }
-      // return status?
       return ok(true)
     } catch (e) {
       console.error(e)
@@ -184,11 +200,10 @@ class PlugWallet implements IConnector, IWalletConnector {
 
   async disconnect() {
     try {
-      // TODO: should be awaited but never finishes, tell Plug to fix
-      // setTimeout?
       if (!this.#ic) {
         return err({ kind: DisconnectError.NotInitialized })
       }
+      // TODO: should be awaited but never finishes, tell Plug to fix
       this.#ic.disconnect()
       return ok(true)
     } catch (e) {

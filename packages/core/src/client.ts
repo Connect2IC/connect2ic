@@ -8,11 +8,10 @@ import type { MachineConfig } from "xstate"
 import { Actor, HttpAgent } from "@dfinity/agent"
 import Emitter from "event-e3"
 import type { ActorSubclass } from "@dfinity/agent"
-// import type { ProviderOptions } from "../providers/index"
 import type { IDL } from "@dfinity/candid"
-import type { IConnector, IWalletConnector } from "./providers/connectors"
+import type { CreateActorResult, IConnector, IWalletConnector } from "./providers/connectors"
 import { ok, Result } from "neverthrow"
-import { ProviderErrors } from "./providers"
+import { CreateActorError } from "./providers/connectors"
 
 type Provider = IConnector
 
@@ -32,10 +31,10 @@ export type RootContext = {
     }
   }
   actors: {
-    [canisterName: string]: Result<ActorSubclass, { kind: ProviderErrors }>
+    [canisterName: string]: Result<ActorSubclass, { kind: CreateActorError }>
   }
   anonymousActors: {
-    [canisterName: string]: Result<ActorSubclass, { kind: ProviderErrors }>
+    [canisterName: string]: Result<ActorSubclass, { kind: CreateActorError }>
   }
 }
 
@@ -48,11 +47,11 @@ type ConnectDoneEvent = { type: "CONNECT_DONE", data: { activeProvider: Provider
 type DisconnectEvent = { type: "DISCONNECT" }
 type ErrorEvent = { type: "ERROR", data: { error: any } }
 type CreateActorEvent = { type: "CREATE_ACTOR", data: { canisterName: string, canisterId: string, idlFactory: IDL.InterfaceFactory } }
-type SaveActorEvent = { type: "SAVE_ACTOR", data: { actor: Result<ActorSubclass, { kind: ProviderErrors }>, canisterName: string } }
+type SaveActorEvent<Service> = { type: "SAVE_ACTOR", data: { actor: CreateActorResult<Service>, canisterName: string } }
 type CreateAnonymousActorEvent = { type: "CREATE_ANONYMOUS_ACTOR", data: { canisterName: string, canisterId: string, idlFactory: IDL.InterfaceFactory } }
-type SaveAnonymousActorEvent = { type: "SAVE_ANONYMOUS_ACTOR", data: { actor: Result<ActorSubclass, { kind: ProviderErrors }>, canisterName: string } }
+type SaveAnonymousActorEvent<Service> = { type: "SAVE_ANONYMOUS_ACTOR", data: { actor: CreateActorResult<Service>, canisterName: string } }
 
-export type RootEvent =
+export type RootEvent<Service = any> =
   | DoneEvent
   | ConnectDoneEvent
   | DoneAndConnectedEvent
@@ -61,9 +60,9 @@ export type RootEvent =
   | DisconnectEvent
   | ErrorEvent
   | CreateActorEvent
-  | SaveActorEvent
+  | SaveActorEvent<Service>
   | CreateAnonymousActorEvent
-  | SaveAnonymousActorEvent
+  | SaveAnonymousActorEvent<Service>
 
 const authStates: MachineConfig<RootContext, any, RootEvent> = {
   id: "auth",
@@ -172,6 +171,7 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
             return
           }
           const provider = context.providers.find(p => p.meta.id === _event.data.provider)
+          console.log("find provider", provider)
           if (!provider) {
             callback({
               type: "ERROR",
@@ -181,6 +181,7 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
             })
             return
           }
+          console.log("provider.connect")
           const result = await provider.connect()
           result.match(() => {
               callback({

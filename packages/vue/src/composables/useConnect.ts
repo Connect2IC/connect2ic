@@ -47,10 +47,13 @@ const useConnect = (props: Props = {}) => {
     isInitializing,
     isIdle,
     connect: (provider) => {
-      client._service.send({ type: "CONNECT", data: { provider } })
+      client.connect(provider)
+    },
+    cancelConnect: () => {
+      client.cancelConnect()
     },
     disconnect: () => {
-      client._service.send({ type: "DISCONNECT" })
+      client.disconnect()
     },
   } as const
 }

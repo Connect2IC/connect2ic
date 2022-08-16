@@ -58,10 +58,6 @@ class AstroX implements IConnector, IWalletConnector {
   #principal?: string
   #ic?: IC
 
-  // set config(config) {
-  //   this.#config = config
-  // }
-
   get principal() {
     return this.#principal
   }
@@ -205,8 +201,8 @@ class AstroX implements IConnector, IWalletConnector {
       if (typeof result === "string") {
         return err({ kind: TransferError.FaultyAddress })
       }
+      // check astrox-js
       if (!result) {
-        // ??
         return err({ kind: TransferError.TransferFailed })
       }
       switch (result?.kind) {
@@ -231,8 +227,8 @@ class AstroX implements IConnector, IWalletConnector {
         amount: ICPBalance / 100000000,
         canisterId: this.#config.ledgerCanisterId,
         decimals: 8,
-        // TODO: fix
-        image: "Dfinity.svg",
+        // TODO: plug returns image?
+        // image: "Dfinity.svg",
         name: "ICP",
         symbol: "ICP",
       }])
