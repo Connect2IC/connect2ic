@@ -1,13 +1,5 @@
 import React, { createContext, useState, PropsWithChildren } from "react"
 import type { Client } from "@connect2ic/core"
-import type { IDL } from "@dfinity/candid"
-
-type CanisterMap = {
-  [canisterName: string]: {
-    canisterId: string,
-    idlFactory: IDL.InterfaceFactory,
-  }
-}
 
 const Connect2ICContext = createContext<{
   client: Client
@@ -16,12 +8,10 @@ const Connect2ICContext = createContext<{
     close: () => void
     isOpen: boolean
   }
-  canisters: CanisterMap
 }>({} as any)
 
 type Props = {
-  // TODO: fix
-  client: any
+  client: Client
 }
 
 const Connect2ICProvider: React.FC<PropsWithChildren<Props>> = ({

@@ -7,23 +7,9 @@ import { NFID } from "./nfid"
 // import { EarthWallet } from "./earth-wallet"
 import type { IConnector, IWalletConnector } from "./connectors"
 
-type ConnectorClass = { new(...args: any[]): IConnector & Partial<IWalletConnector>; };
-
-export type ProviderOptions = {
-  connector: ConnectorClass,
-  features: Array<string>,
-  icon: any,
-  id: string,
-  name: string,
-}
-
-export type Provider = {
-  connector: IConnector & Partial<IWalletConnector>
-  features: Array<string>,
-  icon: any,
-  id: string,
-  name: string,
-}
+export * from "./connectors"
+export type Provider = IConnector & Partial<IWalletConnector>
+export type WalletProvider = IConnector & IWalletConnector
 
 type Config = {
   whitelist: Array<string>
@@ -48,7 +34,7 @@ export const defaultProviders: (config: Config) => Array<Provider> = (config) =>
   ]
 }
 
-export const walletProviders: (Config) => Array<Provider> = (config) => {
+export const walletProviders: (Config) => Array<WalletProvider> = (config) => {
   return [
     new AstroX(config),
     new PlugWallet(config),

@@ -6,6 +6,11 @@ import stoicLogoLight from "../assets/stoic.png"
 // @ts-ignore
 import stoicLogoDark from "../assets/stoic.png"
 import { IDL } from "@dfinity/candid"
+import {
+  ok,
+  err,
+} from "neverthrow"
+import { ConnectError, CreateActorError, DisconnectError, InitError } from "./connectors"
 
 class StoicWallet implements IConnector {
 
@@ -55,54 +60,79 @@ class StoicWallet implements IConnector {
   }
 
   async init() {
-    const identity = await StoicIdentity.load(this.#config.providerUrl)
-
-    if (identity) {
-      this.#identity = identity
-      this.#principal = identity.getPrincipal().toText()
+    try {
+      const identity = await StoicIdentity.load(this.#config.providerUrl)
+      const isConnected = !!identity
+      if (isConnected) {
+        this.#identity = identity
+        this.#principal = identity.getPrincipal().toText()
+      }
+      return ok({ isConnected })
+    } catch (e) {
+      console.error(e)
+      return err({ kind: InitError.InitFailed })
     }
-    return true
   }
 
-  async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory): Promise<ActorSubclass<Service> | undefined> {
-    // TODO: pass identity
-    const agent = new HttpAgent({
-      ...this.#config,
-      identity: this.#identity,
-    })
-
-    // Fetch root key for certificate validation during development
-    if (this.#config.dev) {
-      agent.fetchRootKey().catch(err => {
-        console.warn("Unable to fetch root key. Check to ensure that your local replica is running")
-        console.error(err)
+  async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory) {
+    try {
+      // TODO: allow passing identity?
+      const agent = new HttpAgent({
+        ...this.#config,
+        identity: this.#identity,
       })
-    }
 
-    // TODO: add actorOptions?
-    return Actor.createActor(idlFactory, {
-      agent,
-      canisterId,
-    })
+      if (this.#config.dev) {
+        // Fetch root key for certificate validation during development
+        const res = await agent.fetchRootKey().then(() => ok(true)).catch(e => err({ kind: CreateActorError.FetchRootKeyFailed }))
+        if (res.isErr()) {
+          return res
+        }
+      }
+      // TODO: add actorOptions?
+      const actor = Actor.createActor<Service>(idlFactory, {
+        agent,
+        canisterId,
+      })
+      return ok(actor)
+    } catch (e) {
+      console.error(e)
+      return err({ kind: CreateActorError.CreateActorFailed })
+    }
   }
 
   async isConnected() {
-    const identity = await StoicIdentity.load()
-    return !!identity
+    try {
+      const identity = await StoicIdentity.load()
+      return !!identity
+    } catch (e) {
+      console.error(e)
+      return false
+    }
   }
 
   async connect() {
-    this.#identity = await StoicIdentity.connect()
-    this.#principal = this.#identity.getPrincipal().toText()
-    return true
+    try {
+      this.#identity = await StoicIdentity.connect()
+      this.#principal = this.#identity.getPrincipal().toText()
+      return ok(true)
+    } catch (e) {
+      console.error(e)
+      return err({ kind: ConnectError.ConnectFailed })
+    }
   }
 
   async disconnect() {
-    await StoicIdentity.disconnect()
-    return true
+    try {
+      await StoicIdentity.disconnect()
+      return ok(true)
+    } catch (e) {
+      console.error(e)
+      return err({ kind: DisconnectError.DisconnectFailed })
+    }
   }
 }
 
 export {
-  StoicWallet
+  StoicWallet,
 }

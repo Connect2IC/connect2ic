@@ -6,6 +6,8 @@ import infinityLogoLight from "../assets/infinity.png"
 // @ts-ignore
 import infinityLogoDark from "../assets/infinity.png"
 import type { Principal } from "@dfinity/principal"
+import { err, ok } from "neverthrow"
+import { ConnectError, CreateActorError, DisconnectError, InitError } from "./connectors"
 
 type Config = {
   whitelist: Array<string>,
@@ -74,72 +76,102 @@ class InfinityWallet implements IConnector {
     return this.#config
   }
 
+  // TODO: doesn't work if wallet is locked
+  // test more & tell infinityswap
   async init() {
-    if (!this.#ic) {
-      throw Error("Not supported")
-    }
-    const isConnected = await this.isConnected()
-    if (isConnected) {
-      // Otherwise agent doesn't become available. Infinity wallet should fix
-      await this.connect()
-      try {
+    try {
+      if (!this.#ic) {
+        return err({ kind: InitError.NotInstalled })
+      }
+      const isConnected = await this.isConnected()
+      if (isConnected) {
+        // Otherwise agent doesn't become available. Infinity wallet should fix
+        await this.connect()
         // TODO: never finishes if user doesnt login back?
         this.#principal = (await this.#ic.getPrincipal()).toString()
-        // console.log(this.#principal)
-      } catch (e) {
-        console.error(e)
       }
+      return ok({ isConnected })
+    } catch (e) {
+      console.error(e)
+      return err({ kind: InitError.InitFailed })
     }
-    return true
   }
 
   async isConnected() {
-    return this.#ic ? await this.#ic.isConnected() : false
-  }
-
-  async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory): Promise<ActorSubclass<Service> | undefined> {
-    if (this.#config.dev) {
-      // Not possible to fetch root key
-    }
-
-    return this.#ic?.createActor({ canisterId, interfaceFactory: idlFactory })
-  }
-
-
-  async connect() {
-    if (!this.#ic) {
-      window.open("https://chrome.google.com/webstore/detail/infinity-wallet/jnldfbidonfeldmalbflbmlebbipcnle", "_blank")
-      throw Error("Not installed")
-    }
     try {
-      await this.#ic.requestConnect(this.#config)
-      this.#principal = (await this.#ic.getPrincipal()).toString()
-      return true
-      // const walletAddress = thisIC.wallet
+      if (!this.#ic) {
+        return false
+      }
+      return await this.#ic.isConnected()
     } catch (e) {
       console.error(e)
-      // TODO: handle
       return false
     }
   }
 
+  async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory) {
+    if (!this.#ic) {
+      return err({ kind: CreateActorError.NotInitialized })
+    }
+    try {
+      if (this.#config.dev) {
+        console.error("Infinity wallet doesn't support creating local actors")
+        return err({
+          kind: CreateActorError.LocalActorsNotSupported,
+        })
+      }
+      const actor = await this.#ic.createActor<Service>({ canisterId, interfaceFactory: idlFactory })
+      return ok(actor)
+    } catch (e) {
+      console.error(e)
+      return err({ kind: CreateActorError.CreateActorFailed })
+    }
+  }
+
+
+  async connect() {
+    try {
+      if (!this.#ic) {
+        // TODO: customizable behaviour?
+        window.open("https://chrome.google.com/webstore/detail/infinity-wallet/jnldfbidonfeldmalbflbmlebbipcnle", "_blank")
+        return err({ kind: ConnectError.NotInstalled })
+      }
+      await this.#ic.requestConnect(this.#config)
+      this.#principal = (await this.#ic.getPrincipal()).toString()
+      return ok(true)
+    } catch (e) {
+      console.error(e)
+      return err({ kind: ConnectError.ConnectFailed })
+    }
+  }
+
   async disconnect() {
-    await Promise.race([
-      new Promise((resolve, reject) => {
-        // InfinityWallet disconnect promise never resolves despite being disconnected
-        // This is a hacky workaround
-        setTimeout(async () => {
-          const isConnected = await this.#ic?.isConnected()
-          if (!isConnected) {
-            resolve(isConnected)
-          } else {
-            reject()
-          }
-        }, 10)
-      }),
-      this.#ic?.disconnect(),
-    ])
-    return true
+    try {
+      if (!this.#ic) {
+        return err({ kind: DisconnectError.NotInitialized })
+      }
+      const ic = this.#ic
+      await Promise.race([
+        new Promise((resolve, reject) => {
+          // InfinityWallet disconnect promise never resolves despite being disconnected
+          // This is a hacky workaround
+          setTimeout(async () => {
+            const isConnected = await ic.isConnected()
+            if (!isConnected) {
+              resolve(isConnected)
+            } else {
+              // TODO: return err?
+              reject()
+            }
+          }, 10)
+        }),
+        ic.disconnect(),
+      ])
+      return ok(true)
+    } catch (e) {
+      console.error(e)
+      return err({ kind: DisconnectError.DisconnectFailed })
+    }
   }
 
   // async requestTransfer(...args) {

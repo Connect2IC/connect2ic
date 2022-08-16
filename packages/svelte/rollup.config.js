@@ -1,5 +1,4 @@
 import svelte from "rollup-plugin-svelte"
-import resolve from "@rollup/plugin-node-resolve"
 import commonjs from "@rollup/plugin-commonjs"
 import { terser } from "rollup-plugin-terser"
 import bundleSize from "rollup-plugin-bundle-size"
@@ -38,7 +37,6 @@ export default {
     typescript(),
     // nodePolyfills(),
     commonjs(),
-    // resolve(),
     production && terser(),
     production && bundleSize(),
   ],

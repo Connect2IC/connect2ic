@@ -21,7 +21,7 @@ export const useConnect = (props?: Props) => {
   const { principal, activeProvider, status } = useSelector(client._service, (state) => ({
     principal: state.context.principal,
     activeProvider: state.context.activeProvider,
-    status: state.value.idle,
+    status: state.value,
   }))
 
   useEffect(() => {
@@ -42,8 +42,11 @@ export const useConnect = (props?: Props) => {
     isConnecting: client._service.state?.matches({ idle: "connecting" }) ?? false,
     isDisconnecting: client._service.state?.matches({ idle: "disconnecting" }) ?? false,
     isIdle: client._service.state?.matches({ idle: "idle" }) ?? false,
-    connect: (provider) => {
+    connect: (provider: string) => {
       client.connect(provider)
+    },
+    cancelConnect: () => {
+      client.cancelConnect()
     },
     disconnect: () => {
       client.disconnect()

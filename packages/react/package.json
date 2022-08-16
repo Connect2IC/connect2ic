@@ -1,7 +1,7 @@
 {
   "name": "@connect2ic/react",
   "author": "Mio Quispe",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "files": [
     "dist"
   ],
@@ -21,14 +21,15 @@
     }
   },
   "dependencies": {
-    "@xstate/react": "^3.0.0"
+    "@xstate/react": "^3.0.1",
+    "neverthrow": "^5.0.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.8",
     "@types/react-dom": "^18.0.3"
   },
   "peerDependencies": {
-    "react": "*",
-    "@connect2ic/core": "*"
+    "@connect2ic/core": "*",
+    "react": "*"
   }
 }

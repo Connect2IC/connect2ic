@@ -1,5 +1,6 @@
 import { useWallet } from "./useWallet"
 import { ref, watch } from "vue"
+import type { BalanceError } from "@connect2ic/core"
 
 type Asset = {
   amount: number
@@ -13,20 +14,25 @@ type Asset = {
 export const useBalance = () => {
   // TODO: check if supported or not
   const [wallet] = useWallet()
-  // TODO:
-  const error = ref()
-  const loading = ref(true)
-  const assets = ref()
+  const error = ref<{ kind: BalanceError }>()
+  const loading = ref<boolean>(true)
+  const assets = ref<Array<Asset>>()
 
-  // TODO: fix
   const refetch = async () => {
     const $wallet = wallet.value
     if (!$wallet) {
       assets.value = undefined
       return
     }
-    const result = await $wallet.queryBalance?.()
-    assets.value = result
+    const result = await $wallet.queryBalance()
+    result.match(
+      (a) => {
+        assets.value = a
+      },
+      (e) => {
+        error.value = e
+      },
+    )
     loading.value = false
     return result
   }

@@ -6,6 +6,11 @@ import plugLogoDark from "../assets/plugDark.svg"
 import { IDL } from "@dfinity/candid"
 import { ActorSubclass, Agent } from "@dfinity/agent"
 import { Principal } from "@dfinity/principal"
+import {
+  ok,
+  err,
+} from "neverthrow"
+import { BalanceError, ConnectError, CreateActorError, DisconnectError, InitError, TransferError } from "./connectors"
 
 type Plug = {
   createActor: <T>(args: { canisterId: string, interfaceFactory: IDL.InterfaceFactory }) => Promise<ActorSubclass<T>>
@@ -21,7 +26,7 @@ type Plug = {
     opts?: {
       fee?: number,
       memo?: string,
-      from_subaccount?: Number,
+      from_subaccount?: number,
       created_at_time?: {
         timestamp_nanos: number
       },
@@ -97,14 +102,17 @@ class PlugWallet implements IConnector, IWalletConnector {
   }
 
   async init() {
-    if (!this.#ic) {
-      throw Error("Not supported")
-    }
-    // TODO: returns true even if plug is locked
-    // Fleek should fix
-    const isConnected = await this.isConnected()
-    if (isConnected) {
-      try {
+    // TODO: handle account switching
+    try {
+      if (!this.#ic) {
+        // TODO: correct kind of error?
+        return err({ kind: InitError.NotInstalled })
+      }
+      // TODO: returns true even if plug is locked
+      // const isConnected = await Promise.race([this.isConnected(), new Promise((resolve) => setTimeout(() => resolve(false),1000))]) ?
+      // Fleek should fix
+      const isConnected = await this.isConnected()
+      if (isConnected) {
         await this.#ic.createAgent({
           host: this.#config.host,
           whitelist: this.#config.whitelist,
@@ -112,46 +120,81 @@ class PlugWallet implements IConnector, IWalletConnector {
         // TODO: never finishes if user doesnt login back / plug is locked?
         // Fleek should fix
         this.#principal = (await this.#ic.getPrincipal()).toString()
-      } catch (e) {
-        console.error(e)
       }
+      return ok({ isConnected })
+    } catch (e) {
+      console.error(e)
+      return err({ kind: InitError.InitFailed })
     }
-    return true
   }
 
   async isConnected() {
-    // TODO: no window
-    return this.#ic ? await this.#ic.isConnected() : false
+    try {
+      if (!this.#ic) {
+        return false
+      }
+      return await this.#ic.isConnected()
+    } catch (e) {
+      console.error(e)
+      return false
+    }
   }
 
-  async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory): Promise<ActorSubclass<Service> | undefined> {
-    // Fetch root key for certificate validation during development
-    if (this.#config.dev) {
-      await this.#ic?.agent.fetchRootKey()
+  async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory) {
+    if (!this.#ic) {
+      return err({ kind: CreateActorError.NotInitialized })
     }
-
-    return this.#ic?.createActor({ canisterId, interfaceFactory: idlFactory })
+    try {
+      // Fetch root key for certificate validation during development
+      if (this.#config.dev) {
+        const res = await this.#ic.agent.fetchRootKey().then(() => ok(true)).catch(e => err({ kind: CreateActorError.FetchRootKeyFailed }))
+        if (res.isErr()) {
+          return res
+        }
+      }
+      const actor = await this.#ic.createActor<Service>({ canisterId, interfaceFactory: idlFactory })
+      return ok(actor)
+    } catch (e) {
+      console.error(e)
+      return err({ kind: CreateActorError.CreateActorFailed })
+    }
   }
 
   // TODO: handle Plug account switching
   async connect() {
-    if (!this.#ic) {
-      window.open("https://plugwallet.ooo/", "_blank")
-      throw Error("Not installed")
-    }
     try {
+      if (!this.#ic) {
+        window.open("https://plugwallet.ooo/", "_blank")
+        // TODO: enum
+        return err({ kind: ConnectError.NotInstalled })
+      }
       await this.#ic.requestConnect(this.#config)
       this.#principal = (await this.#ic.getPrincipal()).toString()
-      return true
+      if (this.#principal) {
+        // return status?
+        return ok(true)
+      }
+      // return status?
+      return ok(true)
     } catch (e) {
-      throw e
+      console.error(e)
+      return err({ kind: ConnectError.ConnectFailed })
     }
   }
 
   async disconnect() {
-    // TODO: should be awaited but never finishes, tell Plug to fix
-    this.#ic?.disconnect()
-    return true
+    try {
+      // TODO: should be awaited but never finishes, tell Plug to fix
+      // setTimeout?
+      if (!this.#ic) {
+        return err({ kind: DisconnectError.NotInitialized })
+      }
+      this.#ic.disconnect()
+      return ok(true)
+    } catch (e) {
+      console.error(e)
+      return err({ kind: DisconnectError.DisconnectFailed })
+    }
   }
 
   address() {
@@ -165,40 +208,49 @@ class PlugWallet implements IConnector, IWalletConnector {
   async requestTransfer({
                           amount,
                           to,
-                          // TODO: fix return type
-                        }: { amount: number, to: string }): Promise<{ height: number } | false> {
-    const result = await this.#ic?.requestTransfer({
-      to,
-      amount: amount * 100000000,
-    })
+                          // TODO: why is this needed??
+                        }: { amount: number, to: string }) {
+    try {
+      const result = await this.#ic?.requestTransfer({
+        to,
+        amount: amount * 100000000,
+      })
 
-    switch (!!result) {
-      case true:
-        return { height: result!.height }
-      default:
-        // TODO: kind
-        return false
+      switch (!!result) {
+        case true:
+          return ok({ height: result!.height })
+        default:
+          // TODO: ?
+          return err({ kind: TransferError.TransferFailed })
+      }
+    } catch (e) {
+      console.error(e)
+      return err({ kind: TransferError.TransferFailed })
     }
   }
 
-  async queryBalance(): Promise<Array<{
-    amount: number
-    canisterId: string
-    decimals: number
-    image?: string
-    name: string
-    symbol: string
-  }> | undefined> {
-    return this.#ic?.requestBalance()
+  async queryBalance() {
+    try {
+      if (!this.#ic) {
+        return err({ kind: BalanceError.NotInitialized })
+      }
+      const assets = await this.#ic.requestBalance()
+      return ok(assets)
+    } catch (e) {
+      console.error(e)
+      return err({ kind: BalanceError.QueryBalanceFailed })
+    }
   }
+
+  // TODO:
 
   // signMessage({ message }) {
   //   return this.#ic?.signMessage({message})
   // }
 
-  async getManagementCanister() {
-    return this.#ic?.getManagementCanister()
-  }
+  // async getManagementCanister() {
+  //   return this.#ic?.getManagementCanister()
+  // }
 
   // batchTransactions(...args) {
   //   return this.#ic?.batchTransactions(...args)

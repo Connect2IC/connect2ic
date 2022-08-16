@@ -6,7 +6,7 @@ import type { Ref } from "vue"
 export const useWallet = () => {
   const { isConnected, activeProvider } = useConnect()
   const supportsWallet = computed(() => !!activeProvider.value?.meta.features.includes("wallet"))
-  const wallet: Ref<IConnector & Partial<IWalletConnector> | undefined> = computed(() => {
+  const wallet = computed(() => {
     return isConnected.value && supportsWallet.value && activeProvider.value ? (activeProvider.value as IConnector & Partial<IWalletConnector>) : undefined
   })
   const loading = ref(true)

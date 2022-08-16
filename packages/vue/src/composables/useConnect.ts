@@ -1,4 +1,4 @@
-import { inject, computed, watch, onMounted, onUnmounted } from "vue"
+import { inject, computed,  onMounted, onUnmounted } from "vue"
 import { useSelector } from "@xstate/vue"
 import { contextKey } from "../context"
 import { useActor } from "@xstate/vue"
@@ -18,8 +18,7 @@ const useConnect = (props: Props = {}) => {
   const { client } = inject(contextKey)
   const principal = useSelector(client._service, state => state.context.principal)
   const activeProvider = useSelector(client._service, state => state.context.activeProvider)
-  // @ts-ignore
-  const status = useSelector(client._service, state => state.value.idle)
+  const status = useSelector(client._service, state => state.value)
   const { state } = useActor(client._service)
   const isConnected = computed(() => state.value.matches({ idle: "connected" }) ?? false)
   const isInitializing = computed(() => state.value.matches({ idle: "initializing" }) ?? false)
@@ -53,7 +52,7 @@ const useConnect = (props: Props = {}) => {
     disconnect: () => {
       client._service.send({ type: "DISCONNECT" })
     },
-  }
+  } as const
 }
 
 export { useConnect }

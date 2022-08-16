@@ -14,6 +14,11 @@ import type { IConnector, IWalletConnector } from "./connectors"
 import astroXLogoLight from "../assets/astrox_light.svg"
 // @ts-ignore
 import astroXLogoDark from "../assets/astrox.png"
+import {
+  ok,
+  err, Result,
+} from "neverthrow"
+import { BalanceError, ConnectError, CreateActorError, DisconnectError, InitError, TransferError } from "./connectors"
 
 const balanceFromString = (balance: string, decimal = 8): bigint => {
   const list = balance.split(".")
@@ -57,10 +62,6 @@ class AstroX implements IConnector, IWalletConnector {
   //   this.#config = config
   // }
 
-  get identity(): Identity | undefined {
-    return this.#ic?.identity
-  }
-
   get principal() {
     return this.#principal
   }
@@ -86,64 +87,99 @@ class AstroX implements IConnector, IWalletConnector {
   }
 
   async init() {
-    this.#ic = await IC.create({
-      useFrame: !(window.innerWidth < 768),
-      signerProviderUrl: `${this.#config.providerUrl}/signer`,
-      walletProviderUrl: `${this.#config.providerUrl}/transaction`,
-      identityProvider: `${this.#config.providerUrl}/login#authorize`,
-      permissions: [PermissionsType.identity, PermissionsType.wallet],
-      ledgerCanisterId: this.#config.ledgerCanisterId,
-      ledgerHost: this.#config.ledgerHost,
-      onAuthenticated: (icInstance: IC) => {
-        this.#ic = (window.ic.astrox as IC) ?? icInstance
-        this.#principal = this.#ic.principal.toText()
-        this.#identity = this.#ic.identity
-      },
-      dev: this.#config.dev,
-    })
-    const isConnected = await this.isConnected()
-
-    // TODO: figure out
-    if (isConnected) {
-      this.#identity = this.#ic.identity
+    try {
+      const ic = await IC.create({
+        useFrame: !(window.innerWidth < 768),
+        signerProviderUrl: `${this.#config.providerUrl}/#signer`,
+        walletProviderUrl: `${this.#config.providerUrl}/#transaction`,
+        identityProvider: `${this.#config.providerUrl}/#authorize`,
+        permissions: [PermissionsType.identity, PermissionsType.wallet],
+        ledgerCanisterId: this.#config.ledgerCanisterId,
+        ledgerHost: this.#config.ledgerHost,
+        dev: this.#config.dev,
+      })
+      this.#ic = (window.ic.astrox as IC) ?? ic
       this.#principal = this.#ic.principal.toText()
+      // TODO: export Identity from @astrox/connection
+      // @ts-ignore
+      this.#identity = this.#ic.identity
+      const isConnected = await this.isConnected()
+      if (isConnected) {
+        // @ts-ignore
+        this.#identity = this.#ic.identity
+        this.#principal = this.#ic.principal.toText()
+      }
+      return ok({ isConnected })
+    } catch (e) {
+      console.error(e)
+      return err({ kind: InitError.InitFailed })
     }
-    return true
   }
 
   async isConnected(): Promise<boolean> {
-    return this.#ic!.isAuthenticated()
+    try {
+      if (!this.#ic) {
+        return false
+      }
+      return await this.#ic.isAuthenticated()
+    } catch (e) {
+      console.error(e)
+      return false
+    }
   }
 
-  async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory): Promise<ActorSubclass<Service> | undefined> {
-    // TODO: move from @astrox/connection here?
-    // // Fetch root key for certificate validation during development
-    return this.#ic?.createActor<Service>(idlFactory, canisterId)
+  // TODO: export & use types from astrox/connection instead of dfinity/agent
+  async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory): Promise<Result<ActorSubclass<Service>, { kind: CreateActorError; }>> {
+    try {
+      // TODO: support per actor configuration
+      if (this.#config.dev) {
+        return err({ kind: CreateActorError.LocalActorsNotSupported })
+      }
+      if (!this.#ic) {
+        return err({ kind: CreateActorError.NotInitialized })
+      }
+      // @ts-ignore
+      const actor = this.#ic.createActor<Service>(idlFactory, canisterId)
+      // @ts-ignore
+      return ok(actor)
+    } catch (e) {
+      console.error(e)
+      return err({ kind: CreateActorError.CreateActorFailed })
+    }
   }
 
-  async connect(): Promise<boolean> {
-    await this.#ic?.connect({
-      useFrame: !(window.innerWidth < 768),
-      signerProviderUrl: `${this.#config.providerUrl}/signer`,
-      walletProviderUrl: `${this.#config.providerUrl}/transaction`,
-      identityProvider: `${this.#config.providerUrl}/login#authorize`,
-      permissions: [PermissionsType.identity, PermissionsType.wallet],
-      ledgerCanisterId: this.#config.ledgerCanisterId,
-      ledgerHost: this.#config.ledgerHost,
-      onAuthenticated: (icInstance: IC) => {
-        this.#ic = window.ic.astrox ?? icInstance
-        this.#principal = this.#ic!.principal.toText()
-        this.#identity = this.#ic!.identity
-        // this.#address = this.#ic.wallet
-      },
-    })
-    // TODO: Result type
-    return true
+  async connect() {
+    try {
+      if (!this.#ic) {
+        return err({ kind: ConnectError.NotInitialized })
+      }
+      await this.#ic.connect({
+        useFrame: !(window.innerWidth < 768),
+        signerProviderUrl: `${this.#config.providerUrl}/#signer`,
+        walletProviderUrl: `${this.#config.providerUrl}/#transaction`,
+        identityProvider: `${this.#config.providerUrl}/#authorize`,
+        permissions: [PermissionsType.identity, PermissionsType.wallet],
+        ledgerCanisterId: this.#config.ledgerCanisterId,
+        ledgerHost: this.#config.ledgerHost,
+      })
+      this.#principal = this.#ic.principal.toText()
+      // @ts-ignore
+      this.#identity = this.#ic.identity
+      return ok(true)
+    } catch (e) {
+      console.error(e)
+      return err({ kind: ConnectError.ConnectFailed })
+    }
   }
 
-  async disconnect(): Promise<boolean> {
-    await this.#ic?.disconnect()
-    return true
+  async disconnect() {
+    try {
+      await this.#ic?.disconnect()
+      return ok(true)
+    } catch (e) {
+      console.error(e)
+      return err({ kind: DisconnectError.DisconnectFailed })
+    }
   }
 
   address() {
@@ -156,59 +192,62 @@ class AstroX implements IConnector, IWalletConnector {
   async requestTransfer({
                           amount,
                           to,
-                          from,
-                          // TODO: fix return type
-                        }: { amount: number, to: string, from?: string }): Promise<{ height: number } | false> {
-    let result
+                          // TODO: why is this needed?
+                        }: { amount: number, to: string }) {
     try {
-      result = await this.#ic?.requestTransfer({
+      const result = await this.#ic?.requestTransfer({
         amount: balanceFromString(String(amount)),
         to,
-        from,
         // TODO: ?
         sendOpts: {},
       })
+      // TODO: why string? check astrox-js
+      if (typeof result === "string") {
+        return err({ kind: TransferError.FaultyAddress })
+      }
+      if (!result) {
+        // ??
+        return err({ kind: TransferError.TransferFailed })
+      }
+      switch (result?.kind) {
+        case "transaction-client-success":
+          return ok({
+            // TODO: why is payload optional? check astrox-js
+            height: Number(result.payload?.blockHeight),
+          })
+        default:
+          return err({ kind: TransferError.TransferFailed })
+      }
     } catch (e) {
-      return false
-    }
-
-    switch (result.kind) {
-      case "transaction-client-success":
-        return {
-          height: Number(result.payload.blockHeight),
-        }
-      default:
-        return false
+      console.error(e)
+      return err({ kind: TransferError.TransferFailed })
     }
   }
 
-  // TODO: gets called often
-  async queryBalance(): Promise<Array<{
-    amount: number
-    canisterId: string
-    decimals: number
-    image: string
-    name: string
-    symbol: string
-  }>> {
-    const ICPBalance = Number(await this.#ic?.queryBalance()) ?? 0
-    return [{
-      amount: ICPBalance / 100000000,
-      canisterId: this.#config.ledgerCanisterId,
-      decimals: 8,
-      // TODO: fix
-      image: "Dfinity.svg",
-      name: "ICP",
-      symbol: "ICP",
-    }]
+  async queryBalance() {
+    try {
+      const ICPBalance = Number(await this.#ic?.queryBalance()) ?? 0
+      return ok([{
+        amount: ICPBalance / 100000000,
+        canisterId: this.#config.ledgerCanisterId,
+        decimals: 8,
+        // TODO: fix
+        image: "Dfinity.svg",
+        name: "ICP",
+        symbol: "ICP",
+      }])
+    } catch (e) {
+      console.error(e)
+      return err({ kind: BalanceError.QueryBalanceFailed })
+    }
   }
 
-  async signMessage({ message }: { message: string }): Promise<SignerResponseSuccess | string | undefined> {
-    return this.#ic?.signMessage({
-      signerProvider: this.#config.providerUrl,
-      message,
-    })
-  }
+  // async signMessage({ message }: { message: string }): Promise<SignerResponseSuccess | string | undefined> {
+  //   return this.#ic?.signMessage({
+  //     signerProvider: this.#config.providerUrl,
+  //     message,
+  //   })
+  // }
 
   // getManagementCanister: (...args) => this.#ic.getManagementCanister(...args),
   // batchTransactions: (...args) => this.#ic.batchTransactions(...args),

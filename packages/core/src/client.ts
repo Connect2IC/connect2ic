@@ -2,7 +2,7 @@ import {
   createMachine,
   assign,
   forwardTo,
-  interpret,
+  interpret, Interpreter,
 } from "xstate"
 import type { MachineConfig } from "xstate"
 import { Actor, HttpAgent } from "@dfinity/agent"
@@ -10,9 +10,11 @@ import Emitter from "event-e3"
 import type { ActorSubclass } from "@dfinity/agent"
 // import type { ProviderOptions } from "../providers/index"
 import type { IDL } from "@dfinity/candid"
-import type { IConnector, IWalletConnector } from "../providers/connectors"
+import type { IConnector, IWalletConnector } from "./providers/connectors"
+import { ok, Result } from "neverthrow"
+import { ProviderErrors } from "./providers"
 
-type Provider = IConnector & Partial<IWalletConnector>
+type Provider = IConnector
 
 export type RootContext = {
   host: string
@@ -22,43 +24,40 @@ export type RootContext = {
   principal?: string
   activeProvider?: Provider
   providers: Array<Provider>
-  canisters: any
+  connectingProvider?: string
+  canisters: {
+    [canisterName: string]: {
+      canisterId: string
+      idlFactory: IDL.InterfaceFactory
+    }
+  }
   actors: {
-    [canisterName: string]: ActorSubclass
+    [canisterName: string]: Result<ActorSubclass, { kind: ProviderErrors }>
   }
   anonymousActors: {
-    [canisterName: string]: ActorSubclass
+    [canisterName: string]: Result<ActorSubclass, { kind: ProviderErrors }>
   }
 }
 
 
-type InitEvent = {
-  type: "INIT",
-  data: {
-    whitelist: Array<string>
-    host?: string,
-    providers: Array<Provider>
-    dev?: boolean,
-    autoConnect?: boolean,
-  }
-}
 type DoneEvent = { type: "DONE", data: { providers: Array<Provider> } }
 type DoneAndConnectedEvent = { type: "DONE_AND_CONNECTED", data: { activeProvider: Provider, providers: Array<Provider>, principal: string } }
 type ConnectEvent = { type: "CONNECT", data: { provider: string } }
+type CancelConnectEvent = { type: "CANCEL_CONNECT" }
 type ConnectDoneEvent = { type: "CONNECT_DONE", data: { activeProvider: Provider, principal: string } }
 type DisconnectEvent = { type: "DISCONNECT" }
 type ErrorEvent = { type: "ERROR", data: { error: any } }
 type CreateActorEvent = { type: "CREATE_ACTOR", data: { canisterName: string, canisterId: string, idlFactory: IDL.InterfaceFactory } }
-type SaveActorEvent = { type: "SAVE_ACTOR", data: { actor: ActorSubclass, canisterName: string } }
+type SaveActorEvent = { type: "SAVE_ACTOR", data: { actor: Result<ActorSubclass, { kind: ProviderErrors }>, canisterName: string } }
 type CreateAnonymousActorEvent = { type: "CREATE_ANONYMOUS_ACTOR", data: { canisterName: string, canisterId: string, idlFactory: IDL.InterfaceFactory } }
-type SaveAnonymousActorEvent = { type: "SAVE_ANONYMOUS_ACTOR", data: { actor: ActorSubclass, canisterName: string } }
+type SaveAnonymousActorEvent = { type: "SAVE_ANONYMOUS_ACTOR", data: { actor: Result<ActorSubclass, { kind: ProviderErrors }>, canisterName: string } }
 
 export type RootEvent =
-  | InitEvent
   | DoneEvent
   | ConnectDoneEvent
   | DoneAndConnectedEvent
   | ConnectEvent
+  | CancelConnectEvent
   | DisconnectEvent
   | ErrorEvent
   | CreateActorEvent
@@ -92,19 +91,20 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
             })),
           ],
         },
+        ERROR: {
+          // ?
+        },
       },
       invoke: {
         id: "init",
-        src: (context, event: InitEvent) => async (callback, onReceive) => {
-          // TODO: clean up
+        src: (context, event) => async (callback, onReceive) => {
           const { providers } = context
-          await Promise.allSettled(providers.map(p => p.init()))
+          await Promise.all(providers.map(p => p.init()))
           let connectedProviders = providers.map(p => new Promise<Provider>(async (resolve, reject) => {
             const isConnected = await p.isConnected()
             isConnected ? resolve(p) : reject()
           }))
-
-          // TODO: split into 2?
+          // TODO: init failure
           Promise.any(connectedProviders).then((connectedProvider) => {
             callback({
               type: "DONE_AND_CONNECTED",
@@ -122,39 +122,24 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
       exit: ["onInit"],
     },
     idle: {
-      invoke: {
-        id: "connectService",
-        autoForward: true,
-        src: (context, _event) => (callback, onReceive) => {
-          onReceive(async (e) => {
-            // TODO: Handle cancellation with AbortController?
-            const provider = context.providers.find(p => p.meta.id === e.data.provider)
-            if (e.type === "CONNECT") {
-              const connected = await provider.connect()
-              if (connected) {
-                callback({
-                  type: "CONNECT_DONE",
-                  // TODO: fix?
-                  data: {
-                    activeProvider: provider,
-                    principal: provider.principal,
-                  },
-                })
-              } else {
-                callback({
-                  type: "ERROR",
-                  data: {
-                    error: e,
-                  },
-                })
-              }
-            }
-          })
-        },
-      },
       on: {
         CONNECT: {
-          actions: forwardTo("connectService"),
+          // actions: forwardTo("connectService"),
+          target: "connecting",
+          // TODO: save connecting provider?
+        },
+      },
+    },
+    connecting: {
+      entry: ["onConnecting"],
+      on: {
+        CONNECT: {
+          // actions: forwardTo("connectService"),
+          target: "connecting",
+          // TODO: save connecting provider?
+        },
+        CANCEL_CONNECT: {
+          target: "idle",
         },
         CONNECT_DONE: {
           target: "connected",
@@ -173,6 +158,50 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
           //   })
           // }),
         },
+      },
+      invoke: {
+        id: "connectService",
+        // src: "connectService",
+        src: (context, _event) => async (callback, onReceive) => {
+          // onReceive(async (e) => {
+          //   // TODO: Handle cancellation with AbortController?
+          //   // if (e.type === "CONNECT") {
+          //   // }
+          // })
+          if (_event.type !== "CONNECT") {
+            return
+          }
+          const provider = context.providers.find(p => p.meta.id === _event.data.provider)
+          if (!provider) {
+            callback({
+              type: "ERROR",
+              data: {
+                error: "Provider not found",
+              },
+            })
+            return
+          }
+          const result = await provider.connect()
+          result.match(() => {
+              callback({
+                type: "CONNECT_DONE",
+                data: {
+                  activeProvider: provider,
+                  principal: provider.principal!,
+                },
+              })
+            },
+            (e) => {
+              callback({
+                type: "ERROR",
+                data: {
+                  error: _event,
+                },
+              })
+            },
+          )
+        },
+        autoForward: true,
       },
     },
     connected: {
@@ -251,6 +280,64 @@ type ClientOptions = {
   }
 }
 
+class Client {
+  public _service: Interpreter<RootContext, any, RootEvent>
+  public config
+  private _emitter: Emitter
+
+  constructor(service, emitter, config) {
+    this._service = service
+    this._emitter = emitter
+    this.config = config
+  }
+
+  on(evt, fn) {
+    this._emitter.on(evt, fn)
+    return () => this._emitter.off(evt, fn) as void
+  }
+
+  subscribe(fn) {
+    const sub = this._service.subscribe(fn)
+    return sub.unsubscribe
+  }
+
+  connect(provider) {
+    this._service.send({ type: "CONNECT", data: { provider } })
+  }
+
+  cancelConnect() {
+    this._service.send({ type: "CANCEL_CONNECT" })
+  }
+
+  public disconnect() {
+    this._service.send({ type: "DISCONNECT" })
+  }
+
+  public get providers() {
+    return this._service.state.context.providers
+  }
+
+  public get activeProvider() {
+    return this._service.state.context.activeProvider
+  }
+
+  public get principal() {
+    return this._service.state.context.principal
+  }
+
+  public get actors() {
+    return this._service.state.context.actors
+  }
+
+  public get anonymousActors() {
+    return this._service.state.context.anonymousActors
+  }
+
+  public get status() {
+    return this._service.state.value
+  }
+}
+
 const createClient = ({
                         canisters = {},
                         providers: p = [],
@@ -270,16 +357,17 @@ const createClient = ({
 
   providers.forEach(p => p.config = config)
 
+  const agent = new HttpAgent({ host: config.host })
+  if (config.dev) {
+    // TODO: handle errors
+    // try {
+    agent.fetchRootKey().catch(e => console.error(e))
+    // } catch (e) {
+    //
+    // }
+  }
   const anonymousActors = Object.entries(canisters).map(([canisterName, val]) => {
     const { canisterId, idlFactory } = val
-    const agent = new HttpAgent({ host: config.host })
-    // Fetch root key for certificate validation during development
-    if (config.dev) {
-      agent.fetchRootKey().catch(err => {
-        console.warn("Unable to fetch root key. Check to ensure that your local replica is running")
-        console.error(err)
-      })
-    }
     const actor = Actor.createActor(idlFactory, {
       agent,
       canisterId,
@@ -287,7 +375,7 @@ const createClient = ({
     return { actor, canisterName, idlFactory, canisterId }
   }).reduce((acc, { canisterName, actor }) => ({
     ...acc,
-    [canisterName]: actor,
+    [canisterName]: ok(actor),
   }), {})
 
   const emitter = new Emitter()
@@ -318,26 +406,48 @@ const createClient = ({
       actorService: (context, _event) => (callback, onReceive) => {
         onReceive(async (e: RootEvent) => {
           if (e.type === "CREATE_ACTOR") {
-            const actor = (await context.activeProvider.createActor(e.data.canisterId, e.data.idlFactory) as ActorSubclass)
-            callback({ type: "SAVE_ACTOR", data: { actor, canisterName: e.data.canisterName } })
+            // TODO: why type error
+            const result = await context.activeProvider!.createActor(e.data.canisterId, e.data.idlFactory)
+            callback({ type: "SAVE_ACTOR", data: { actor: result, canisterName: e.data.canisterName } })
+            // result.match(
+            //   (actor) => {
+            //     callback({ type: "SAVE_ACTOR", data: { actor: result, canisterName: e.data.canisterName } })
+            //   },
+            //   (error) => {
+            //     // TODO: ?
+            //     callback({ type: "ERROR", data: { error } })
+            //   },
+            // )
           }
         })
-        Object.entries(context.canisters).forEach(async ([canisterName, val]) => {
-          const { canisterId, idlFactory } = val
-          const actor = (await context.activeProvider.createActor(canisterId, idlFactory) as ActorSubclass)
-          callback({ type: "SAVE_ACTOR", data: { actor, canisterName } })
+        // Initialize
+        Object.keys(context.canisters).forEach(async (canisterName) => {
+          const { canisterId, idlFactory } = context.canisters[canisterName]
+          // TODO: why type error
+          const result = await context.activeProvider!.createActor(canisterId, idlFactory)
+          callback({ type: "SAVE_ACTOR", data: { actor: result, canisterName } })
         })
       },
     },
     actions: {
-      onDisconnect: (context, event) => {
+      onDisconnect: () => {
         emitter.emit("disconnect")
       },
-      onInit: (context, event) => {
+      onInit: () => {
         emitter.emit("init")
       },
-      onConnect: (context, event) => {
+      onConnect: (context, event: ConnectEvent) => {
         emitter.emit("connect", event.data)
+        // TODO: check if works
+        return assign({
+          connectingProvider: event.data,
+        })
+      },
+      onConnecting: () => {
+        emitter.emit("connecting")
+      },
+      onDisconnecting: () => {
+        emitter.emit("disconnecting")
       },
     },
   })
@@ -346,44 +456,11 @@ const createClient = ({
 
   service.start()
 
-  return {
-    _service: service,
-    on: (evt, fn) => {
-      emitter.on(evt, fn)
-      return () => emitter.off(evt, fn)
-    },
-    subscribe: (fn) => {
-      const sub = service.subscribe(fn)
-      return sub.unsubscribe
-    },
-    connect: (provider) => {
-      service.send({ type: "CONNECT", data: { provider } })
-    },
-    disconnect: () => {
-      service.send({ type: "DISCONNECT" })
-    },
-    get providers() {
-      return service.state.context.providers
-    },
-    get activeProvider() {
-      return service.state.context.activeProvider
-    },
-    get principal() {
-      return service.state.context.principal
-    },
-    get actors() {
-      return service.state.context.actors
-    },
-    get anonymousActors() {
-      return service.state.context.anonymousActors
-    },
-    get status() {
-      return service.state.value.idle
-    },
-    get config() {
-      return config
-    },
-  }
+  return new Client(service, emitter, config)
+}
+
+export type {
+  Client,
 }
 
 export { createClient }

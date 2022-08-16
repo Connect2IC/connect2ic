@@ -7,6 +7,11 @@ import dfinityLogoLight from "../assets/dfinity.svg"
 // @ts-ignore
 import dfinityLogoDark from "../assets/dfinity.svg"
 import { IDL } from "@dfinity/candid"
+import {
+  ok,
+  err,
+} from "neverthrow"
+import { ConnectError, CreateActorError, DisconnectError, InitError } from "./connectors"
 
 class InternetIdentity implements IConnector {
 
@@ -57,64 +62,92 @@ class InternetIdentity implements IConnector {
   }
 
   async init() {
-    this.#client = await AuthClient.create()
-    const isConnected = await this.isConnected()
-    // // TODO: fix?
-    if (isConnected) {
-      this.#identity = this.#client.getIdentity()
-      this.#principal = this.#identity?.getPrincipal().toString()
+    try {
+      this.#client = await AuthClient.create()
+      const isConnected = await this.isConnected()
+      if (isConnected) {
+        this.#identity = this.#client.getIdentity()
+        this.#principal = this.#identity?.getPrincipal().toString()
+      }
+      return ok({ isConnected })
+    } catch (e) {
+      console.error(e)
+      return err({ kind: InitError.InitFailed })
     }
-    return true
   }
 
   async isConnected(): Promise<boolean> {
-    return await this.#client!.isAuthenticated()
+    try {
+      if (!this.#client) {
+        return false
+      }
+      return await this.#client!.isAuthenticated()
+    } catch (e) {
+      console.error(e)
+      return false
+    }
   }
 
-  async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory): Promise<ActorSubclass<Service> | undefined> {
-    // TODO: pass identity?
-    const agent = new HttpAgent({
-      ...this.#config,
-      identity: this.#identity,
-    })
-
-    if (this.#config.dev) {
-      // Fetch root key for certificate validation during development
-      agent.fetchRootKey().catch(err => {
-        console.warn("Unable to fetch root key. Check to ensure that your local replica is running")
-        console.error(err)
+  async createActor<Service>(canisterId, idlFactory) {
+    try {
+      // TODO: pass identity?
+      const agent = new HttpAgent({
+        ...this.#config,
+        identity: this.#identity,
       })
-    }
 
-    // TODO: add actorOptions?
-    return Actor.createActor(idlFactory, {
-      agent,
-      canisterId,
-    })
+      if (this.#config.dev) {
+        // Fetch root key for certificate validation during development
+        // Fetch root key for certificate validation during development
+        const res = await agent.fetchRootKey().then(() => ok(true)).catch(e => err({ kind: CreateActorError.FetchRootKeyFailed }))
+        if (res.isErr()) {
+          return res
+        }
+      }
+      // TODO: add actorOptions?
+      const actor = Actor.createActor<Service>(idlFactory, {
+        agent,
+        canisterId,
+      })
+      return ok(actor)
+    } catch (e) {
+      console.error(e)
+      return err({ kind: CreateActorError.CreateActorFailed })
+    }
   }
 
   async connect() {
-    await new Promise((resolve, reject) => {
-      this.#client?.login({
-        // TODO: local
-        identityProvider: this.#config.providerUrl,
-        onSuccess: () => resolve(true),
-        onError: reject,
+    try {
+      await new Promise<void>((resolve, reject) => {
+        this.#client?.login({
+          // TODO: local
+          identityProvider: this.#config.providerUrl,
+          onSuccess: resolve,
+          onError: reject,
+        })
       })
-    })
-    const identity = this.#client?.getIdentity()
-    const principal = identity?.getPrincipal().toString()
-    this.#identity = identity
-    this.#principal = principal
-    return true
+      const identity = this.#client?.getIdentity()
+      const principal = identity?.getPrincipal().toString()
+      this.#identity = identity
+      this.#principal = principal
+      return ok(true)
+    } catch (e) {
+      console.error(e)
+      return err({ kind: ConnectError.ConnectFailed })
+    }
   }
 
   async disconnect() {
-    await this.#client?.logout()
-    return true
+    try {
+      await this.#client?.logout()
+      return ok(true)
+    } catch (e) {
+      console.error(e)
+      return err({ kind: DisconnectError.DisconnectFailed })
+    }
   }
 }
 
 export {
-  InternetIdentity
+  InternetIdentity,
 }

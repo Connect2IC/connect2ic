@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react"
 import { useConnect } from "./useConnect"
 import { useWallet } from "./useWallet"
+import { WalletErrors } from "@connect2ic/core/providers"
+import { IConnector, IWalletConnector } from "@connect2ic/core"
 
 type Asset = {
   amount: number
@@ -17,17 +19,22 @@ export const useBalance = () => {
   const { activeProvider } = useConnect()
   const [assets, setAssets] = useState<Array<Asset>>()
   const [loading, setLoading] = useState(true)
-  // TODO:
-  const [error, setError] = useState(false)
+  const [error, setError] = useState<{ kind: WalletErrors } | undefined>()
 
   const refetch = async () => {
     if (!wallet || !activeProvider) {
       setAssets(undefined)
       return
     }
-    // TODO: errors
-    const result = await activeProvider.queryBalance?.()
-    setAssets(result)
+    const result = await (activeProvider as IConnector & IWalletConnector).queryBalance?.()
+    result.match(
+      (assets) => {
+        setAssets(assets)
+      },
+      (error) => {
+        setError(error)
+      },
+    )
     setLoading(false)
     return result
   }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, provide } from "vue"
 import { contextKey } from "./context"
-import type { createClient } from "@connect2ic/core"
+import type { Client } from "@connect2ic/core"
 
 let open = ref(false)
 const dialog = {
@@ -15,7 +15,7 @@ const dialog = {
 }
 
 const { client } = defineProps<{
-  client: ReturnType<typeof createClient>
+  client: Client
 }>()
 
 provide(contextKey, {

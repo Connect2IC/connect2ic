@@ -6,6 +6,11 @@ import nfidLogoLight from "../assets/nfid.png"
 // @ts-ignore
 import nfidLogoDark from "../assets/nfid.png"
 import { IDL } from "@dfinity/candid"
+import {
+  ok,
+  err,
+} from "neverthrow"
+import { ConnectError, CreateActorError, DisconnectError, InitError } from "./connectors"
 
 class NFID implements IConnector {
 
@@ -62,64 +67,96 @@ class NFID implements IConnector {
   }
 
   async init() {
-    // TODO: pass in config or not?
-    this.#client = await AuthClient.create()
-    const isAuthenticated = await this.isConnected()
-    if (isAuthenticated) {
-      this.#identity = this.#client.getIdentity()
-      this.#principal = this.#identity.getPrincipal().toString()
+    try {
+      // TODO: pass in config or not?
+      this.#client = await AuthClient.create()
+      const isConnected = await this.isConnected()
+      if (isConnected) {
+        this.#identity = this.#client.getIdentity()
+        this.#principal = this.#identity.getPrincipal().toString()
+      }
+      return ok({ isConnected })
+    } catch (e) {
+      console.error(e)
+      return err({ kind: InitError.InitFailed })
     }
-    return true
   }
 
   async isConnected() {
-    return await this.#client.isAuthenticated()
+    try {
+      if (!this.#client) {
+        return false
+      }
+      return await this.#client.isAuthenticated()
+    } catch (e) {
+      console.error(e)
+      return false
+    }
   }
 
-  async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory): Promise<ActorSubclass<Service> | undefined> {
-    // TODO: pass identity?
-    const agent = new HttpAgent({
-      ...this.#config,
-      identity: this.#identity,
-    })
-
-    if (this.#config.dev) {
-      // Fetch root key for certificate validation during development
-      agent.fetchRootKey().catch(err => {
-        console.warn("Unable to fetch root key. Check to ensure that your local replica is running")
-        console.error(err)
+  async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory) {
+    try {
+      // TODO: allow passing identity?
+      const agent = new HttpAgent({
+        ...this.#config,
+        identity: this.#identity,
       })
-    }
 
-    // TODO: add actorOptions?
-    return Actor.createActor(idlFactory, {
-      agent,
-      canisterId,
-    })
+      if (this.#config.dev) {
+        // Fetch root key for certificate validation during development
+        const res = await agent.fetchRootKey().then(() => ok(true)).catch(e => err({ kind: CreateActorError.FetchRootKeyFailed }))
+        if (res.isErr()) {
+          return res
+        }
+      }
+      // TODO: add actorOptions?
+      const actor = Actor.createActor<Service>(idlFactory, {
+        agent,
+        canisterId,
+      })
+      return ok(actor)
+    } catch (e) {
+      console.error(e)
+      return err({ kind: CreateActorError.CreateActorFailed })
+    }
   }
 
   async connect() {
-    await new Promise((resolve, reject) => {
-      this.#client.login({
-        // TODO: local
-        identityProvider: this.#config.providerUrl + `/authenticate/?applicationName=${this.#config.appName}`,
-        onSuccess: resolve,
-        onError: reject,
+    try {
+      await new Promise((resolve, reject) => {
+        this.#client.login({
+          // TODO: local
+          identityProvider: this.#config.providerUrl + `/authenticate/?applicationName=${this.#config.appName}`,
+          onSuccess: resolve,
+          onError: reject,
+        })
       })
-    })
-    const identity = this.#client.getIdentity()
-    const principal = identity.getPrincipal().toString()
-    this.#identity = identity
-    this.#principal = principal
-    return true
+      const identity = this.#client.getIdentity()
+      const principal = identity.getPrincipal().toString()
+      // TODO: why is this check here?
+      if (identity) {
+        this.#identity = identity
+        this.#principal = principal
+        return ok(true)
+      }
+      return ok(true)
+    } catch (e) {
+      console.error(e)
+      return err({ kind: ConnectError.ConnectFailed })
+    }
   }
 
   async disconnect() {
-    await this.#client.logout()
-    return true
+    try {
+      await this.#client.logout()
+      return ok(true)
+    } catch (e) {
+      console.error(e)
+      return err({ kind: DisconnectError.DisconnectFailed })
+    }
   }
 }
 
 export {
-  NFID
+  NFID,
 }

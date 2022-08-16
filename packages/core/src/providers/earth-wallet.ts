@@ -4,6 +4,7 @@ import { IDL } from "@dfinity/candid"
 import earthLogoLight from "../assets/earth.png"
 // @ts-ignore
 import earthLogoDark from "../assets/earth.png"
+import { ActorSubclass } from "@dfinity/agent"
 
 class EarthWallet implements IConnector, IWalletConnector {
 
@@ -81,7 +82,7 @@ class EarthWallet implements IConnector, IWalletConnector {
     // return await this.#ic.isConnected()
   }
 
-  async createActor(canisterId, idlFactory) {
+  async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory): Promise<ActorSubclass<Service> | undefined> {
     // Fetch root key for certificate validation during development
     if (this.#config.dev) {
       // await this.#ic.agent.fetchRootKey()

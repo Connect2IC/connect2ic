@@ -1,6 +1,8 @@
 import { useState } from "react"
 import { useConnect } from "./useConnect"
 import { useWallet } from "./useWallet"
+import { IConnector, IWalletConnector, TransferError } from "@connect2ic/core"
+import { err } from "neverthrow"
 
 type Props = {
   amount: number,
@@ -13,20 +15,27 @@ export const useTransfer = ({ amount, to, from = undefined }: Props) => {
   const [wallet] = useWallet()
   const { activeProvider, principal } = useConnect()
   const [loading, setLoading] = useState<boolean>(false)
-  const [error, setError] = useState<Error | undefined>()
+  const [payload, setPayload] = useState<{ height: number }>()
+  const [error, setError] = useState<{ kind: TransferError }>()
 
   const transfer = async () => {
     if (!wallet || !activeProvider) {
-      return
+      return err({ kind: TransferError.NotConnected })
     }
     setLoading(true)
-    const result = await activeProvider.requestTransfer({
+    const result = await (activeProvider as IConnector & IWalletConnector).requestTransfer({
       amount,
       to,
-      from: from ?? principal,
-    }).catch(e => {
-      setError(e)
     })
+    result.match(
+      (payload) => {
+        // TODO: ?
+        setPayload(payload)
+      },
+      (error) => {
+        setError(error)
+      },
+    )
     setLoading(false)
     return result
   }

@@ -1,13 +1,13 @@
-import { useContext } from "react"
+import { useContext, useState } from "react"
 import { useSelector } from "@xstate/react"
 import { useConnect } from "./useConnect"
 import { Connect2ICContext } from "../context"
-import type { IDL } from "@dfinity/candid"
-import { ActorSubclass } from "@dfinity/agent"
+import type { ActorSubclass, Actor } from "@dfinity/agent"
+import { IDL } from "@dfinity/candid"
 
-// TODO: Figure out ts error
+// TODO: ??
 // @ts-ignore
-export const useCanister: (canisterName: string, options?: { mode: string }) => readonly [ActorSubclass, { canisterDefinition: { canisterId: string; idlFactory: IDL.InterfaceFactory }; error: boolean; loading: boolean }] = (
+export const useCanister: <T>(canisterName: string, options?: { mode: string }) => readonly [ActorSubclass, { canisterDefinition: any; error: any; loading: boolean }] = <T>(
   canisterName: string,
   options: { mode: string } = {
     mode: "auto", // "anonymous" | "connected"
@@ -16,23 +16,20 @@ export const useCanister: (canisterName: string, options?: { mode: string }) => 
   const { mode } = options
   const { client } = useContext(Connect2ICContext)
 
-  const anonymousActor = useSelector(client._service, (state) => state.context.anonymousActors[canisterName])
-  const actor = useSelector(client._service, (state) => state.context.actors[canisterName])
+  const anonymousActorResult = useSelector(client._service, (state) => state.context.anonymousActors[canisterName])
+  const actorResult = useSelector(client._service, (state) => state.context.actors[canisterName])
   const canisterDefinition = useSelector(client._service, (state) => state.context.canisters[canisterName])
   const { isConnected } = useConnect()
 
-  const signedIn = (isConnected && actor && mode !== "anonymous")
-  const canister = signedIn ? actor : anonymousActor
-
-  // TODO:
-  const loading = !canister
-  const error = false
+  const signedIn = (isConnected && actorResult && mode !== "anonymous")
+  const actor = signedIn ? actorResult : anonymousActorResult
 
   return [
-    canister,
+    actor.isOk() ? actor.value : undefined,
     {
-      error,
-      loading,
+      error: actor.isErr() ? actor.error : undefined,
+      // TODO: ?
+      loading: !actor,
       canisterDefinition,
     },
   ] as const

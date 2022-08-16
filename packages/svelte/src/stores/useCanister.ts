@@ -6,8 +6,10 @@ import type { ContextState } from "../context"
 import { derived, writable } from "svelte/store"
 import type { Readable } from "svelte/store"
 import type { ActorSubclass } from "@dfinity/agent"
+import type { CreateActorResult, CreateActorError } from "@connect2ic/core"
+import type { ActorMethod } from "@dfinity/agent"
 
-export const useCanister = (
+export const useCanister: <Service extends Record<string, ActorMethod<unknown[], unknown>>>(canisterName: string, options?: { mode: string }) => readonly [Readable<ActorSubclass<Service> | undefined>, { canisterDefinition: Readable<unknown>; error: Readable<{ kind: CreateActorError } | undefined>; loading: Readable<boolean> }] = <Service extends Record<string, ActorMethod<unknown[], unknown>>>(
   canisterName: string,
   options: { mode: string } = {
     mode: "auto", // "anonymous" | "connected"
@@ -15,16 +17,31 @@ export const useCanister = (
 ) => {
   const { mode } = options
   const { client } = getContext<ContextState>(contextKey)
-  const anonymousActor = useSelector(client._service, (state) => state.context.anonymousActors[canisterName])
-  const actor = useSelector(client._service, (state) => state.context.actors[canisterName])
+  const anonymousActorResult = useSelector(client._service, (state) => state.context.anonymousActors[canisterName])
+  const actorResult = useSelector(client._service, (state) => state.context.actors[canisterName])
+  const canisterDefinition = useSelector(client._service, (state) => state.context.canisters[canisterName])
   const { isConnected } = useConnect()
-  const canister: Readable<ActorSubclass> = derived([isConnected, actor, anonymousActor], ([$isConnected, $actor, $anonymousActor], set) => {
+  const chosenActorResult: Readable<CreateActorResult<Service>> = derived([isConnected, actorResult, anonymousActorResult], ([$isConnected, $actorResult, $anonymousActorResult], set) => {
     // @ts-ignore
-    set($isConnected && $actor && mode !== "anonymous" ? $actor : $anonymousActor)
+    set($isConnected && $actorResult && mode !== "anonymous" ? $actorResult : $anonymousActorResult)
   })
-  // TODO:
-  const loading: Readable<boolean> = derived(canister, (c, set) => set(!c))
-  const error = false
+  const actor: Readable<ActorSubclass<Service> | undefined> = derived([chosenActorResult], ([$chosenActorResult], set) => {
+    // @ts-ignore
+    set($chosenActorResult.isOk() ? $chosenActorResult.value : undefined)
+  })
 
-  return [canister, { error, loading }] as const
+  // TODO: ?
+  const loading: Readable<boolean> = derived(actor, (c, set) => set(!c))
+  const error: Readable<{ kind: CreateActorError } | undefined> = derived([chosenActorResult], ([$chosenActorResult], set) => {
+    $chosenActorResult.isErr() ? set($chosenActorResult.error) : set(undefined)
+  })
+
+  return [
+    actor,
+    {
+      error,
+      loading,
+      canisterDefinition,
+    },
+  ] as const
 }
