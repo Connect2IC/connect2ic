@@ -4,6 +4,7 @@ import { PlugWallet } from "./plug-wallet"
 import { StoicWallet } from "./stoic-wallet"
 import { InfinityWallet } from "./infinity-wallet"
 import { NFID } from "./nfid"
+import { ICX } from "./icx/connector"
 // import { EarthWallet } from "./earth-wallet"
 import type { IConnector, IWalletConnector } from "./connectors"
 
@@ -22,8 +23,15 @@ type Config = {
   appName?: string
 }
 
+let isDesktop = false
+let isMobile = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry|webOS)/)
+
+if (!isMobile) {
+  isDesktop = true
+}
+
 export const defaultProviders: (config: Config) => Array<Provider> = (config) => {
-  return [
+  return isDesktop ? [
     new AstroX(config),
     // EarthWallet,
     new InfinityWallet(config),
@@ -31,14 +39,14 @@ export const defaultProviders: (config: Config) => Array<Provider> = (config) =>
     new NFID(config),
     new PlugWallet(config),
     new StoicWallet(config),
-  ]
+  ] : [new ICX(config)]
 }
 
 export const walletProviders: (Config) => Array<WalletProvider> = (config) => {
-  return [
+  return isDesktop ? [
     new AstroX(config),
     new PlugWallet(config),
-  ]
+  ] : [new ICX(config)]
 }
 
 export {
@@ -49,4 +57,5 @@ export {
   NFID,
   PlugWallet,
   StoicWallet,
+  ICX,
 }

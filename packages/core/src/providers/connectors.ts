@@ -5,39 +5,36 @@ import type { IDL } from "@dfinity/candid"
 type CustomError<T> = { kind: T, message?: string }
 
 export enum CreateActorError {
-  FetchRootKeyFailed,
-  CreateActorFailed,
-  NotInitialized,
-  LocalActorsNotSupported,
-}
-
-export enum ConnectError {
-  NotInitialized,
-  NotInstalled,
-  ConnectFailed,
-  IsLocked,
-}
-
-export enum DisconnectError {
-  DisconnectFailed,
-  NotInitialized
-}
-
-export enum InitError {
-  NotInstalled,
-  InitFailed
-}
-
-export enum TransferError {
-  InsufficientBalance,
-  TransferFailed,
-  FaultyAddress,
-  NotConnected
+  FetchRootKeyFailed = "FETCH_ROOT_KEY_FAILED",
+  CreateActorFailed = "CREATE_ACTOR_FAILED",
+  NotInitialized = "NOT_INITIALIZED",
+  LocalActorsNotSupported = "LOCAL_ACTORS_NOT_SUPPORTED",
 }
 
 export type CreateActorResult<Service> = Result<ActorSubclass<Service>, CustomError<CreateActorError>>
+
+export enum ConnectError {
+  NotInitialized = "NOT_INITIALIZED",
+  NotInstalled = "NOT_INSTALLED",
+  ConnectFailed = "CONNECT_FAILED",
+  IsLocked = "IS_LOCKED",
+}
+
 export type ConnectResult = Result<boolean, CustomError<ConnectError>>
+
+export enum DisconnectError {
+  DisconnectFailed = "DISCONNECT_FAILED",
+  NotInitialized = "NOT_INITIALIZED"
+}
+
 export type DisconnectResult = Result<boolean, CustomError<DisconnectError>>
+
+export enum InitError {
+  NotInstalled = "NOT_INSTALLED",
+  InitFailed = "INIT_FAILED",
+  FetchRootKeyFailed = "FETCH_ROOT_KEY_FAILED",
+}
+
 export type InitResult = Result<{ isConnected: boolean }, CustomError<InitError>>
 
 export interface IConnector {
@@ -53,15 +50,15 @@ export interface IConnector {
     name: string
   }
   isConnected: () => Promise<boolean>
-  createActor: <Service>(canisterId: string, interfaceFactory: IDL.InterfaceFactory) => Promise<CreateActorResult<Service>>
+  createActor: <Service>(canisterId: string, interfaceFactory: IDL.InterfaceFactory, config?: {}) => Promise<CreateActorResult<Service>>
   connect: () => Promise<ConnectResult>
   disconnect: () => Promise<DisconnectResult>
   principal?: string
 }
 
 export enum BalanceError {
-  NotInitialized,
-  QueryBalanceFailed,
+  NotInitialized = "NOT_INITIALIZED",
+  QueryBalanceFailed = "QUERY_BALANCE_FAILED",
 }
 
 export type BalanceResult = Result<Array<{
@@ -73,20 +70,37 @@ export type BalanceResult = Result<Array<{
   symbol: string
 }>, CustomError<BalanceError>>
 
+export enum TransferError {
+  InsufficientBalance = "INSUFFICIENT_BALANCE",
+  TransferFailed = "TRANSFER_FAILED",
+  FaultyAddress = "FAULTY_ADDRESS",
+  NotInitialized = "NOT_INITIALIZED",
+  NotConnected = "NOT_CONNECTED",
+}
+
 export type TransferResult = Result<{ height: number }, CustomError<TransferError>>
+
+export enum SignError {
+  NotConnected = "NOT_CONNECTED",
+  NotInitialized = "NOT_INITIALIZED"
+}
+
+export type SignResult = Result<{ height: number }, CustomError<SignError>>
 
 export interface IWalletConnector {
   address: () => {
     principal?: string
     accountId?: string
   },
-  requestTransfer: ({
-                      amount: number,
-                      to: string,
-                    }) => Promise<TransferResult>
+  requestTransfer: (args: {
+    amount: number,
+    to: string,
+    symbol?: string,
+    standard?: string,
+  }) => Promise<TransferResult>
   queryBalance: () => Promise<BalanceResult>
   // TODO:
-  // signMessage?: (any) => Promise<any>
+  signMessage?: (any) => Promise<SignResult>
   // getManagementCanister: (any) => Promise<any>
   // callClientRPC: (any) => Promise<any>
   // requestBurnXTC: (any) => Promise<any>

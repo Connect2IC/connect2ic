@@ -171,7 +171,6 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
             return
           }
           const provider = context.providers.find(p => p.meta.id === _event.data.provider)
-          console.log("find provider", provider)
           if (!provider) {
             callback({
               type: "ERROR",
@@ -181,7 +180,6 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
             })
             return
           }
-          console.log("provider.connect")
           const result = await provider.connect()
           result.match(() => {
               callback({
@@ -193,6 +191,7 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
               })
             },
             (e) => {
+              console.error(e)
               callback({
                 type: "ERROR",
                 data: {
