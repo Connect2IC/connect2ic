@@ -70,15 +70,44 @@ export type BalanceResult = Result<Array<{
   symbol: string
 }>, CustomError<BalanceError>>
 
+export enum TokensError {
+  NotInitialized = "NOT_INITIALIZED",
+  QueryBalanceFailed = "QUERY_BALANCE_FAILED",
+}
+
+export type TokensResult = Result<Array<{
+  amount: number
+  canisterId: string
+  decimals: number
+  image?: string
+  name: string
+  symbol: string
+}>, CustomError<TokensError>>
+
+export enum NFTsError {
+  NotInitialized = "NOT_INITIALIZED",
+  QueryBalanceFailed = "QUERY_BALANCE_FAILED",
+}
+
+export type NFTsResult = Result<Array<{
+  amount: number
+  canisterId: string
+  decimals: number
+  image?: string
+  name: string
+  symbol: string
+}>, CustomError<NFTsError>>
+
 export enum TransferError {
   InsufficientBalance = "INSUFFICIENT_BALANCE",
   TransferFailed = "TRANSFER_FAILED",
   FaultyAddress = "FAULTY_ADDRESS",
   NotInitialized = "NOT_INITIALIZED",
+  TokenNotSupported = "TOKEN_NOT_SUPPORTED",
   NotConnected = "NOT_CONNECTED",
 }
 
-export type TransferResult = Result<{ height: number }, CustomError<TransferError>>
+export type TransferResult = Result<{ height?: number; transactionId?: string; }, CustomError<TransferError>>
 
 export enum SignError {
   NotConnected = "NOT_CONNECTED",
@@ -93,12 +122,21 @@ export interface IWalletConnector {
     accountId?: string
   },
   requestTransfer: (args: {
-    amount: number,
-    to: string,
-    symbol?: string,
-    standard?: string,
+    amount: number
+    to: string
+    symbol?: string
+    standard?: string
+  }) => Promise<TransferResult>
+  requestTransferNFT: (args: {
+    to: string
+    tokenIdentifier: string;
+    tokenIndex: number;
+    canisterId: string;
+    standard: 'ICP' | 'DIP20' | 'EXT' | 'DRC20' | string;
   }) => Promise<TransferResult>
   queryBalance: () => Promise<BalanceResult>
+  // queryTokens: () => Promise<TokensResult>
+  queryNFTs: () => Promise<NFTsResult>
   // TODO:
   signMessage?: (any) => Promise<SignResult>
   // getManagementCanister: (any) => Promise<any>

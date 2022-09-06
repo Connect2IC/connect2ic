@@ -18,15 +18,11 @@ import {
   CreateActorError,
   DisconnectError,
   InitError,
-  TransferError,
+  TransferError, TokensError, NFTsError,
 } from "../connectors"
+import { TransactionMessageKind, TransactionType } from "@astrox/sdk-webview/build/types"
 
 class ICX implements IConnector, IWalletConnector {
-
-  // TODO:
-  // private readonly _isReady: boolean = false
-  // private readonly env: any
-  //
 
   public meta = {
     features: ["wallet"],
@@ -48,9 +44,25 @@ class ICX implements IConnector, IWalletConnector {
   }
   #ic: AstroXWebViewHandler
   #principal?: string
+  #supportedTokenList: Array<{
+    symbol: string;
+    standard: string;
+    decimals: number;
+    fee: string;
+    name: string;
+    canisterId: string;
+  }> = []
+  #wallet?: {
+    principal: string;
+    accountId: string;
+  }
 
   get principal() {
     return this.#principal
+  }
+
+  get wallets() {
+    return [this.#wallet]
   }
 
   constructor(userConfig = {}) {
@@ -77,10 +89,22 @@ class ICX implements IConnector, IWalletConnector {
 
   async init() {
     try {
+      if (!this.#ic) {
+        // TODO: move to providers
+        await new Promise((resolve, reject) => {
+          window.addEventListener("icx:ready", resolve)
+        })
+        // @ts-ignore
+        this.#ic = window.icx
+      }
+      await this.#ic.init()
+      // @ts-ignore
+      this.#supportedTokenList = await this.#ic.getSupportedTokenList()
       const isConnected = await this.isConnected()
       // TODO: never connected
       if (isConnected) {
         this.#principal = this.#ic.getPrincipal().toText()
+        this.#wallet = this.#ic.wallet
       }
       return ok({ isConnected })
     } catch (e) {
@@ -106,10 +130,10 @@ class ICX implements IConnector, IWalletConnector {
   // TODO: export & use types from astrox/connection instead of dfinity/agent
   async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory, config = {}): Promise<Result<ActorSubclass<Service>, { kind: CreateActorError; }>> {
     try {
-      // TODO: support per actor configuration
-      if (this.#config.dev) {
-        return err({ kind: CreateActorError.LocalActorsNotSupported })
-      }
+      // TODO: ?
+      // if (this.#config.dev) {
+      //   return err({ kind: CreateActorError.LocalActorsNotSupported })
+      // }
       if (!this.#ic) {
         return err({ kind: CreateActorError.NotInitialized })
       }
@@ -143,14 +167,6 @@ class ICX implements IConnector, IWalletConnector {
     }
   }
 
-  // TODO:
-  // public async disconnect(): Promise<boolean> {
-  //   this._cacheKey && (await _ms.disconnect.invoke(this._cacheKey))
-  //   this.removePrivateKey()
-  //
-  //
-  //   return true
-  // }
   async disconnect() {
     try {
       await this.#ic?.disconnect()
@@ -164,11 +180,18 @@ class ICX implements IConnector, IWalletConnector {
   address() {
     return {
       principal: this.#principal,
-      // accountId: this.#ic.accountId,
     }
   }
 
-  async requestTransferNFT(args: TransferNFTWithIdentifier): Promise<Result<string, { kind: TransferError; }>> {
+  // accountId: this.#wallet?.accountId,
+
+  async requestTransferNFT(args: {
+    tokenIdentifier: string;
+    tokenIndex: number;
+    canisterId: string;
+    to: string;
+    standard: 'ICP' | 'DIP20' | 'EXT' | 'DRC20' | string;
+  }) {
     try {
       const {
         tokenIdentifier,
@@ -176,23 +199,29 @@ class ICX implements IConnector, IWalletConnector {
         canisterId,
         standard,
         to,
-        // symbol,
-        amount = 1,
       } = args
       if (!this.#ic) {
         return err({ kind: TransferError.NotInitialized })
       }
-      const result = await this.#ic.requestTransfer({
+      const response = await this.#ic.requestTransfer({
         tokenIdentifier,
         tokenIndex,
         canisterId,
         standard,
         to,
       })
-      if (!result) {
+      if (!response || response.kind === TransactionMessageKind.fail) {
         return err({ kind: TransferError.TransferFailed })
       }
-      return ok(result)
+      if (response.kind === TransactionMessageKind.success) {
+        // ?????
+        if (response.type === TransactionType.nft) {
+          return ok({
+            ...response.payload,
+          })
+        }
+      }
+      return err({ kind: TransferError.TransferFailed })
     } catch (e) {
       console.error(e)
       return err({ kind: TransferError.TransferFailed })
@@ -207,29 +236,32 @@ class ICX implements IConnector, IWalletConnector {
       standard = "ICP",
     } = args
     try {
-      const result = await this.#ic?.requestTransfer({
-        amount,
+      const tokenInfo = this.#supportedTokenList.find(({
+                                                         symbol: tokenSymbol,
+                                                       }) => symbol === tokenSymbol)
+      if (!tokenInfo) {
+        return err({ kind: TransferError.TokenNotSupported })
+      }
+      // @ts-ignore
+      const response = await this.#ic?.requestTransfer({
+        //@ts-ignore
+        amount: BigInt(amount * (10 ** tokenInfo.decimals)),
         to,
         symbol,
         standard,
       })
-      // TODO: why string? check astrox-js
-      if (typeof result === "string") {
-        return err({ kind: TransferError.FaultyAddress })
-      }
-      // check astrox-js
-      if (!result) {
+      if (!response || response.kind === TransactionMessageKind.fail) {
+        // message?
         return err({ kind: TransferError.TransferFailed })
       }
-      switch (result?.kind) {
-        case "transaction-client-success":
-          return ok({
-            // TODO: why is payload optional? check astrox-js
-            height: Number(result.payload?.blockHeight),
-          })
-        default:
-          return err({ kind: TransferError.TransferFailed })
+
+      if (response.kind === TransactionMessageKind.success) {
+        return ok({
+          ...response.payload,
+          height: response.payload.blockHeight ?? Number(response.payload.blockHeight),
+        })
       }
+      return err({ kind: TransferError.TransferFailed })
     } catch (e) {
       console.error(e)
       return err({ kind: TransferError.TransferFailed })
@@ -248,6 +280,32 @@ class ICX implements IConnector, IWalletConnector {
       return err({ kind: BalanceError.QueryBalanceFailed })
     }
   }
+
+  async queryTokens() {
+    try {
+      if (!this.#ic) {
+        return err({ kind: TokensError.NotInitialized })
+      }
+      const response = await this.#ic.queryBalance()
+      return ok(response)
+    } catch (e) {
+      console.error(e)
+      return err({ kind: TokensError.QueryBalanceFailed })
+    }
+  }
+
+  // async queryNFTs() {
+  //   try {
+  //     if (!this.#ic) {
+  //       return err({ kind: NFTsError.NotInitialized })
+  //     }
+  //     // const response = await this.#ic.queryBalance()
+  //     return ok(response)
+  //   } catch (e) {
+  //     console.error(e)
+  //     return err({ kind: NFTsError.QueryBalanceFailed })
+  //   }
+  // }
 
   // TODO:
   // public async signMessage(message: string): Promise<any> => this.#ic.signMessage(message)
