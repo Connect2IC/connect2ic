@@ -23,12 +23,8 @@ type Config = {
   appName?: string
 }
 
-let isDesktop = false
 let isMobile = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry|webOS)/)
-
-if (!isMobile) {
-  isDesktop = true
-}
+let isDesktop = !isMobile
 
 export const defaultProviders: (config: Config) => Array<Provider> = (config) => {
   return isDesktop ? [
