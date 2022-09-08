@@ -105,6 +105,9 @@ class ICX implements IConnector, IWalletConnector {
       if (isConnected) {
         this.#principal = this.#ic.getPrincipal().toText()
         this.#wallet = this.#ic.wallet
+        if (this.#config.dev) {
+          await this.#ic.agent.fetchRootKey()
+        }
       }
       return ok({ isConnected })
     } catch (e) {
@@ -159,6 +162,9 @@ class ICX implements IConnector, IWalletConnector {
         delegationTargets: this.#config.whitelist,
         host: this.#config.host,
       })
+      if (this.#config.dev) {
+        await this.#ic.agent.fetchRootKey()
+      }
       this.#principal = this.#ic.getPrincipal().toText()
       return ok(true)
     } catch (e) {
@@ -177,12 +183,6 @@ class ICX implements IConnector, IWalletConnector {
     }
   }
 
-  address() {
-    return {
-      principal: this.#principal,
-    }
-  }
-
   // accountId: this.#wallet?.accountId,
 
   async requestTransferNFT(args: {
@@ -190,7 +190,7 @@ class ICX implements IConnector, IWalletConnector {
     tokenIndex: number;
     canisterId: string;
     to: string;
-    standard: 'ICP' | 'DIP20' | 'EXT' | 'DRC20' | string;
+    standard: "ICP" | "DIP20" | "EXT" | "DRC20" | string;
   }) {
     try {
       const {
@@ -274,6 +274,7 @@ class ICX implements IConnector, IWalletConnector {
         return err({ kind: BalanceError.NotInitialized })
       }
       const response = await this.#ic.queryBalance()
+      response.forEach(token => token.amount = token.amount / (10 ** token.decimals))
       return ok(response)
     } catch (e) {
       console.error(e)
@@ -281,18 +282,18 @@ class ICX implements IConnector, IWalletConnector {
     }
   }
 
-  async queryTokens() {
-    try {
-      if (!this.#ic) {
-        return err({ kind: TokensError.NotInitialized })
-      }
-      const response = await this.#ic.queryBalance()
-      return ok(response)
-    } catch (e) {
-      console.error(e)
-      return err({ kind: TokensError.QueryBalanceFailed })
-    }
-  }
+  // async queryTokens() {
+  //   try {
+  //     if (!this.#ic) {
+  //       return err({ kind: TokensError.NotInitialized })
+  //     }
+  //     const response = await this.#ic.queryBalance()
+  //     return ok(response)
+  //   } catch (e) {
+  //     console.error(e)
+  //     return err({ kind: TokensError.QueryBalanceFailed })
+  //   }
+  // }
 
   // async queryNFTs() {
   //   try {

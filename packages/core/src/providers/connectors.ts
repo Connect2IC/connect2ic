@@ -117,10 +117,6 @@ export enum SignError {
 export type SignResult = Result<{ height: number }, CustomError<SignError>>
 
 export interface IWalletConnector {
-  address: () => {
-    principal?: string
-    accountId?: string
-  },
   requestTransfer: (args: {
     amount: number
     to: string
@@ -136,7 +132,7 @@ export interface IWalletConnector {
   }) => Promise<TransferResult>
   queryBalance: () => Promise<BalanceResult>
   // queryTokens: () => Promise<TokensResult>
-  queryNFTs: () => Promise<NFTsResult>
+  // queryNFTs: () => Promise<NFTsResult>
   // TODO:
   signMessage?: (any) => Promise<SignResult>
   // getManagementCanister: (any) => Promise<any>
