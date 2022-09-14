@@ -51,6 +51,7 @@ class AstroX implements IConnector, IWalletConnector {
     providerUrl: string,
     ledgerCanisterId: string,
     ledgerHost?: string,
+    noUnify?: boolean,
     host: string,
     dev: boolean,
   }
@@ -70,6 +71,7 @@ class AstroX implements IConnector, IWalletConnector {
       ledgerHost: "https://boundary.ic0.app/",
       host: window.location.origin,
       dev: true,
+      noUnify: false,
       ...userConfig,
     }
   }
@@ -93,6 +95,8 @@ class AstroX implements IConnector, IWalletConnector {
         ledgerCanisterId: this.#config.ledgerCanisterId,
         ledgerHost: this.#config.ledgerHost,
         dev: this.#config.dev,
+        delegationTargets: this.#config.whitelist,
+        noUnify: this.#config.noUnify,
       })
       this.#ic = (window.ic.astrox as IC) ?? ic
       this.#principal = this.#ic.principal.toText()
@@ -153,6 +157,8 @@ class AstroX implements IConnector, IWalletConnector {
         permissions: [PermissionsType.identity, PermissionsType.wallet],
         ledgerCanisterId: this.#config.ledgerCanisterId,
         ledgerHost: this.#config.ledgerHost,
+        delegationTargets: this.#config.whitelist,
+        noUnify: this.#config.noUnify,
       })
       this.#principal = this.#ic.principal.toText()
       // @ts-ignore
@@ -181,11 +187,11 @@ class AstroX implements IConnector, IWalletConnector {
     }
   }
 
-  async requestTransfer(opts: { amount: number, to: string, standard?: string, symbol?: string }) {
-    const { to, amount, standard = "ICP", symbol = "ICP" } = opts
+  async requestTransfer(opts: { amount: number, to: string, standard?: string, symbol?: string, decimals?: number }) {
+    const { to, amount, standard = "ICP", symbol = "ICP", decimals = 8 } = opts
     try {
       const result = await this.#ic?.requestTransfer({
-        amount: balanceFromString(String(amount)),
+        amount: BigInt(amount * (10 ** decimals)),
         to,
         standard,
         symbol,
