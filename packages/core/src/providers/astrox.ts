@@ -1,4 +1,4 @@
-import { IC } from "@astrox/connection"
+import { IC } from "@astrox/sdk-web"
 import type { IDL } from "@dfinity/candid"
 import type { ActorSubclass, Identity } from "@dfinity/agent"
 import {
@@ -127,15 +127,11 @@ class AstroX implements IConnector, IWalletConnector {
   // TODO: export & use types from astrox/connection instead of dfinity/agent
   async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory): Promise<Result<ActorSubclass<Service>, { kind: CreateActorError; }>> {
     try {
-      // TODO: support per actor configuration
-      if (this.#config.dev) {
-        return err({ kind: CreateActorError.LocalActorsNotSupported })
-      }
       if (!this.#ic) {
         return err({ kind: CreateActorError.NotInitialized })
       }
       // @ts-ignore
-      const actor = this.#ic.createActor<Service>(idlFactory, canisterId)
+      const actor = await this.#ic.createActor<Service>(idlFactory, canisterId)
       // @ts-ignore
       return ok(actor)
     } catch (e) {
@@ -185,15 +181,14 @@ class AstroX implements IConnector, IWalletConnector {
     }
   }
 
-  async requestTransfer({
-                          amount,
-                          to,
-                          // TODO: why is this needed?
-                        }: { amount: number, to: string }) {
+  async requestTransfer(opts: { amount: number, to: string, standard?: string, symbol?: string }) {
+    const { to, amount, standard = "ICP", symbol = "ICP" } = opts
     try {
       const result = await this.#ic?.requestTransfer({
         amount: balanceFromString(String(amount)),
         to,
+        standard,
+        symbol,
         // TODO: ?
         sendOpts: {},
       })

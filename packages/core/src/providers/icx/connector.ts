@@ -133,10 +133,6 @@ class ICX implements IConnector, IWalletConnector {
   // TODO: export & use types from astrox/connection instead of dfinity/agent
   async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory, config = {}): Promise<Result<ActorSubclass<Service>, { kind: CreateActorError; }>> {
     try {
-      // TODO: ?
-      // if (this.#config.dev) {
-      //   return err({ kind: CreateActorError.LocalActorsNotSupported })
-      // }
       if (!this.#ic) {
         return err({ kind: CreateActorError.NotInitialized })
       }
@@ -182,8 +178,6 @@ class ICX implements IConnector, IWalletConnector {
       return err({ kind: DisconnectError.DisconnectFailed })
     }
   }
-
-  // accountId: this.#wallet?.accountId,
 
   async requestTransferNFT(args: {
     tokenIdentifier: string;

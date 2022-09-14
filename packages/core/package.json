@@ -66,8 +66,9 @@
   "sideEffects": false,
   "dependencies": {
     "@astrox/connection": "^0.0.52",
-    "@astrox/sdk-core": "^0.1.5",
-    "@astrox/sdk-webview": "^0.1.5",
+    "@astrox/sdk-core": "^0.1.13",
+    "@astrox/sdk-web": "^0.1.13",
+    "@astrox/sdk-webview": "^0.1.13",
     "@dfinity/agent": "^0.13.1",
     "@dfinity/auth-client": "^0.13.1",
     "@dfinity/authentication": "^0.13.1",

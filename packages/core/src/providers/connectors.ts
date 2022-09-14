@@ -123,7 +123,7 @@ export interface IWalletConnector {
     symbol?: string
     standard?: string
   }) => Promise<TransferResult>
-  requestTransferNFT: (args: {
+  requestTransferNFT?: (args: {
     to: string
     tokenIdentifier: string;
     tokenIndex: number;
