@@ -41,6 +41,7 @@ class ICX implements IConnector, IWalletConnector {
     ledgerHost?: string
     host: string
     dev: boolean
+    noUnify?: boolean
   }
   #ic: AstroXWebViewHandler
   #principal?: string
@@ -73,6 +74,7 @@ class ICX implements IConnector, IWalletConnector {
       ledgerHost: "https://boundary.ic0.app/",
       host: window.location.origin,
       dev: true,
+      noUnify: false,
       ...userConfig,
     }
     // @ts-ignore
@@ -157,6 +159,7 @@ class ICX implements IConnector, IWalletConnector {
       await this.#ic.connect({
         delegationTargets: this.#config.whitelist,
         host: this.#config.host,
+        noUnify: this.#config.noUnify,
       })
       if (this.#config.dev) {
         await this.#ic.agent.fetchRootKey()
