@@ -1,7 +1,7 @@
 {
   "name": "@connect2ic/svelte",
   "author": "Mio Quispe",
-  "version": "0.2.0-beta.4",
+  "version": "0.2.0-beta.7",
   "files": [
     "dist"
   ],

@@ -30,8 +30,8 @@ class ICX implements IConnector, IWalletConnector {
       light: astroXLogoLight,
       dark: astroXLogoDark,
     },
-    id: "astrox",
-    name: "AstroX ME",
+    id: "icx",
+    name: "ICX",
   }
 
   #config: {
