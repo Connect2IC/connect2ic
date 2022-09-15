@@ -58,10 +58,19 @@ class AstroX implements IConnector, IWalletConnector {
   #identity?: Identity
   #principal?: string
   #ic?: IC
+  #wallet?: {
+    principal: string;
+    accountId: string;
+  }
 
   get principal() {
     return this.#principal
   }
+
+  get wallets() {
+    return [this.#wallet]
+  }
+
 
   constructor(userConfig = {}) {
     this.#config = {
@@ -108,6 +117,7 @@ class AstroX implements IConnector, IWalletConnector {
         // @ts-ignore
         this.#identity = this.#ic.identity
         this.#principal = this.#ic.principal.toText()
+        this.#wallet = this.#ic.wallet
       }
       return ok({ isConnected })
     } catch (e) {
@@ -163,6 +173,7 @@ class AstroX implements IConnector, IWalletConnector {
       this.#principal = this.#ic.principal.toText()
       // @ts-ignore
       this.#identity = this.#ic.identity
+      this.#wallet = this.#ic.wallet
       return ok(true)
     } catch (e) {
       console.error(e)
@@ -177,13 +188,6 @@ class AstroX implements IConnector, IWalletConnector {
     } catch (e) {
       console.error(e)
       return err({ kind: DisconnectError.DisconnectFailed })
-    }
-  }
-
-  address() {
-    return {
-      principal: this.#principal,
-      // accountId: this.#ic.accountId,
     }
   }
 

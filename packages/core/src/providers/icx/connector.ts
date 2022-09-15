@@ -161,10 +161,11 @@ class ICX implements IConnector, IWalletConnector {
         host: this.#config.host,
         noUnify: this.#config.noUnify,
       })
+      this.#principal = this.#ic.getPrincipal().toText()
+      this.#wallet = this.#ic.wallet
       if (this.#config.dev) {
         await this.#ic.agent.fetchRootKey()
       }
-      this.#principal = this.#ic.getPrincipal().toText()
       return ok(true)
     } catch (e) {
       console.error(e)
