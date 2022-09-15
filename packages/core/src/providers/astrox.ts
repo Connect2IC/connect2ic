@@ -19,6 +19,7 @@ import {
   err, Result,
 } from "neverthrow"
 import { BalanceError, ConnectError, CreateActorError, DisconnectError, InitError, TransferError } from "./connectors"
+import type { TransactionMessageKind, TransactionType } from "@astrox/sdk-webview/build/types"
 
 const balanceFromString = (balance: string, decimal = 8): bigint => {
   const list = balance.split(".")
@@ -224,6 +225,52 @@ class AstroX implements IConnector, IWalletConnector {
       return err({ kind: TransferError.TransferFailed })
     }
   }
+
+  async requestTransferNFT(args: {
+    tokenIdentifier: string;
+    tokenIndex: number;
+    canisterId: string;
+    to: string;
+    standard: string;
+  }) {
+    try {
+      const {
+        tokenIdentifier,
+        tokenIndex,
+        canisterId,
+        standard,
+        to,
+      } = args
+      if (!this.#ic) {
+        return err({ kind: TransferError.NotInitialized })
+      }
+      const response = await this.#ic.requestTransfer({
+        tokenIdentifier,
+        tokenIndex,
+        canisterId,
+        standard,
+        to,
+        sendOpts: {},
+        symbol: "",
+      })
+      if (!response || response.kind === TransactionMessageKind.fail) {
+        return err({ kind: TransferError.TransferFailed })
+      }
+      if (response.kind === TransactionMessageKind.success) {
+        // ?????
+        if (response.type === TransactionType.nft) {
+          return ok({
+            ...response.payload,
+          })
+        }
+      }
+      return err({ kind: TransferError.TransferFailed })
+    } catch (e) {
+      console.error(e)
+      return err({ kind: TransferError.TransferFailed })
+    }
+  }
+
 
   async queryBalance() {
     try {

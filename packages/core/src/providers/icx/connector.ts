@@ -20,7 +20,7 @@ import {
   InitError,
   TransferError, TokensError, NFTsError,
 } from "../connectors"
-import { TransactionMessageKind, TransactionType } from "@astrox/sdk-webview/build/types"
+import type { TransactionMessageKind, TransactionType } from "@astrox/sdk-webview/build/types"
 
 class ICX implements IConnector, IWalletConnector {
 
@@ -188,7 +188,7 @@ class ICX implements IConnector, IWalletConnector {
     tokenIndex: number;
     canisterId: string;
     to: string;
-    standard: "ICP" | "DIP20" | "EXT" | "DRC20" | string;
+    standard: string;
   }) {
     try {
       const {
