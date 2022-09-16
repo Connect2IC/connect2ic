@@ -23,11 +23,10 @@ type Config = {
   appName?: string
 }
 
-let isMobile = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry|webOS)/)
-let isDesktop = !isMobile
+let isICX = navigator.userAgent.match(/(me-client)/)
 
 export const defaultProviders: (config: Config) => Array<Provider> = (config) => {
-  return isDesktop ? [
+  return isICX ? [new ICX(config)] : [
     new AstroX(config),
     // EarthWallet,
     new InfinityWallet(config),
@@ -35,14 +34,14 @@ export const defaultProviders: (config: Config) => Array<Provider> = (config) =>
     new NFID(config),
     new PlugWallet(config),
     new StoicWallet(config),
-  ] : [new ICX(config)]
+  ]
 }
 
 export const walletProviders: (Config) => Array<WalletProvider> = (config) => {
-  return isDesktop ? [
+  return isICX ? [new ICX(config)] : [
     new AstroX(config),
     new PlugWallet(config),
-  ] : [new ICX(config)]
+  ]
 }
 
 export {

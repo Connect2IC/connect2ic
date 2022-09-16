@@ -13,7 +13,7 @@ const props = defineProps({
   },
 })
 
-let isMobile = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry|webOS)/)
+const isICX = navigator.userAgent.match(/(me-client)/)
 
 const { open } = useDialog()
 
@@ -38,7 +38,7 @@ let { isConnected, disconnect, connect } = useConnect({
     Disconnect
   </button>
 
-  <button v-if="!isConnected" class="connect-button" @click="() => isMobile ? connect('icx') : open()">
+  <button v-if="!isConnected" class="connect-button" @click="() => isICX ? connect('icx') : open()">
     Connect
   </button>
 </template>
