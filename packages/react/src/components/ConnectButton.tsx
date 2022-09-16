@@ -3,6 +3,8 @@ import {
   useConnect, useDialog,
 } from "../index"
 
+let isMobile = navigator.userAgent.match(/(iPhone|iPod|iPad|Android|BlackBerry|webOS)/)
+
 type Props = {
   style?: CSSProperties
   dark?: boolean
@@ -21,7 +23,7 @@ const ConnectButton: React.FC<PropsWithChildren<Props>> = (props) => {
   } = props
 
   const dialog = useDialog()
-  const { disconnect, isConnected } = useConnect({
+  const { disconnect, isConnected, connect } = useConnect({
     onConnect,
     onDisconnect,
   })
@@ -29,7 +31,7 @@ const ConnectButton: React.FC<PropsWithChildren<Props>> = (props) => {
   return (
     <>
       {!isConnected ? (
-        <button onClick={() => dialog.open()} style={style} className="connect-button">
+        <button onClick={() => isMobile ? connect("icx") : dialog.open()} style={style} className="connect-button">
           {children ?? "Connect"}
         </button>
       ) : null}
