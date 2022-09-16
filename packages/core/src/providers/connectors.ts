@@ -128,8 +128,12 @@ export interface IWalletConnector {
     tokenIdentifier: string;
     tokenIndex: number;
     canisterId: string;
-    standard: 'ICP' | 'DIP20' | 'EXT' | 'DRC20' | string;
+    standard: "ICP" | "DIP20" | "EXT" | "DRC20" | string;
   }) => Promise<TransferResult>
+  wallets: Array<{
+    accountId: string
+    principal: string
+  }>
   queryBalance: () => Promise<BalanceResult>
   // queryTokens: () => Promise<TokensResult>
   // queryNFTs: () => Promise<NFTsResult>

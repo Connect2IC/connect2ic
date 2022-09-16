@@ -69,7 +69,7 @@ class AstroX implements IConnector, IWalletConnector {
   }
 
   get wallets() {
-    return [this.#wallet]
+    return this.#wallet ? [this.#wallet] : []
   }
 
 

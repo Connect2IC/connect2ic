@@ -63,7 +63,7 @@ class ICX implements IConnector, IWalletConnector {
   }
 
   get wallets() {
-    return [this.#wallet]
+    return this.#wallet ? [this.#wallet] : []
   }
 
   constructor(userConfig = {}) {

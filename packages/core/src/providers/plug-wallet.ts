@@ -20,6 +20,7 @@ type Plug = {
   isConnected: () => Promise<boolean>
   disconnect: () => Promise<void>
   requestConnect: (Config) => Promise<boolean>
+  accountId: string
   requestTransfer: (args: {
     to: string,
     amount: number,
@@ -67,9 +68,17 @@ class PlugWallet implements IConnector, IWalletConnector {
   #principal?: string
   #client?: any
   #ic?: Plug
+  #wallet?: {
+    principal: string;
+    accountId: string;
+  }
 
   get identity() {
     return this.#identity
+  }
+
+  get wallets() {
+    return this.#wallet ? [this.#wallet] : []
   }
 
   get principal() {
@@ -124,6 +133,10 @@ class PlugWallet implements IConnector, IWalletConnector {
       if (status === "connected") {
         // Never finishes if locked
         this.#principal = (await this.#ic.getPrincipal()).toString()
+        this.#wallet = {
+          principal: this.#principal,
+          accountId: this.#ic.accountId,
+        }
       }
       return ok({ isConnected: false })
     } catch (e) {
@@ -189,6 +202,10 @@ class PlugWallet implements IConnector, IWalletConnector {
       await this.#ic.requestConnect(this.#config)
       this.#principal = (await this.#ic.getPrincipal()).toString()
       if (this.#principal) {
+        this.#wallet = {
+          principal: this.#principal,
+          accountId: this.#ic.accountId,
+        }
         return ok(true)
       }
       return ok(true)
@@ -211,14 +228,6 @@ class PlugWallet implements IConnector, IWalletConnector {
       return err({ kind: DisconnectError.DisconnectFailed })
     }
   }
-
-  address() {
-    return {
-      principal: this.#principal,
-      // accountId: this.#ic.accountId,
-    }
-  }
-
 
   async requestTransfer({
                           amount,
