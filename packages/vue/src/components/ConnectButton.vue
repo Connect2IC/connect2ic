@@ -13,6 +13,7 @@ const props = defineProps({
   },
 })
 
+//@ts-ignore
 const isICX = !!window.icx
 
 const { open } = useDialog()

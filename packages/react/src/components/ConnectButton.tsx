@@ -3,6 +3,7 @@ import {
   useConnect, useDialog,
 } from "../index"
 
+//@ts-ignore
 const isICX = !!window.icx
 
 type Props = {
