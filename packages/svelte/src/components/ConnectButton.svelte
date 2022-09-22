@@ -8,7 +8,7 @@
   export const dark: boolean = false
   export const style: string = ""
 
-  const isICX = navigator.userAgent.match(/(me-client)/)
+  const isICX = !!window.icx
   const { open } = useDialog()
   const { isConnected, disconnect, connect } = useConnect({
     onConnect,

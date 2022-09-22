@@ -13,7 +13,7 @@ const props = defineProps({
   },
 })
 
-const isICX = navigator.userAgent.match(/(me-client)/)
+const isICX = !!window.icx
 
 const { open } = useDialog()
 
