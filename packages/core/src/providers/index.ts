@@ -23,7 +23,7 @@ type Config = {
   appName?: string
 }
 
-let isICX = navigator.userAgent.match(/(me-client)/)
+let isICX = !!window.icx
 
 export const defaultProviders: (config: Config) => Array<Provider> = (config) => {
   return isICX ? [new ICX(config)] : [

@@ -108,6 +108,7 @@ export enum TransferError {
 }
 
 export type TransferResult = Result<{ height?: number; transactionId?: string; }, CustomError<TransferError>>
+export type NFTTransferResult = Result<{ transactionId?: string; }, CustomError<TransferError>>
 
 export enum SignError {
   NotConnected = "NOT_CONNECTED",
@@ -129,7 +130,7 @@ export interface IWalletConnector {
     tokenIndex: number;
     canisterId: string;
     standard: "ICP" | "DIP20" | "EXT" | "DRC20" | string;
-  }) => Promise<TransferResult>
+  }) => Promise<NFTTransferResult>
   wallets: Array<{
     accountId: string
     principal: string

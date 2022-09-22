@@ -4,11 +4,6 @@ import type { ActorSubclass, Identity } from "@dfinity/agent"
 import {
   PermissionsType,
 } from "@astrox/connection/lib/esm/types"
-import type {
-  SignerResponseSuccess,
-  TransactionResponseFailure,
-  TransactionResponseSuccess,
-} from "@astrox/connection/lib/esm/types"
 import type { IConnector, IWalletConnector } from "./connectors"
 // @ts-ignore
 import astroXLogoLight from "../assets/astrox_light.svg"
@@ -19,7 +14,7 @@ import {
   err, Result,
 } from "neverthrow"
 import { BalanceError, ConnectError, CreateActorError, DisconnectError, InitError, TransferError } from "./connectors"
-import type { TransactionMessageKind, TransactionType } from "@astrox/sdk-webview/build/types"
+import { TransactionMessageKind } from "@astrox/sdk-web/build/types"
 
 const balanceFromString = (balance: string, decimal = 8): bigint => {
   const list = balance.split(".")
@@ -102,6 +97,7 @@ class AstroX implements IConnector, IWalletConnector {
         walletProviderUrl: `${this.#config.providerUrl}/#transaction`,
         identityProvider: `${this.#config.providerUrl}/#authorize`,
         permissions: [PermissionsType.identity, PermissionsType.wallet],
+        host: this.#config.host,
         ledgerCanisterId: this.#config.ledgerCanisterId,
         ledgerHost: this.#config.ledgerHost,
         dev: this.#config.dev,
@@ -253,16 +249,15 @@ class AstroX implements IConnector, IWalletConnector {
         sendOpts: {},
         symbol: "",
       })
-      if (!response || response.kind === TransactionMessageKind.fail) {
+      if (!response || typeof response === "string" || response.kind === TransactionMessageKind.fail) {
         return err({ kind: TransferError.TransferFailed })
       }
       if (response.kind === TransactionMessageKind.success) {
-        // ?????
-        if (response.type === TransactionType.nft) {
-          return ok({
-            ...response.payload,
-          })
-        }
+        return ok({
+          // TODO: fix
+          ...response.payload,
+          // height: Number(response.payload.blockHeight),
+        })
       }
       return err({ kind: TransferError.TransferFailed })
     } catch (e) {

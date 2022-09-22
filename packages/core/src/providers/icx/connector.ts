@@ -1,8 +1,7 @@
 import type { IDL } from "@dfinity/candid"
 import type { ActorSubclass, Identity } from "@dfinity/agent"
 import type { IConnector, IWalletConnector } from "../connectors"
-import type { TransferNFTWithIdentifier, TransferToken, BaseTransactionRequest, Wallet } from "@astrox/sdk-core"
-import type { AstroXWebViewHandler } from "@astrox/sdk-webview"
+import { AstroXWebViewHandler } from "@astrox/sdk-webview"
 // @ts-ignore
 import astroXLogoLight from "../../assets/astrox_light.svg"
 // @ts-ignore
@@ -18,9 +17,11 @@ import {
   CreateActorError,
   DisconnectError,
   InitError,
-  TransferError, TokensError, NFTsError,
+  TransferError,
+  TokensError,
+  NFTsError,
 } from "../connectors"
-import type { TransactionMessageKind, TransactionType } from "@astrox/sdk-webview/build/types"
+import { TransactionMessageKind, TransactionType } from "@astrox/sdk-webview/build/types"
 
 class ICX implements IConnector, IWalletConnector {
 
@@ -77,8 +78,9 @@ class ICX implements IConnector, IWalletConnector {
       noUnify: false,
       ...userConfig,
     }
-    // @ts-ignore
-    this.#ic = window.icx as AstroXWebViewHandler
+    this.#ic = new AstroXWebViewHandler()
+    // // @ts-ignore
+    // this.#ic = window.icx as AstroXWebViewHandler
   }
 
   set config(config) {
@@ -91,14 +93,6 @@ class ICX implements IConnector, IWalletConnector {
 
   async init() {
     try {
-      if (!this.#ic) {
-        // TODO: move to providers
-        await new Promise((resolve, reject) => {
-          window.addEventListener("icx:ready", resolve)
-        })
-        // @ts-ignore
-        this.#ic = window.icx
-      }
       await this.#ic.init()
       // @ts-ignore
       this.#supportedTokenList = await this.#ic.getSupportedTokenList()
@@ -208,16 +202,13 @@ class ICX implements IConnector, IWalletConnector {
         standard,
         to,
       })
-      if (!response || response.kind === TransactionMessageKind.fail) {
+      if (response.kind === TransactionMessageKind.fail) {
         return err({ kind: TransferError.TransferFailed })
       }
       if (response.kind === TransactionMessageKind.success) {
-        // ?????
-        if (response.type === TransactionType.nft) {
-          return ok({
-            ...response.payload,
-          })
-        }
+        return ok({
+          ...response.payload,
+        })
       }
       return err({ kind: TransferError.TransferFailed })
     } catch (e) {

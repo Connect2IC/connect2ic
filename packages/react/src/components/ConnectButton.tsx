@@ -3,7 +3,7 @@ import {
   useConnect, useDialog,
 } from "../index"
 
-const isICX = navigator.userAgent.match(/(me-client)/)
+const isICX = !!window.icx
 
 type Props = {
   style?: CSSProperties
