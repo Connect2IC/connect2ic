@@ -2,7 +2,7 @@
   "name": "@connect2ic/core",
   "author": "Mio Quispe",
   "private": false,
-  "version": "0.2.0-beta.14",
+  "version": "0.2.0-beta.15",
   "files": [
     "dist",
     "providers",
@@ -66,9 +66,9 @@
   "sideEffects": false,
   "dependencies": {
     "@astrox/connection": "^0.0.52",
-    "@astrox/sdk-core": "^0.1.26",
-    "@astrox/sdk-web": "^0.1.26",
-    "@astrox/sdk-webview": "^0.1.26",
+    "@astrox/sdk-core": "^0.1.27",
+    "@astrox/sdk-web": "^0.1.27",
+    "@astrox/sdk-webview": "^0.1.27",
     "@dfinity/agent": "^0.13.1",
     "@dfinity/auth-client": "^0.13.1",
     "@dfinity/authentication": "^0.13.1",

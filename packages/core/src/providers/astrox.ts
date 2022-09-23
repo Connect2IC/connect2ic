@@ -162,6 +162,7 @@ class AstroX implements IConnector, IWalletConnector {
         walletProviderUrl: `${this.#config.providerUrl}/#transaction`,
         identityProvider: `${this.#config.providerUrl}/#authorize`,
         permissions: [PermissionsType.identity, PermissionsType.wallet],
+        host: this.#config.host,
         ledgerCanisterId: this.#config.ledgerCanisterId,
         ledgerHost: this.#config.ledgerHost,
         delegationTargets: this.#config.whitelist,
