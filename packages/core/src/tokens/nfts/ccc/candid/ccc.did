@@ -1,0 +1,300 @@
+type TransferResponse =
+ variant {
+   err:
+    variant {
+      ListOnMarketPlace;
+      NotAllowTransferToSelf;
+      NotOwnerOrNotApprove;
+      Other;
+    };
+   ok: TokenIndex;
+ };
+type TokenIndex__1 = nat;
+type TokenIndex = nat;
+type TokenDetails =
+ record {
+   attrArr: vec ComponentAttribute;
+   id: nat;
+   rarityScore: float64;
+ };
+type Time = int;
+type SoldListings =
+ record {
+   account: nat;
+   lastPrice: nat;
+   time: Time;
+ };
+type PreMint =
+ record {
+   index: nat;
+   user: principal;
+ };
+type OpenBoxResponse =
+ variant {
+   err: variant {
+          AlreadyOpen;
+          NotOpen;
+          NotOwner;
+        };
+   ok: CanvasIdentity;
+ };
+type NFTStoreInfo =
+ record {
+   index: TokenIndex;
+   photoLink: opt text;
+   videoLink: opt text;
+ };
+type NFTLinkInfo =
+ record {
+   id: TokenIndex;
+   photoLink: text;
+   videoLink: text;
+ };
+type MintResponse =
+ variant {
+   err:
+    variant {
+      AllowedInsufficientBalance;
+      InsufficientBalance;
+      LessThanFee;
+      NotEnoughToMint;
+      NotOpen;
+      NotWhiteListOrMaximum;
+      Other;
+      SoldOut;
+      Unauthorized;
+    };
+   ok: vec CanvasIdentity;
+ };
+type Listings__1 =
+ record {
+   price: nat;
+   seller: principal;
+   time: Time;
+   tokenIndex: TokenIndex;
+ };
+type Listings =
+ record {
+   price: nat;
+   seller: principal;
+   time: Time;
+   tokenIndex: TokenIndex;
+ };
+type ListResponse =
+ variant {
+   err:
+    variant {
+      AlreadyList;
+      MarketNotOpen;
+      NotApprove;
+      NotFoundIndex;
+      NotNFT;
+      NotOwner;
+      Other;
+      SamePrice;
+    };
+   ok: TokenIndex;
+ };
+type ListRequest =
+ record {
+   price: nat;
+   tokenIndex: TokenIndex;
+ };
+type GetTokenResponse =
+ variant {
+   err: variant {NotFoundIndex;};
+   ok: TokenDetails;
+ };
+type GetSoldListingsRes =
+ record {
+   listings: SoldListings;
+   rarityScore: float64;
+ };
+type GetListingsRes =
+ record {
+   listings: Listings__1;
+   rarityScore: float64;
+ };
+type ComponentAttribute =
+ record {
+   name: text;
+   traitType: text;
+ };
+type CanvasIdentity =
+ record {
+   index: TokenIndex;
+   photoLink: opt text;
+   videoLink: opt text;
+ };
+type BuyResponse =
+ variant {
+   err:
+    variant {
+      AllowedInsufficientBalance;
+      AlreadyTransferToOther;
+      InsufficientBalance;
+      LessThanFee;
+      NotAllowBuySelf;
+      NotFoundIndex;
+      Other;
+      Unauthorized;
+    };
+   ok: TokenIndex;
+ };
+type BuyRequest =
+ record {
+   feeTo: principal;
+   marketFeeRatio: nat;
+   price: nat;
+   tokenIndex: TokenIndex;
+ };
+type AirDropStruct =
+ record {
+   remainTimes: nat;
+   user: principal;
+ };
+type AirDropResponse =
+ variant {
+   err:
+    variant {
+      AlreadyCliam;
+      NotEnoughToMint;
+      NotInAirDropListOrAlreadyCliam;
+    };
+   ok: CanvasIdentity;
+ };
+service : {
+  approve: (principal, TokenIndex__1) -> (bool);
+  bBlindBoxOpen: (TokenIndex__1) -> (bool) query;
+  balanceOf: (principal) -> (nat) query;
+  batchTransferFrom: (principal, vec principal, vec TokenIndex__1) ->
+   (TransferResponse);
+  buyNow: (BuyRequest) -> (BuyResponse);
+  cancelFavorite: (TokenIndex__1) -> (bool);
+  cancelList: (TokenIndex__1) -> (ListResponse);
+  checkIfWhiteList: (principal) -> (nat) query;
+  clearAirDrop: () -> (bool);
+  clearWhiteList: () -> (bool);
+  cliamAirdrop: () -> (AirDropResponse);
+  deleteAirDrop: (principal) -> (bool);
+  getAirDropLeft: () -> (vec record {
+                               principal;
+                               nat;
+                             }) query;
+  getAirDropRemain: (principal) -> (nat) query;
+  getAirDropStartTime: () -> (Time) query;
+  getAll: () -> (vec record {
+                       TokenIndex__1;
+                       principal;
+                     }) query;
+  getAllHistoryStorageCanisterId: () -> (vec principal) query;
+  getAllNFT: (principal) -> (vec record {
+                                   TokenIndex__1;
+                                   principal;
+                                 }) query;
+  getAllNftCanister: () -> (vec principal);
+  getAllNftLinkInfo: () -> (vec record {
+                                  TokenIndex__1;
+                                  NFTLinkInfo;
+                                }) query;
+  getAllUserNFT: (principal) -> (vec NFTStoreInfo) query;
+  getApproved: (TokenIndex__1) -> (opt principal) query;
+  getAvailableMint: () -> (vec record {
+                                 TokenIndex__1;
+                                 bool;
+                               }) query;
+  getBlindBoxLink: () -> (text, text) query;
+  getBlindTime: () -> (Time, Time) query;
+  getCirculation: () -> (nat) query;
+  getCycles: () -> (nat) query;
+  getLinkInfoByIndex: (TokenIndex__1) -> (opt text, opt text) query;
+  getLinkInfoByIndexArr: (vec TokenIndex__1) ->
+   (vec record {
+          opt text;
+          opt text;
+        }) query;
+  getListings: () -> (vec record {
+                            NFTStoreInfo;
+                            GetListingsRes;
+                          }) query;
+  getMaxMarketFeeRatio: () -> (nat) query;
+  getMintAccount: () -> (nat) query;
+  getMintPrice: () -> (vec record {
+                             nat;
+                             nat;
+                           }) query;
+  getNftHoldInfo: () -> (vec record {
+                               principal;
+                               nat;
+                             }) query;
+  getNftLinkInfo: (TokenIndex__1) -> (opt NFTLinkInfo) query;
+  getNftStoreCIDByIndex: (TokenIndex__1) -> (principal) query;
+  getOpenTime: () -> (Time, Time) query;
+  getOwnerSize: () -> (nat) query;
+  getRegistry: () -> (vec record {
+                            principal;
+                            vec NFTStoreInfo;
+                          }) query;
+  getRoyaltyFeeRatio: () -> (nat) query;
+  getRoyaltyFeeTo: () -> (principal) query;
+  getSaleInfo: () -> (nat, nat) query;
+  getSoldListings: () ->
+   (vec record {
+          NFTStoreInfo;
+          GetSoldListingsRes;
+        }) query;
+  getStorageCanisterId: () -> (opt principal) query;
+  getSuppy: () -> (nat) query;
+  getTokenById: (nat) -> (GetTokenResponse) query;
+  getWICPCanisterId: () -> (principal) query;
+  getWhiteList: () -> (vec record {
+                             principal;
+                             nat;
+                           }) query;
+  getWhiteListPrice: () -> (vec record {
+                                  nat;
+                                  nat;
+                                }) query;
+  getbOpenMarket: () -> (bool) query;
+  isApprovedForAll: (principal, principal) -> (bool) query;
+  isList: (TokenIndex__1) -> (opt Listings) query;
+  list: (ListRequest) -> (ListResponse);
+  mint: (nat) -> (MintResponse);
+  newStorageCanister: (principal) -> (bool);
+  openBlindBox: (TokenIndex__1) -> (OpenBoxResponse);
+  ownerOf: (TokenIndex__1) -> (opt principal) query;
+  preMint: (vec PreMint) -> (nat);
+  proAvailableMint: () -> (bool);
+  setAirDropStartTime: (Time) -> (bool);
+  setApprovalForAll: (principal, bool) -> (bool);
+  setBlindBoxLink: (NFTLinkInfo) -> (bool);
+  setCapacity: (nat) -> (bool);
+  setFavorite: (TokenIndex__1) -> (bool);
+  setMaxMarketFeeRatio: (nat) -> (bool);
+  setMintAccount: (nat) -> (bool);
+  setMintFeeRatio: (nat) -> (bool);
+  setMintPrice: (vec record {
+                       nat;
+                       nat;
+                     }) -> (bool);
+  setNftCanister: (vec principal) -> (bool);
+  setNftLinkInfo: (vec NFTLinkInfo) -> (bool);
+  setOwner: (principal) -> (bool);
+  setRoyaltyFeeTo: (principal) -> (bool);
+  setRoyaltyfeeRatio: (nat) -> (bool);
+  setStorageCanisterId: (opt principal) -> (bool);
+  setSuppy: (nat) -> (bool);
+  setTime: (vec Time) -> (bool);
+  setWICPCanisterId: (principal) -> (bool);
+  setWhiteListPrice: (vec record {
+                            nat;
+                            nat;
+                          }) -> (bool);
+  setbOpenMarket: (bool) -> (bool);
+  transferFrom: (principal, principal, TokenIndex__1) -> (TransferResponse);
+  updateList: (ListRequest) -> (ListResponse);
+  uploadAirDropList: (vec AirDropStruct) -> (bool);
+  uploadWhiteList: (vec principal) -> (bool);
+  wallet_receive: () -> (nat);
+  whiteListMint: (nat) -> (MintResponse);
+}

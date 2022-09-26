@@ -1,9 +1,10 @@
-import { AstroX } from "./astrox"
-import { InternetIdentity } from "./internet-identity"
-import { PlugWallet } from "./plug-wallet"
-import { StoicWallet } from "./stoic-wallet"
-import { InfinityWallet } from "./infinity-wallet"
-import { NFID } from "./nfid"
+import { AstroX } from "./astrox/connector"
+import { InternetIdentity } from "./internet-identity/connector"
+import { PlugWallet } from "./plug-wallet/connector"
+import { StoicWallet } from "./stoic-wallet/connector"
+import { InfinityWallet } from "./infinity-wallet/connector"
+import { NFID } from "./nfid/connector"
+import { Anonymous } from "./anonymous/connector"
 import { ICX } from "./icx/connector"
 // import { EarthWallet } from "./earth-wallet"
 import type { IConnector, IWalletConnector } from "./connectors"
@@ -13,14 +14,24 @@ export type Provider = IConnector & Partial<IWalletConnector>
 export type WalletProvider = IConnector & IWalletConnector
 
 type Config = {
-  whitelist: Array<string>
-  host?: string
-  dev?: boolean
-  autoConnect?: boolean
-  providerUrl: string
-  ledgerCanisterId: string
-  ledgerHost?: string
-  appName?: string
+  ic: {
+    whitelist?: Array<string>
+    host?: string
+    autoConnect?: boolean
+    providerUrl?: string
+    ledgerCanisterId?: string
+    ledgerHost?: string
+    appName?: string
+  },
+  local: {
+    whitelist?: Array<string>
+    host?: string
+    autoConnect?: boolean
+    providerUrl?: string
+    ledgerCanisterId?: string
+    ledgerHost?: string
+    appName?: string
+  }
 }
 
 let isICX = !!window.icx
@@ -45,6 +56,7 @@ export const walletProviders: (Config) => Array<WalletProvider> = (config) => {
 }
 
 export {
+  Anonymous,
   AstroX,
   // EarthWallet,
   InfinityWallet,

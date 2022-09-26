@@ -1,0 +1,146 @@
+type UserInfoExt = 
+ record {
+   allowedBy: vec principal;
+   allowedTokens: vec nat;
+   operators: vec principal;
+   tokens: vec nat;
+ };
+type TxRecord = 
+ record {
+   caller: principal;
+   from: Record;
+   index: nat;
+   op: Operation;
+   timestamp: Time;
+   to: Record;
+   tokenIndex: opt nat;
+ };
+type TxReceipt = 
+ variant {
+   Err: Errors;
+   Ok: nat;
+ };
+type TokenMetadata__1 = 
+ record {
+   attributes: vec Attribute;
+   filetype: text;
+   location: Location;
+ };
+type TokenMetadata = 
+ record {
+   attributes: vec Attribute;
+   filetype: text;
+   location: Location;
+ };
+type TokenInfoExt = 
+ record {
+   index: nat;
+   metadata: opt TokenMetadata__1;
+   operator: opt principal;
+   owner: principal;
+   timestamp: Time;
+ };
+type Time = int;
+type Result_2 = 
+ variant {
+   err: Errors;
+   ok: TokenInfoExt;
+ };
+type Result_1 = 
+ variant {
+   err: Errors;
+   ok: UserInfoExt;
+ };
+type Result = 
+ variant {
+   err: Errors;
+   ok: principal;
+ };
+type Record = 
+ variant {
+   metadata: opt TokenMetadata__1;
+   user: principal;
+ };
+type Operation = 
+ variant {
+   approve;
+   approveAll;
+   burn;
+   mint: opt TokenMetadata__1;
+   revokeAll;
+   setMetadata;
+   transfer;
+   transferFrom;
+ };
+type NFToken = 
+ service {
+   approve: (nat, principal) -> (TxReceipt);
+   balanceOf: (principal) -> (nat) query;
+   batchMint: (principal, vec opt TokenMetadata) -> (MintResult);
+   batchTransferFrom: (principal, principal, vec nat) -> (TxReceipt);
+   burn: (nat) -> (TxReceipt);
+   desc: () -> (text) query;
+   getAllTokens: () -> (vec TokenInfoExt) query;
+   getMetadata: () -> (Metadata) query;
+   getOperator: (nat) -> (Result) query;
+   getTokenInfo: (nat) -> (Result_2) query;
+   getTransaction: (nat) -> (TxRecord) query;
+   getTransactions: (nat, nat) -> (vec TxRecord) query;
+   getUserInfo: (principal) -> (Result_1) query;
+   getUserTokens: (principal) -> (vec TokenInfoExt) query;
+   getUserTransactionAmount: (principal) -> (nat) query;
+   getUserTransactions: (principal, nat, nat) -> (vec TxRecord) query;
+   historySize: () -> (nat) query;
+   isApprovedForAll: (principal, principal) -> (bool) query;
+   logo: () -> (text) query;
+   mint: (principal, opt TokenMetadata) -> (MintResult);
+   name: () -> (text) query;
+   ownerOf: (nat) -> (Result) query;
+   setApprovalForAll: (principal, bool) -> (TxReceipt);
+   setOwner: (principal) -> (principal);
+   setTokenMetadata: (nat, TokenMetadata) -> (TxReceipt);
+   symbol: () -> (text) query;
+   totalSupply: () -> (nat) query;
+   transfer: (principal, nat) -> (TxReceipt);
+   transferFrom: (principal, principal, nat) -> (TxReceipt);
+ };
+type MintResult = 
+ variant {
+   Err: Errors;
+   Ok: record {
+         nat;
+         nat;
+       };
+ };
+type Metadata = 
+ record {
+   cycles: nat;
+   desc: text;
+   logo: text;
+   name: text;
+   owner: principal;
+   symbol: text;
+   totalSupply: nat;
+ };
+type Location = 
+ variant {
+   AssetCanister: record {
+                    principal;
+                    blob;
+                  };
+   IPFS: text;
+   InCanister: blob;
+   Web: text;
+ };
+type Errors = 
+ variant {
+   InvalidOperator;
+   TokenNotExist;
+   Unauthorized;
+ };
+type Attribute = 
+ record {
+   key: text;
+   value: text;
+ };
+service : (text, text, text, text, principal) -> NFToken

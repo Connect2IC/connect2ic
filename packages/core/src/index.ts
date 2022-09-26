@@ -3,6 +3,11 @@ import type { Client } from "./client"
 import type { RootEvent, RootContext } from "./client"
 import type { Provider } from "./providers"
 
+// TODO: separate?
+// tokens
+export { getIdl, getMethods } from "./tokens/tokens"
+export type { InternalTokenMethods } from "./tokens/tokens/methods"
+
 export {
   InitError,
   CreateActorError,

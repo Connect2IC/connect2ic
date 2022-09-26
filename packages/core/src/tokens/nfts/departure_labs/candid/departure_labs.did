@@ -1,0 +1,321 @@
+type WriteNFT = 
+ variant {
+   Chunk: record {
+            callback: opt Callback;
+            chunk: blob;
+            id: text;
+          };
+   Init: record {
+           callback: opt Callback;
+           size: nat;
+         };
+ };
+type WriteAsset = 
+ variant {
+   Chunk: record {
+            callback: opt Callback;
+            chunk: blob;
+            id: text;
+          };
+   Init: record {
+           callback: opt Callback;
+           id: text;
+           size: nat;
+         };
+ };
+type Value = 
+ variant {
+   Bool: bool;
+   Class: vec Property;
+   Empty;
+   Float: float64;
+   Int: int;
+   Nat: nat;
+   Principal: principal;
+   Text: text;
+ };
+type UpdateRequest = 
+ record {
+   id: text;
+   update: vec Update;
+ };
+type UpdateMode = 
+ variant {
+   Next: vec Update;
+   Set: Value;
+ };
+type UpdateEventCallback = 
+ variant {
+   Remove;
+   Set: Callback__1;
+ };
+type Update = 
+ record {
+   mode: UpdateMode;
+   name: text;
+ };
+type TopupCallback = func () -> ();
+type Token = 
+ variant {
+   Authorize: record {
+                id: text;
+                isAuthorized: bool;
+                user: principal;
+              };
+   Transfer: record {
+               from: principal;
+               id: text;
+               to: principal;
+             };
+ };
+type StreamingStrategy = variant {
+                           Callback:
+                            record {
+                              callback: StreamingCallback;
+                              token: StreamingCallbackToken;
+                            };};
+type StreamingCallbackToken = 
+ record {
+   content_encoding: text;
+   index: nat;
+   key: text;
+ };
+type StreamingCallbackResponse = 
+ record {
+   body: blob;
+   token: opt StreamingCallbackToken;
+ };
+type StreamingCallback = func (StreamingCallbackToken) ->
+                          (StreamingCallbackResponse) query;
+type Result_6 = 
+ variant {
+   err: Error;
+   ok: principal;
+ };
+type Result_5 = 
+ variant {
+   err: Error;
+   ok: PublicToken;
+ };
+type Result_4 = 
+ variant {
+   err: Error;
+   ok: Chunk;
+ };
+type Result_3 = 
+ variant {
+   err: Error;
+   ok: Metadata;
+ };
+type Result_2 = 
+ variant {
+   err: Error;
+   ok;
+ };
+type Result_1 = 
+ variant {
+   err: Error;
+   ok: Properties;
+ };
+type Result = 
+ variant {
+   err: Error;
+   ok: text;
+ };
+type Response = 
+ record {
+   body: blob;
+   headers: vec HeaderField;
+   status_code: nat16;
+   streaming_strategy: opt StreamingStrategy;
+ };
+type Request = 
+ record {
+   body: blob;
+   headers: vec HeaderField;
+   method: text;
+   url: text;
+ };
+type QueryRequest = 
+ record {
+   id: text;
+   mode: QueryMode;
+ };
+type QueryMode = 
+ variant {
+   All;
+   Some: vec Query;
+ };
+type Query = 
+ record {
+   name: text;
+   next: vec Query;
+ };
+type PublicToken = 
+ record {
+   contentType: text;
+   createdAt: int;
+   id: text;
+   owner: principal;
+   payload: PayloadResult;
+   properties: Properties;
+ };
+type Property = 
+ record {
+   immutable: bool;
+   name: text;
+   value: Value;
+ };
+type Properties = vec Property;
+type PayloadResult = 
+ variant {
+   Chunk: Chunk;
+   Complete: blob;
+ };
+type Metadata = 
+ record {
+   contentType: text;
+   createdAt: int;
+   id: text;
+   owner: principal;
+   properties: Properties;
+ };
+type Message = 
+ record {
+   createdAt: int;
+   event: variant {
+            ContractEvent: Contract;
+            TokenEvent: Token;
+          };
+   topupAmount: nat;
+   topupCallback: TopupCallback;
+ };
+type Hub = 
+ service {
+   assetRequest: (AssetRequest) -> (Result_2);
+   authorize: (AuthorizeRequest) -> (Result_2);
+   balanceOf: (principal) -> (vec text) query;
+   getAuthorized: (text) -> (vec principal) query;
+   getContractInfo: () -> (ContractInfo);
+   getEventCallbackStatus: () -> (CallbackStatus);
+   getMetadata: () -> (ContractMetadata) query;
+   getTotalMinted: () -> (nat) query;
+   http_request: (Request) -> (Response) query;
+   http_request_streaming_callback: (StreamingCallbackToken) ->
+    (StreamingCallbackResponse) query;
+   init: (vec principal, ContractMetadata) -> ();
+   isAuthorized: (text, principal) -> (bool) query;
+   listAssets: () -> (vec record {
+                            text;
+                            text;
+                            nat;
+                          }) query;
+   mint: (Egg) -> (Result);
+   nftStreamingCallback: (StreamingCallbackToken) ->
+    (StreamingCallbackResponse) query;
+   ownerOf: (text) -> (Result_6) query;
+   queryProperties: (QueryRequest) -> (Result_1) query;
+   staticStreamingCallback: (StreamingCallbackToken) ->
+    (StreamingCallbackResponse) query;
+   tokenByIndex: (text) -> (Result_5);
+   tokenChunkByIndex: (text, nat) -> (Result_4);
+   tokenMetadataByIndex: (text) -> (Result_3);
+   transfer: (principal, text) -> (Result_2);
+   updateContractOwners: (principal, bool) -> (Result_2);
+   updateEventCallback: (UpdateEventCallback) -> ();
+   updateProperties: (UpdateRequest) -> (Result_1);
+   wallet_receive: () -> ();
+   writeStaged: (WriteNFT) -> (Result);
+ };
+type HeaderField = 
+ record {
+   text;
+   text;
+ };
+type Error = 
+ variant {
+   AuthorizedPrincipalLimitReached: nat;
+   FailedToWrite: text;
+   Immutable;
+   InvalidRequest;
+   NotFound;
+   Unauthorized;
+ };
+type Egg = 
+ record {
+   contentType: text;
+   isPrivate: bool;
+   owner: opt principal;
+   payload: variant {
+              Payload: blob;
+              StagedData: text;
+            };
+   properties: Properties;
+ };
+type ContractMetadata = 
+ record {
+   name: text;
+   symbol: text;
+ };
+type ContractInfo = 
+ record {
+   authorized_users: vec principal;
+   cycles: nat;
+   heap_size: nat;
+   max_live_size: nat;
+   memory_size: nat;
+   nft_payload_size: nat;
+   total_minted: nat;
+ };
+type Contract = 
+ variant {
+   ContractAuthorize: record {
+                        isAuthorized: bool;
+                        user: principal;
+                      };
+   Mint: record {
+           id: text;
+           owner: principal;
+         };
+ };
+type Chunk = 
+ record {
+   data: blob;
+   nextPage: opt nat;
+   totalPages: nat;
+ };
+type Callback__1 = func (Message) -> ();
+type CallbackStatus = 
+ record {
+   callback: opt Callback__1;
+   callsSinceLastTopup: nat;
+   failedCalls: nat;
+   failedCallsLimit: nat;
+   noTopupCallLimit: nat;
+ };
+type Callback = func () -> ();
+type AuthorizeRequest = 
+ record {
+   id: text;
+   isAuthorized: bool;
+   p: principal;
+ };
+type AssetRequest = 
+ variant {
+   Put:
+    record {
+      callback: opt Callback;
+      contentType: text;
+      key: text;
+      payload: variant {
+                 Payload: blob;
+                 StagedData;
+               };
+    };
+   Remove: record {
+             callback: opt Callback;
+             key: text;
+           };
+   StagedWrite: WriteAsset;
+ };
+service : () -> Hub

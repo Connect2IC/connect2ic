@@ -6,8 +6,7 @@ import type { ActorSubclass, Actor } from "@dfinity/agent"
 import { IDL } from "@dfinity/candid"
 
 // TODO: ??
-// @ts-ignore
-export const useCanister: <T>(canisterName: string, options?: { mode: string }) => readonly [ActorSubclass, { canisterDefinition: any; error: any; loading: boolean }] = <T>(
+export const useCanister = <T>(
   canisterName: string,
   options: { mode: string } = {
     mode: "auto", // "anonymous" | "connected"
@@ -15,22 +14,35 @@ export const useCanister: <T>(canisterName: string, options?: { mode: string }) 
 ) => {
   const { mode } = options
   const { client } = useContext(Connect2ICContext)
+  const { activeProvider, isConnected } = useConnect()
 
-  const anonymousActorResult = useSelector(client._service, (state) => state.context.anonymousActors[canisterName])
-  const actorResult = useSelector(client._service, (state) => state.context.actors[canisterName])
-  const canisterDefinition = useSelector(client._service, (state) => state.context.canisters[canisterName])
-  const { isConnected } = useConnect()
-
-  const signedIn = (isConnected && actorResult && mode !== "anonymous")
-  const actor = signedIn ? actorResult : anonymousActorResult
+  // TODO: put all inside getCanister in client?
+  const canisterId = useSelector(client._service, (state) => {
+    // TODO: network switching
+    console.log(state.context, canisterName)
+    // @ts-ignore
+    return state.context.networksConfig.local.canisters[canisterName].canisterId
+  })
+  const anonymousCanister = useSelector(client._service, (state) => {
+    // TODO: network switching
+    return state.context.networks.local.anonymousProvider[canisterId]
+  })
+  const providerCanister = useSelector(client._service, (state) => {
+    if (!activeProvider) {
+      return
+    }
+    // TODO: network switching
+    return state.context.networks.local.providers[activeProvider.meta.id].canisters[canisterId]
+  })
+  const canister = isConnected && (mode !== "anonymous") && providerCanister ? providerCanister : anonymousCanister
 
   return [
-    actor.isOk() ? actor.value : undefined,
+    canister?.actor.isOk() ? canister.actor.value : undefined,
     {
-      error: actor.isErr() ? actor.error : undefined,
+      error: canister?.actor.isErr() ? canister.actor.error : undefined,
       // TODO: ?
-      loading: !actor,
-      canisterDefinition,
+      loading: !(canister?.actor),
+      idl: canister?.idlFactory,
     },
-  ] as const
+  ]
 }

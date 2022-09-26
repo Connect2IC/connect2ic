@@ -1,0 +1,1914 @@
+[
+  {
+    "thumbnail": "https://qcg3w-tyaaa-aaaah-qakea-cai.raw.ic0.app/Token/1",
+    "name": "ICPunks",
+    "frontend": [
+      "https://icpunks.com/"
+    ],
+    "description": "10,000 randomly generated, unique collectible clowns with proof of ownership stored on the Internet Computer blockchain. Created as a reference to a meme comparing the Internet Computer token (ICP) with the Insane Clown Posse - an American hip hop duo founded in 1989.",
+    "details": {
+      "standard": "ICPunks"
+    },
+    "principal_id": "qcg3w-tyaaa-aaaah-qakea-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/principia.png",
+    "name": "Principia Mathematica",
+    "frontend": [
+      "https://7xw5z-uqaaa-aaaad-qaqcq-cai.raw.ic0.app/"
+    ],
+    "description": "An Ode to Mathematics, a silent tribute to the greatest minds of all time.",
+    "details": {
+      "standard": "DepartureLabs"
+    },
+    "principal_id": "lhq4n-3yaaa-aaaai-qaniq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/TrueFairyTale-Logo.png",
+    "name": "True Fairy Stories",
+    "frontend": [],
+    "description": "We are engaged in the creation of creative fantasy and fairy-tale characters that we want to embody first in the NFT and then integrate them into the games, cartoons comics and meta worlds.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "ddjbd-biaaa-aaaaj-acc7a-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/icats_logo.jpg",
+    "name": "Wrapped ICats",
+    "frontend": [],
+    "description": "ICats is a new collection drop for ICPunks holders.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "y3b7h-siaaa-aaaah-qcnwa-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/dab/candy-lib.png",
+    "name": "Candy Library",
+    "frontend": [
+      "https://hwqwz-ryaaa-aaaai-aasoa-cai.raw.ic0.app/"
+    ],
+    "description": "Candy Library NFTs - distribution licenses for a motoko software library, fund software!",
+    "details": {
+      "standard": "DepartureLabs"
+    },
+    "principal_id": "hdxhu-qqaaa-aaaai-aasnq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/ICPBunny.png",
+    "name": "Wrapped ICPBunny",
+    "frontend": [
+      "https://hae47-fyaaa-aaaaf-qaeiq-cai.raw.ic0.app/"
+    ],
+    "description": "Wrapped version of ICPBunny, a bunny-themed NFT collection that uses utility tokens to enable yieldable and breedable NFTs on the Internet Computer.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "q6hjz-kyaaa-aaaah-qcama-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/C4Meadow.jpeg",
+    "name": "C4Meadow",
+    "frontend": [],
+    "description": "Charity driven NFT project, with real world implications",
+    "details": {
+      "standard": "ICPunks"
+    },
+    "principal_id": "ca4b4-uyaaa-aaaal-aac7a-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/CosmicRafts-Crowdfund-NFT.jpeg",
+    "name": "Cosmicrafts (CrowdFundNFT)",
+    "frontend": [],
+    "description": "Cosmicrafts NFTs for crowdfunding on CrowdFundNFT",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "eejma-naaaa-aaaak-aalda-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/dab/a3capas-logo.png",
+    "name": "Elementum: Faceted Meninas",
+    "frontend": [],
+    "description": "Enter The Universo With Faceted Meninas! This unique and limited-edition 3D-video collection is inspired from the works of famous artist Diego Valasquez, the leading artist of the Spanish Golden Age. A collection of only 102 NFT’s, the Faceted Meninas are the 1st in a series Elementum NFT releases which can be used to increase your odds of winning ICP in our Danton Station risky game! These NFT’s will be extremely valuable to the Elementum Trading Card Game. Faceted Meninas (Ladies in Waiting) are the most powerful creature species in the Elementum Universo, their magic powers bring strength to allies and help maximize their inner-power.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "k4qsa-4aaaa-aaaah-qbvnq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/Girls-Logo.png",
+    "name": "Girls",
+    "frontend": [],
+    "description": "In metaverse, there are many kinds of girls with different poses, they are from traditional painting world.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "xarx3-ayaaa-aaaah-abjbq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/HH.jpg",
+    "name": "Haunted Hamsters",
+    "frontend": [],
+    "description": "NFT set of 6666 Haunted Hamsters.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "bid2t-gyaaa-aaaah-qcdea-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/logo_messiah.png",
+    "name": "Dfinity Messiah",
+    "frontend": [],
+    "description": "The reborner after the war. The god of the new world.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "v5mzt-tqaaa-aaaah-abjoa-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/CandyMachine-Demo-Logo.png",
+    "name": "candymachine demo",
+    "frontend": [],
+    "description": "DIP-721 NFT contract written in azle using typescript.",
+    "details": {
+      "standard": "DIP721v2"
+    },
+    "principal_id": "4sho4-xyaaa-aaaak-aardq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/IMG_6099__1_.jpeg",
+    "name": "Metacats",
+    "frontend": [],
+    "description": "Metacats is a collection of 10,000 randomly generated NFTs that were hand-drawn by Izzy, the founder and the lead artist of ICWhiskers.",
+    "details": {
+      "standard": "C3"
+    },
+    "principal_id": "k3wif-yyaaa-aaaah-qc2ca-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/NightBirdz-Logo.png",
+    "name": "Night Birdz Poster",
+    "frontend": [],
+    "description": "The Night Birdz Project Is the first Adventure-Based Manga/Comic Series And Brand Collective Built On the Internet Computer Protocol.",
+    "details": {
+      "standard": "DIP721v2"
+    },
+    "principal_id": "tyrbk-nyaaa-aaaak-abgia-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/id_45.jpeg",
+    "name": "ICWhiskers NFT (CrowdFundNFT)",
+    "frontend": [],
+    "description": "NFT collection for the purpose of crowdfunding for ICWhiskers on CrowdFundNFT.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "jjeno-oyaaa-aaaak-aanua-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/ICPBunny.png",
+    "name": "ICPBunny",
+    "frontend": [
+      "https://hae47-fyaaa-aaaaf-qaeiq-cai.raw.ic0.app/"
+    ],
+    "description": "A bunny-themed NFT collection that uses utility tokens to enable yieldable and breedable NFTs on the Internet Computer.",
+    "details": {
+      "standard": "ICPunks"
+    },
+    "principal_id": "xkbqi-2qaaa-aaaah-qbpqq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/DrySushi-Logo.png",
+    "name": "IC Dry Sushi",
+    "frontend": [],
+    "description": "1000 Dry Sushi lost into the cracks of the Internet computer.",
+    "details": {
+      "standard": "DIP721v2"
+    },
+    "principal_id": "qygna-tyaaa-aaaak-aapka-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/Ethbutterflynft-Logo.png",
+    "name": "ETHBUTTERFLYNFT",
+    "frontend": [],
+    "description": "Graceful, Varied, and Enchanting, Small but Approachable, Butterflies leads you to the Sunny Side of Life, and Everyone deserves a little Sunshine. So grab your Wings, let's Fly!! A collection of 2222 unique Butterflies that escaped with the riches from the gargantuan ETH blockchain. There are perks of boons coming to our esteemed community members.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "5t44v-paaaa-aaaah-qcz6q-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/ICPSwap-Official-Logo.jpeg",
+    "name": "ICPSwap Official NFT",
+    "frontend": [],
+    "description": "This NFT collection includes ICPSwap Genesis NFT, ICS Airdrop NFT, ICPSwap Pioneer NFT, and other NFTs issued by ICPSwap.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "ewuhj-dqaaa-aaaag-qahgq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/Distrik-Test-Logo.png",
+    "name": "Test collection 1",
+    "frontend": [],
+    "description": "Testing NFT collection",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "43src-hqaaa-aaaak-aaohq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/Arun.jpeg",
+    "name": "ICP Squad",
+    "frontend": [],
+    "description": "A vibrant and enthusiast squad of Internet Computer fans.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "jmuqr-yqaaa-aaaaj-qaicq-cai"
+  },
+  {
+    "thumbnail": "https://btggw-4aaaa-aaaah-qcdgq-cai.raw.ic0.app/?cc=0&type=thumbnail&tokenid=dbmzw-tykor-uwiaa-aaaaa-b4aqz-uaqca-aaaah-a",
+    "name": "IC Pumpkins",
+    "frontend": [],
+    "description": "ICPumpkin is 2222 unique pumpkins! The collection consists of 20 really different cool characters, each with their own mood and costume.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "btggw-4aaaa-aaaah-qcdgq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/icpxy-logo.png",
+    "name": "ICPxy",
+    "frontend": [],
+    "description": "Experimenting ‘Quantum Immortality’ destroyed our planet, ‘Pxyrth’. We fled. The perfect habitat we found was in the Internet Computer, nestled among Canisters in Subnets. Now we terraform the IC. Together, our Pxy hands build: 1) Staking—so you may harvest our energy and load up on Pxy X points for ICP. 2) Comic DAO—so you may write us a better future than the past we left behind. 3) Coding DAO—so you may build upon the IC, make our home vibrant.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "46sy3-aiaaa-aaaah-qczza-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/ICKitties-logo.png",
+    "name": "ICKitties",
+    "frontend": [],
+    "description": "A 10,000 NFTs collection of cute 8-bit kitties.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "rw7qm-eiaaa-aaaak-aaiqq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/icpdog.png",
+    "name": "ICP.Dog",
+    "frontend": [],
+    "description": "First GameFi to support staking and NFTs as game hero on IC.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "3bqt5-gyaaa-aaaah-qcvha-cai"
+  },
+  {
+    "thumbnail": "https://e3izy-jiaaa-aaaah-qacbq-cai.raw.ic0.app/?tokenid=hancg-5ykor-uwiaa-aaaaa-b4aaq-maqca-aabuk-a",
+    "name": "Cronic Critters",
+    "frontend": [
+      "https://cronic.toniqlabs.com/"
+    ],
+    "description": "Cronics is a Play-to-earn NFT game being developed by ToniqLabs for the Internet Computer. Cronics  incorporates breeding mechanics, wearable NFTs and a p2e minigame ecosystem and more.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "e3izy-jiaaa-aaaah-qacbq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/ICDinos-Items-Logo.png",
+    "name": "IC Dinos (ITEMS)",
+    "frontend": [],
+    "description": "This is the canister for the DINO Items that are NFT's to use within the IC Dinos eco-system.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "tvo7m-iyaaa-aaaai-qjjsa-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/Frame_1__17_.png",
+    "name": "Chaos Tarot Decks",
+    "frontend": [],
+    "description": "The chaos set of tarot decks blend the traditional Rider Waite Smith (RWS) deck with Google DeepDream. Each is fully complete deck of Tarot cards.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "6e6eb-piaaa-aaaaj-qal6a-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/crowns-ooo.png",
+    "name": "CAP Crowns",
+    "frontend": [
+      "https://crowns.ooo/"
+    ],
+    "description": "Crowns are a collection of 10,000 uniquely generated NFTs on the Internet Computer. With a mix of traditional and psychedelic materials, and a CAP-powered transaction history for full provenance.",
+    "details": {
+      "standard": "DIP721v2"
+    },
+    "principal_id": "vlhm2-4iaaa-aaaam-qaatq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/IC_Apes_Plug_Logo.png",
+    "name": "ICApes",
+    "frontend": [],
+    "description": "First Ape NFT collection on Internet Computer. 10,000 Unique Apes are ready to take over the IC.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "zvycl-fyaaa-aaaah-qckmq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/ICPCS-logo.png",
+    "name": "ICPCS",
+    "frontend": [],
+    "description": "ICPCS is a collection of 7,777 Internet Computers running on the IC",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "j3dqa-byaaa-aaaah-qcwfa-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/hatch-logo-1.png",
+    "name": "Hatch Tickets",
+    "frontend": [],
+    "description": "The first collection on the Hatch Launchpad.",
+    "details": {
+      "standard": "DIP721"
+    },
+    "principal_id": "lqp4q-iqaaa-aaaak-aakga-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/TheEmporor-Logo.png",
+    "name": "The Emperor",
+    "frontend": [],
+    "description": "Saga is bringing Tarot into the Metaverse. These collectible Major Arcana NFTs celebrate and support our first official deck",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "4zv6l-2aaaa-aaaaj-qauua-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/huadan-logo.png",
+    "name": "Hua Dan",
+    "frontend": [],
+    "description": "In the metaverse, we welcome a Huadan series, they are Lotus, Daffodil, and Peony, from the traditional painting world.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "svjgc-5yaaa-aaaah-abj7q-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/Cipher_Proxy___Discord_Avatar.jpg",
+    "name": "Cipher",
+    "frontend": [],
+    "description": "Default Cipher collection",
+    "details": {
+      "standard": "DIP721v2"
+    },
+    "principal_id": "6hgw2-nyaaa-aaaai-abkqq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/Rar18%20(1).jpg",
+    "name": "Avocado Research",
+    "frontend": [],
+    "description": "Research, an analytics service that has been actively participating and analyzing NFTs in the Internet Computer ecosystem since the early days. Collection consists of 10,000 NFTs, each of which is part of the collective neuron.",
+    "details": {
+      "standard": "C3"
+    },
+    "principal_id": "bjcsj-rqaaa-aaaah-qcxqq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/PetBots-Logo.jpeg",
+    "name": "pet bots",
+    "frontend": [],
+    "description": "pet bots are the mischievous companions to pokedbots",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "t2mog-myaaa-aaaal-aas7q-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/TheHighPriestess-Logo.png",
+    "name": "The High Priestess",
+    "frontend": [],
+    "description": "Collectible Major Arcana cards celebrating the enduring spirit of tarot, the innervating virtues of web3, and the first deck developed by Saga Tarot.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "zzk67-giaaa-aaaaj-qaujq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/%D0%BCace_of_a_wandering_magician_t.gif",
+    "name": "Initial Weapon of the Eimolad",
+    "frontend": [],
+    "description": "The Eimolad holds a lot of dangers and it is unwise to go on a journey without weapons.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "n6bj5-ryaaa-aaaan-qaaqq-cai"
+  },
+  {
+    "thumbnail": "https://uzhxd-ziaaa-aaaah-qanaq-cai.raw.ic0.app/?tokenid=3qdzl-jikor-uwiaa-aaaaa-b4adi-eaqca-aaaad-q",
+    "name": "ICP News",
+    "frontend": [],
+    "description": "An NFT collection set designed by the @icp_news artist with an Internet Computer theme.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "uzhxd-ziaaa-aaaah-qanaq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/cosmicrafts-logo.gif",
+    "name": "Cosmicrafts",
+    "frontend": [],
+    "description": "The first RTS on IC blockchain",
+    "details": {
+      "standard": "ERC721"
+    },
+    "principal_id": "k7h5q-jyaaa-aaaan-qaaaq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/MusicVideoNFT-logo.jpeg",
+    "name": "Music Video NFT (CrowdfundNFT)",
+    "frontend": [],
+    "description": "The future of the music industry is on the blockchain, the future of the blockchain is on the IC.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "j3c2x-ciaaa-aaaak-aanxa-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/kontribute.png",
+    "name": "KontributeNFT (CrowdFundNFT)",
+    "frontend": [],
+    "description": "NFT collection for the purpose of crowdfunding for Kontribute on CrowdFundNFT.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "cib4d-2iaaa-aaaak-aaluq-cai"
+  },
+  {
+    "thumbnail": "https://crt3j-mqaaa-aaaah-qcdnq-cai.raw.ic0.app/?cc=0&type=thumbnail&tokenid=rtuc6-kqkor-uwiaa-aaaaa-b4aq3-maqca-aaaaa-q",
+    "name": "Neil White",
+    "frontend": [],
+    "description": "Neil White is a Miami-based contemporary artist. His work focuses on ironic portraits of historical icons and social commentary in the form of robots.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "crt3j-mqaaa-aaaah-qcdnq-cai"
+  },
+  {
+    "thumbnail": "https://fleek-team-bucket.s3.fleek.co/fleek-team-bucket/logos/IC-Flowers-logo.jpg",
+    "name": "ICFlowers (Airdrop)",
+    "frontend": [],
+    "description": "3000 unique flower NFTs on the IC",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "ahos3-5yaaa-aaaah-abbna-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/OG-medal-logo.png",
+    "name": "OG MEDALS",
+    "frontend": [],
+    "description": "Celebrating the Internet Computer integration with Bitcoin & Ethereum with memes.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "rw623-hyaaa-aaaah-qctcq-cai"
+  },
+  {
+    "thumbnail": "https://b5el6-hqaaa-aaaah-qcdhq-cai.raw.ic0.app/?cc=0&type=thumbnail&tokenid=vzzh5-uykor-uwiaa-aaaaa-b4aqz-4aqca-aaaa5-a",
+    "name": "Wild & West",
+    "frontend": [],
+    "description": "Wild and West: The Journey Begins.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "b5el6-hqaaa-aaaah-qcdhq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/Revolucio-Logo.png",
+    "name": "Revolució",
+    "frontend": [],
+    "description": "Revolució is the first Canistore Audio NFT launched on the Internet Computer",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "527xj-ziaaa-aaaah-qcz7a-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/naps-logo.jpeg",
+    "name": "naaps.art (CrowdfundNFT)",
+    "frontend": [],
+    "description": "We're building an open AI art platform where anybody can create high-quality NFTs using artificial intelligence.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "m75rx-naaaa-aaaak-aavsq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/squad_log.jpeg",
+    "name": "ICP Squad Accessories",
+    "frontend": [],
+    "description": "po6n2-uiaaa-aaaaj-qaiua-cai",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "po6n2-uiaaa-aaaaj-qaiua-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/ICHotel-CrowdfundNFT-Logo.png",
+    "name": "IC Hotel (CrowdfundNFT)",
+    "frontend": [],
+    "description": "IC Hotel is a Habbo Hotel-inspired project created by Pavlo Yasenchuk, a well-connected person in the NFT market. After helping to succesfully boost projects as a moderator in multiple Ethereum chain projects he's gathered enough resources to build a project of his own on the Internet Computer, starting as a one-man team and hiring freelancers.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "qaraz-7yaaa-aaaak-acc7q-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/Avatar.jpg",
+    "name": "Feminiverse",
+    "frontend": [],
+    "description": "Feminiverse NFTs consist of 10K portraits of women of all nationalities. Through different traits, we want to convey that the true beauty of women lies in their nature.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "6imyv-myaaa-aaaah-qcv3a-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/MutantSpaceApes-Logo.png",
+    "name": "Mutant Space Apes",
+    "frontend": [],
+    "description": "10,000 Mutant Apes Waiting on Planets",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "gikg4-eaaaa-aaaam-qaieq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/rc_upload_1646364314806_small.jpeg",
+    "name": "ARES Cars",
+    "frontend": [],
+    "description": "A car that combined the design of a hypercar, the performance of a supercar and the accessibility of a sportscar.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "6qlam-vaaaa-aaaah-abddq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/ICLions-logo.jpeg",
+    "name": "IC LIONS",
+    "frontend": [],
+    "description": "IC PARK plans to release many wild animal collections of unique programmatically generated NFTs hosted on the ICP blockchain. The start will be 2222 NFT wild lions on DFINITY that will be 100% FREE to this wonderful community",
+    "details": {
+      "standard": "C3"
+    },
+    "principal_id": "ygenm-saaaa-aaaah-qczaq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/FinterestCard-Logo.png",
+    "name": "Finterest Early Adopters Card",
+    "frontend": [],
+    "description": "Finterest is the first DeFi protocol to enable lending/borrowing with native BTC. We are sending 1000 cards to our early adopters in a sign of gratitude for their continued support <3",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "4fcza-biaaa-aaaah-abi4q-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/CrowdFundNFT-Ukraine-Logo.jpeg",
+    "name": "IC Ukraine Support (CrowdFundNFT)",
+    "frontend": [],
+    "description": "NFT crowdfunding project for charity to support Ukraine on CrowdFundNFT.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "fjhio-ciaaa-aaaak-aaleq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/plug/Stacked-Logo.png",
+    "name": "SaorsaLabs_DevTesting",
+    "frontend": [],
+    "description": "Dev Testing NFT collection from SaorsaLabs",
+    "details": {
+      "standard": "DIP721v2"
+    },
+    "principal_id": "hu6tl-fyaaa-aaaak-qakgq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/dfinishield1.png",
+    "name": "DFINI∞SHIELDS",
+    "frontend": [],
+    "description": "DFINI∞SHIELDS is a collection of shields. You can mint your unique shield NFT and choose your unique colour combination for the shield and infinity symbol. Each colour can be used only once so nobody can really have the same shield.",
+    "details": {
+      "standard": "DIP721"
+    },
+    "principal_id": "l22ez-fqaaa-aaaah-qcwiq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/ICNotes-Logo.png",
+    "name": "ICNotes",
+    "frontend": [],
+    "description": "ICNotes is a 10,000 musical notes NFT collection with sounds, randomly generated on the Internet Computer",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "5pyge-yaaaa-aaaah-qcz4q-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/GenesisHats-Logo.jpeg",
+    "name": "Genesis Hats",
+    "frontend": [],
+    "description": "Solid is an NFT project to empower the wonderful Dapps within the ICP ecosystem. In addition, we hope to inspire ICP users to use NFT and Dapps.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "dcbuw-wyaaa-aaaam-qapfq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/SCOGE-Logo.jpeg",
+    "name": "SCOGÉ Universe",
+    "frontend": [],
+    "description": "A 3D Narrative Game World",
+    "details": {
+      "standard": "DIP721"
+    },
+    "principal_id": "wnunb-baaaa-aaaag-aaoya-cai"
+  },
+  {
+    "thumbnail": "https://cdvmq-aaaaa-aaaah-qcdoq-cai.raw.ic0.app/?cc=0&type=thumbnail&tokenid=ta7sv-bqkor-uwiaa-aaaaa-b4aq3-uaqca-aaaaa-a",
+    "name": "Selay Karasu",
+    "frontend": [],
+    "description": "NFT collection by Selay Karasu, a multidisciplinary artist and creative director based in Istanbul.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "cdvmq-aaaaa-aaaah-qcdoq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/ICVibesters-logo.png",
+    "name": "ICVibesters",
+    "frontend": [],
+    "description": "Vibesters is a collection of 5000 2D Avatars, living on the Internet Computer.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "2l7rh-eiaaa-aaaah-qcvaa-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/tuts.jpg",
+    "name": "ICTuts",
+    "frontend": [
+      "https://ictuts.com/"
+    ],
+    "description": "10,000 randomly generated TuTs, a pharaoh-themed NFT collections on the Internet Computer.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "ahl3d-xqaaa-aaaaj-qacca-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/avatar.jpeg",
+    "name": "Dfinity Donkey",
+    "frontend": [],
+    "description": "Dfinity donkey is an NFT collection that will be the membership token of DONGE foundation, a decentralised foundation backed by DONGE tokens.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "qjwjm-eaaaa-aaaah-qctga-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/Kinic-CFN-Logo.png",
+    "name": "Kinic (CrowdfundNFT)",
+    "frontend": [],
+    "description": "Kinic is a search engine for web3 content. Kinic New-Launch NFT.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "6fosk-kaaaa-aaaak-aawqq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/icprime8s.png",
+    "name": "ICPrime8s",
+    "frontend": [],
+    "description": "Five releases (10,500 total) of randomly generated NFTs following the evolution of Prime8s.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "5h2fc-zaaaa-aaaah-qcnjq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/69B3142A_3A42_4ECE_8EB5_EC8280E2D28A.jpeg",
+    "name": "The Equanimity Collection",
+    "frontend": [],
+    "description": "49, 1 of 1, Hand-Crafted Oil Paintings",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "vj752-6iaaa-aaaah-qcm6a-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/8yeargangnft-logo.png",
+    "name": "8YearGang Genesis Collection",
+    "frontend": [],
+    "description": "8YearGang NFT Genesis Collection will be issued for those who stake ICP for 8 years.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "7gayh-aqaaa-aaaah-abdgq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/Crypto90s-Logo.png",
+    "name": "Crypto 90s",
+    "frontend": [],
+    "description": "Taking crypto to the 90s. A 90s-themed collection of 1999 NFTs, mashed with crypto culture.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "3kt53-zaaaa-aaaah-qczkq-cai"
+  },
+  {
+    "thumbnail": "https://pnpu4-3aaaa-aaaah-qcceq-cai.raw.ic0.app/?cc=0&type=thumbnail&tokenid=sqpc5-5akor-uwiaa-aaaaa-b4aqr-eaqca-aaaav-a",
+    "name": "Infinite Chimps",
+    "frontend": [],
+    "description": "Every Infinite Chimp in this NFT collection is a portrait of a rescued chimp that now lives peacefully at the sanctuary.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "pnpu4-3aaaa-aaaah-qcceq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/Ownership.png",
+    "name": "Content Fly Deliverable Ownership",
+    "frontend": [],
+    "description": "This NFT proves ownership of the content produced in a Content Fly job.",
+    "details": {
+      "standard": "DIP721"
+    },
+    "principal_id": "x6avo-fqaaa-aaaah-qcuiq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/0.png",
+    "name": "CrowdFund NFT",
+    "frontend": [],
+    "description": "NFT collection created for crowdfunding purposes on CrowdFund NFT.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "2glp2-eqaaa-aaaak-aajoa-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/TheEmpress-Logo.png",
+    "name": "The Empress",
+    "frontend": [],
+    "description": "Collectible Major Arcana cards celebrating the enduring spirit of tarot, the innervating virtues of web3, and the first deck developed by Saga Tarot.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "5t24r-yqaaa-aaaaj-qauta-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/ICPAnalysisNFT(CrowdfundNFT)-Logo.png",
+    "name": "ICP Analysis NFT (CrowdfundNFT)",
+    "frontend": [],
+    "description": "ICP Analysis is the top source of micro-economic data for the Internet Computer and the ICP token.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "3ua4f-caaaa-aaaak-aarta-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/MadRealities-logo.jpeg",
+    "name": "MetaRealities Tickets",
+    "frontend": [],
+    "description": "The MetaRealities's ticket collection for authenticating users into the auction.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "ytwb7-iqaaa-aaaah-abiea-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/icApps-CrowdfundNFT-Logo.png",
+    "name": "icApps (CrowdfundNFT)",
+    "frontend": [],
+    "description": "Hi! icApps started as a simple one-page site in the earliest days of the Internet Computer Genesis launch. Since then it has developed into one of the main resources with information about projects and NFT collections on the IC. A large community has formed around it. More than hundreds of NFTs were raffled among the followers and supporters for the duration of the project. icApps is also recognized by DFINITY Foundation and is referenced on its website.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "dtlqp-nqaaa-aaaak-abwna-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/B5.jpg",
+    "name": "DSCVR OG 21",
+    "frontend": [],
+    "description": "A legendary NFT badge gifted to OG DSCVR users who were active on the site in 2021.",
+    "details": {
+      "standard": "ERC721"
+    },
+    "principal_id": "s6hwe-laaaa-aaaab-qaeba-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/8%20(1).png",
+    "name": "Saga Legends: #1 The Magician",
+    "frontend": [],
+    "description": "Collectible Major Arcana cards celebrating the enduring spirit of tarot, the innervating virtues of web3, and the first deck developed by Saga Tarot.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "cwu5z-wyaaa-aaaaj-qaoaq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/MutantBabyApes-logo.png",
+    "name": "Mutant Baby Apes Club",
+    "frontend": [],
+    "description": "MBAC is a collection of 10,000 Mutant Baby Apes NFTs are unique digital collectibles on the ICP blockchain. Your Mutant Baby Apes can be used as the identity cards of a mysterious club and have access to exclusive club features.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "4nwoe-giaaa-aaaah-abdma-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/icbucks-logo.png",
+    "name": "IC Bucks",
+    "frontend": [],
+    "description": "ICBucks is a collection of 8888 different NFTS made by Egido Val and DKLord89 with thousands of dfferent designs inspired by Art, Cryptocurrency and Memes that promotes the expansion of WEB3 and the Internet Computer.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "6wih6-siaaa-aaaah-qczva-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/avatar.png",
+    "name": "ICSnakes",
+    "frontend": [],
+    "description": "First NFT with built-in mini-game! A collection of 10,000 randomly generated NFTs on the Internet Computer hunting for food.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "3ifmd-wqaaa-aaaah-qckda-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/cake-logo.png",
+    "name": "Cake",
+    "frontend": [
+      "https://cake.aviate-labs.com/"
+    ],
+    "description": "Slices of cake celebrating the birthdays of IC builders. Proceeds fund open source development.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "wxi2q-oiaaa-aaaaj-qab2q-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/DanielsCollection-Logo.png",
+    "name": "Daniel's Playground",
+    "frontend": [],
+    "description": "A collection of experimental NFTs by Daniel.",
+    "details": {
+      "standard": "DIP721v2"
+    },
+    "principal_id": "q47yz-iyaaa-aaaam-qambq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/voxel-assassins-logo.jpeg",
+    "name": "Voxel Assassins!!!",
+    "frontend": [],
+    "description": "Frog Nation 2.0 is a community that unites like minded people who value freedom of speech and liberty, the community that pushes forward the ideology of decentralization of power. High quality collectibles of Assassin themed Pepes represent army of individuals who embrace power of Internet Computer that will help them to build the bright future of Decentralized world.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "erpx2-pyaaa-aaaah-qcqsq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/artific.jpg",
+    "name": "Artific",
+    "frontend": [],
+    "description": "The artific NFT collection is a decentrally user generated set of unique NFT tokens. It is one of the first of its kind and runs entirely on the dfinity IC blockchain.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "4q4as-faaaa-aaaal-qab4q-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/ICPuppies.png",
+    "name": "ICPuppies",
+    "frontend": [],
+    "description": "10.000 unique randomly generated 8-bit puppies with equippable accessories",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "5movr-diaaa-aaaak-aaftq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/items.png",
+    "name": "ICMojis Items",
+    "frontend": [
+      "https://graci-aaaaa-aaaah-aaqjq-cai.raw.ic0.app/"
+    ],
+    "description": "Collection of items that will be integrated into the ICmojis Origins game in the future.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "cihkf-qyaaa-aaaah-qb7jq-cai"
+  },
+  {
+    "thumbnail": "https://tde7l-3qaaa-aaaah-qansa-cai.raw.ic0.app/?tokenid=gvmdu-vikor-uwiaa-aaaaa-b4adm-qaqca-aakby-a",
+    "name": "Cronic Wearables",
+    "frontend": [
+      "https://cronic.toniqlabs.com/"
+    ],
+    "description": "Wearable NFTs, usable with the Cronics NFT collection. A Play-to-earn NFT game being developed by ToniqLabs for the Internet Computer. Cronics  incorporates breeding mechanics, wearable NFTs, a p2e minigame ecosystem, and more.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "tde7l-3qaaa-aaaah-qansa-cai"
+  },
+  {
+    "thumbnail": "https://oeee4-qaaaa-aaaak-qaaeq-cai.raw.ic0.app/?cc=0&type=thumbnail&tokenid=w5txv-gakor-uwiaa-aaaaa-cuaab-eaqca-aadhc-a",
+    "name": "Motoko Day Drop",
+    "frontend": [
+      "https://dfinity.org/"
+    ],
+    "description": "Motoko-themed NFT Collection on the Internet Computer.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "oeee4-qaaaa-aaaak-qaaeq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/internetastro.jpeg",
+    "name": "Internet Astronauts",
+    "frontend": [
+      "https://interastrosc.com/"
+    ],
+    "description": "Internet Astronauts is a collection of 10,000 unique digital astronaut NFT collectibles only found on the Internet Computer.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "sr4qi-vaaaa-aaaah-qcaaq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/DRats-Logo.jpeg",
+    "name": "Dfinity Rats",
+    "frontend": [],
+    "description": "DRats is a P2E game combining art, comedy, and gameplay on the IC",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "5izaq-vyaaa-aaaah-qcz4a-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/hatch-logo.png",
+    "name": "Hatch Lottery Tickets",
+    "frontend": [],
+    "description": "This is used as a public test NFT collection for the Hatch Launchpad.",
+    "details": {
+      "standard": "DIP721"
+    },
+    "principal_id": "v7vsu-wqaaa-aaaai-qhpsa-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/spaceapes-logo.jpeg",
+    "name": "Dfinity Space Apes",
+    "frontend": [],
+    "description": "10.000 Space Apes want to go their planet",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "3mttv-dqaaa-aaaah-qcn6q-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/ICGhost-Logo.png",
+    "name": "IC Ghosts",
+    "frontend": [],
+    "description": "IC Ghosts was born for ICP with Love&Hope with a collection size of 10,000. They are generated entirely from pixel drawings by icplink. They belong ICP ecosystem forever. Feel free to use IC Ghosts any way you want.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "xzcnc-myaaa-aaaak-abk7a-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/ICFootprint-Crowdfund-Logo.png",
+    "name": "Internet Computer Footprint (CrowdfundNFT)",
+    "frontend": [],
+    "description": "Internet Computer Footprint by Carbon Crowd Our Inspiration Any idea that wants to play a positive role in defining the future must take into account the health of our planet. The Internet Computer (IC) ecosystem is the home of many such ideas, and the radical thinkers who birth them. We want IC footprint to be the climate partner of choice; representing, protecting and regenerating the planet as the IC shapes it. We started IC footprint because we saw a critical flaw in the IC, and as environmentalists, couldn’t go about building our big ideas on the platform until we solved it. What problem? Unavoidable emissions caused by canister cycles.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "lxmol-ciaaa-aaaak-abpdq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/iccreeps.jpg",
+    "name": "Internet Creeps",
+    "frontend": [],
+    "description": "Internet Creeps genesis collection features 222 unique 1:1 NFT�۪s that have been generatively layered and restored from classic pulp arts.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "i5a2q-4yaaa-aaaam-qafla-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/DAB.jpg",
+    "name": "YoloOctopus",
+    "frontend": [],
+    "description": "A collection of 8888 intelligently generated dope characters living life to the fullest !",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "xzxhy-oiaaa-aaaah-qclnq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/ChineseChar-CrowdfundNFT-Logo.png",
+    "name": "中国汉字 (CrowdfundNFT)",
+    "frontend": [],
+    "description": "We launched the Chinese Characters 5K NFT project on IC, a collection of 5,000 commonly used Chinese characters that are simple, atmospheric and unique. Our vision is to spread and promote Chinese culture: to let the world know the story of each Chinese character, the essence of each group of words, and the underlying meaning of each verse. Chinese characters will write poems in web 3.0, which is a great and meaningful thing",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "cpwov-rqaaa-aaaak-aaurq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/icats_logo.jpg",
+    "name": "ICats",
+    "frontend": [],
+    "description": "ICats is a new collection drop for ICPunks holders.",
+    "details": {
+      "standard": "ICPunks"
+    },
+    "principal_id": "4nvhy-3qaaa-aaaah-qcnoq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/darling.png",
+    "name": "Snowmen MVP",
+    "frontend": [],
+    "description": "This is an MVP nft project created to test out indie game dao during Motoko Bootcamp. This NFT will unlock an MVP video game.",
+    "details": {
+      "standard": "DIP721"
+    },
+    "principal_id": "b547e-maaaa-aaaam-qadga-cai"
+  },
+  {
+    "thumbnail": "https://owuqd-dyaaa-aaaah-qapxq-cai.raw.ic0.app/?tokenid=2e7o5-wykor-uwiaa-aaaaa-b4ad5-4aqca-aaagc-q",
+    "name": "ICPuzzle",
+    "frontend": [],
+    "description": "The ICPuzzle NFT is an artistic NFT that is meant to invoke thought around individuality, community, and the beauty of the human condition. Each puzzle piece represents human individuality within humanity, a self-contained piece of a larger cohesive whole.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "owuqd-dyaaa-aaaah-qapxq-cai"
+  },
+  {
+    "thumbnail": "https://d3ttm-qaaaa-aaaai-qam4a-cai.raw.ic0.app/?tokenId=1",
+    "name": "Wrapped IC Drip",
+    "frontend": [
+      "https://dvr6e-lqaaa-aaaai-qam5a-cai.raw.ic0.app/"
+    ],
+    "description": "IC Drip are randomly generated NFTs with meta-commerce shopping carts for outfits and personas stored on chain on the Internet Computer.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "3db6u-aiaaa-aaaah-qbjbq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/ICKitsune-logo.jpg",
+    "name": "IC Kitsune",
+    "frontend": [],
+    "description": "10,000 chubby foxes are travelling through time & space to find new universes to populate. But this is only the beginning. They prepared an app and they will evolve into wiser foxes that will help their app migrate into metaverse.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "zqpvh-hqaaa-aaaah-qczfq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/ICBikes-Logo.png",
+    "name": "ICBikes",
+    "frontend": [],
+    "description": "10000 bikes NFT RIDE ON InternetComputer",
+    "details": {
+      "standard": "DIP721v2"
+    },
+    "principal_id": "sx5ur-maaaa-aaaak-aapgq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/KVHS-Logo.jpeg",
+    "name": "KVHS Drafts",
+    "frontend": [],
+    "description": "KVHS Drafts is a collection of 60 old KawaiiVHS designs. These designs were fan-favorites but were created prior to the community-led design changes.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "3cjkh-tqaaa-aaaam-qan6a-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/IMG_20211219_173121_637.jpg",
+    "name": "Imagine",
+    "frontend": [],
+    "description": "NFT Studio's very first collection published on the Internet Computer, entitled Imagine, is composed of rare and unique pieces that push the boundaries of what is possible in terms of minting. Imagine aims to delight and challenge. Available exclusively on NFT Studio's Marketplace.",
+    "details": {
+      "standard": "DepartureLabs"
+    },
+    "principal_id": "iiibs-tqaaa-aaaak-aab6q-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/637220BA-6BB1-4329-9B2A-703987EDDA22.png",
+    "name": "ICKoalas",
+    "frontend": [],
+    "description": "Koalas that rule the Earth.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "tnvo7-iaaaa-aaaah-qcy4q-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/humans.png",
+    "name": "Internet Humans",
+    "frontend": [],
+    "description": "A collection of 8-bit Humans who live on the #InternetComputer blockchain",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "qbc6i-daaaa-aaaah-qcywq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/ClubCani-Logo.png",
+    "name": "Club CANI",
+    "frontend": [],
+    "description": "The Canistore Crypto-Club Membership NFTs has over 50 million  tokens attached, with variants ranging from one to ten years! Our physical venue is based in Central London (UK) with a stylish NFT gallery backdrop and a unique cocktail bar that serves a variety of Cryptails (Crypto-themed cocktails).",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "ehr7n-3yaaa-aaaam-qaiia-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/ICPSwap-Valentines-Logo.png",
+    "name": "ValentinesDay Exclusive NFT",
+    "frontend": [],
+    "description": "Get by participating in the ICPSwap Launchpad testing during ValentinesDay 2022.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "e7xmv-vyaaa-aaaag-qahha-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/Avatar_Dino_Blue.png",
+    "name": "IC DINOS",
+    "frontend": [],
+    "description": "8888 Dinos living on ICP blockchain - watchable from eggs.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "yrdz3-2yaaa-aaaah-qcvpa-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/ContentFlyPoJCNFT%20(1).png",
+    "name": "Content Fly PoJC",
+    "frontend": [],
+    "description": "Each PoJC NFT certifies a completed job on Content Fly by the content creator and buyer.",
+    "details": {
+      "standard": "DIP721"
+    },
+    "principal_id": "yjr44-yyaaa-aaaah-qcsqq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/IC3D.png",
+    "name": "ICGhost",
+    "frontend": [
+      "https://ic3dnft.art/"
+    ],
+    "description": "The 3D ICGhost NFT scenes will be the largest NFT release since the Dfinity Foundation launched the ICP network in May of 2021. On October 29, 2021, sixty thousand NFTs will be released in ten thousand spooky but adorable scenes. Each 3D ICGhost NFT scene contains six separate 3D NFTs that include a landscape, a ghost with hat & glasses, and two other scene items.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "nfvlz-jaaaa-aaaah-qcciq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/950x950.png",
+    "name": "ETH Flower",
+    "frontend": [],
+    "description": "ETH Flower, the second of Ludo’s Flower Trilogy, and the continuation of his techno-flower chimera.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "dhiaa-ryaaa-aaaae-qabva-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/6196.png",
+    "name": "ICShellbacks",
+    "frontend": [],
+    "description": "10000 cool Turtle PFPs showing off the first open launchpad/marketplace service on the IC!",
+    "details": {
+      "standard": "DIP721"
+    },
+    "principal_id": "jvax7-zyaaa-aaaak-aanwa-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/BlackHole.jpeg",
+    "name": "Elementum: Interitus",
+    "frontend": [],
+    "description": "These pieces will definitely give you an edge in our upcoming first risky game and they'll function as instant cards for our Trading Card Game, spells that can change the conditions of the match and let you walk away victorious. For more information, join The Agora on Discord.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "zejmq-rqaaa-aaaah-qcnsq-cai"
+  },
+  {
+    "thumbnail": "https://cnxby-3qaaa-aaaah-qcdpq-cai.raw.ic0.app/?cc=0&type=thumbnail&tokenid=b6qdx-lykor-uwiaa-aaaaa-b4aq3-4aqca-aaaaa-a",
+    "name": "André Wee",
+    "frontend": [],
+    "description": "André Wee, a newcomer to the NFT Art scene, is an experimental illustrator that jumps between both the virtual and physical world when he creates his craft.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "cnxby-3qaaa-aaaah-qcdpq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/ICDinos-Items-Logo.png",
+    "name": "IC Dinos (GEN2)",
+    "frontend": [],
+    "description": "IC Dinos - GEN2",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "xe45w-fyaaa-aaaai-qkgfa-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/400_400_ETH.png",
+    "name": "Dmail Network",
+    "frontend": [],
+    "description": "Dmail is the first Web3.0-based mailbox DApp with integrated distributed storage. Every domain account is a NFT.",
+    "details": {
+      "standard": "ERC721"
+    },
+    "principal_id": "42fn2-wyaaa-aaaak-aafwq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/icpugs400x400.png",
+    "name": "ICPugs",
+    "frontend": [],
+    "description": "10,000 randomly generated 8-bit style pug NFTs lounging on the Internet Computer",
+    "details": {
+      "standard": "C3"
+    },
+    "principal_id": "awbbf-xqaaa-aaaai-qieaa-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/ICPets-logo.jpeg",
+    "name": "ICPets",
+    "frontend": [],
+    "description": "A collection of 11,111 ICPets NFT on the #ICP Blockchain",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "unssi-hiaaa-aaaah-qcmya-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/bulls.PNG",
+    "name": "Dfinity Bulls",
+    "frontend": [],
+    "description": "8,888 Awesome Badass Bulls will ever be minted! P2E Game coming!",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "dknxi-2iaaa-aaaah-qceuq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/Panda-Queen-logo.png",
+    "name": "Panda Queen",
+    "frontend": [],
+    "description": "9999 unique artworks from the Animal Guardians universe.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "zhibq-piaaa-aaaah-qcvka-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/TacoNFT-Logo.png",
+    "name": "Taco NFTs",
+    "frontend": [],
+    "description": "10,000 Tacos Living on the Internet Computer",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "jxpyk-6iaaa-aaaam-qafma-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/ICPToday-Logo.jpeg",
+    "name": "ICP Today",
+    "frontend": [],
+    "description": "ICP Today is a magazine of weekly updates for the ICP ecosystem",
+    "details": {
+      "standard": "DIP721v2"
+    },
+    "principal_id": "jjqnd-pyaaa-aaaak-abxuq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/BoxyDude-logo.png",
+    "name": "Boxy Dude",
+    "frontend": [],
+    "description": "Body Dude is a collectible and breedable 10K NFT living in Dfinity Blockchain.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "s36wu-5qaaa-aaaah-qcyzq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/CYMAN-logo.png",
+    "name": "CYMAN",
+    "frontend": [],
+    "description": "7777 cybernetic humanoids built on the IC",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "xphpx-xyaaa-aaaah-qcmta-cai"
+  },
+  {
+    "thumbnail": "https://73xld-saaaa-aaaah-qbjya-cai.raw.ic0.app/?tokenid=tpx6i-sykor-uwiaa-aaaaa-b4ako-aaqca-aaaaz-a",
+    "name": "Wing",
+    "frontend": [],
+    "description": "An NFT photographic series created by the photographer @olisav ",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "73xld-saaaa-aaaah-qbjya-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/ICAliens_LOGO%20(1).jpeg",
+    "name": "ICAliens",
+    "frontend": [],
+    "description": "A Collection of 10,000 Souvenirs of our adventures for our fellow Humans minted as an NFT on ICP",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "p5jg7-6aaaa-aaaah-qcolq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/IVC_Logo%20(1).png",
+    "name": "Infernal Vampire Colony",
+    "frontend": [],
+    "description": "Infernal Vampire Colony is an initial collection of 666 Vampires, with another 6000 to be released in future.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "gyuaf-kqaaa-aaaah-qceka-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/DragonBoots-logo.png",
+    "name": "Dragon Boots",
+    "frontend": [],
+    "description": "Designed by Metadahn, these 266 iconic dragon boots compose VRSTL’s first collection. They are the first in a series of different drops consisting of various wearables and items. These collections will be integrated in ICP’s major metaverses, providing utility as digital status and granting various powers. Further utilities range from airdrops to unlockable content.",
+    "details": {
+      "standard": "C3"
+    },
+    "principal_id": "2j7u5-nyaaa-aaaah-qczma-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/chibi.jpg",
+    "name": "IC CHIBI",
+    "frontend": [],
+    "description": "ICChibi is a collection of 5555 unique, hand-drawn and algorithmically generated NFTs on the ICP blockchain.Owning a Chibi NFT means being part of a community, family, and movement.",
+    "details": {
+      "standard": "DIP721v2"
+    },
+    "principal_id": "zdg5i-yqaaa-aaaai-acjda-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/3D-GDolls-Logo.png",
+    "name": "3D GDolls",
+    "frontend": [],
+    "description": "The entire collection was created by the artist quiizzzzzmeow. She is a big fan of graphic arts, painting, art and computer games, agreeing to give us our favorite characters in a funny funko pop style and spending a lot of effort and energy, we can now see this beautiful collection.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "oqhcb-biaaa-aaaao-aafmq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/ICPSwap-Memorial-Logo.png",
+    "name": "ICPSwap 1.0 Memorial NFT",
+    "frontend": [],
+    "description": "Folks who have experienced ICPSwap 1.0 functions by May 16, 12:00 UTC will receive it!",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "ey3ct-4aaaa-aaaak-aaueq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/IVFv2-logo.png",
+    "name": "Infernal Vampire Colony Gen2",
+    "frontend": [],
+    "description": "Gen2 Infernal Vampires are prisoned in the lair by their enemies for a long time. They look more terrible and more scary than Gen1 Infernal Vampires",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "ctt6t-faaaa-aaaah-qcpbq-cai"
+  },
+  {
+    "thumbnail": "https://d3ttm-qaaaa-aaaai-qam4a-cai.raw.ic0.app/?tokenId=11",
+    "name": "IC Drip",
+    "frontend": [
+      "https://dvr6e-lqaaa-aaaai-qam5a-cai.raw.ic0.app/"
+    ],
+    "description": "IC Drip are randomly generated NFTs with meta-commerce shopping carts for outfits and personas stored on chain on the Internet Computer.",
+    "details": {
+      "standard": "ICPunks"
+    },
+    "principal_id": "d3ttm-qaaaa-aaaai-qam4a-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/ICBird-Logo.png",
+    "name": "IC Birds",
+    "frontend": [],
+    "description": "4,444 birds playable as nft in games.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "4mupc-myaaa-aaaah-qcz2a-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/gang.png",
+    "name": "DfinityGangs",
+    "frontend": [],
+    "description": "DfinityGangs has been airdropped by the Dfinity Community Vietnam, as a certificate of holders' engagement in the Dfinity ecosystem. The collection consists of 10000 avatars created by artist @cat1_nyan for many weeks.",
+    "details": {
+      "standard": "C3"
+    },
+    "principal_id": "2x3lw-tiaaa-aaaah-qcvca-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/full_stone_400.png",
+    "name": "Saga Legends: #0 The Fool",
+    "frontend": [],
+    "description": "The legends series of NFTs is a collectible version of the major arcana in the traditional tarot deck, for NFT collectors and early supports of Saga.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "nges7-giaaa-aaaaj-qaiya-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/ICPuppies.png",
+    "name": "ICPuppies Wearables",
+    "frontend": [],
+    "description": "Accessories for the ICPuppies NFT collection",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "4gbxl-byaaa-aaaak-aafuq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/icme_twitter_logo.pngg",
+    "name": "HS testers",
+    "frontend": [],
+    "description": "NFTs minted using ICME",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "bxsmj-kiaaa-aaaaj-aai3a-cai"
+  },
+  {
+    "thumbnail": "https://dv6u3-vqaaa-aaaah-qcdlq-cai.raw.ic0.app/?cc=0&type=thumbnail&tokenid=hrhxl-sakor-uwiaa-aaaaa-b4aq2-4aqca-aaaaa-a",
+    "name": "Tyler Monsein & Dakota Light-Smith",
+    "frontend": [],
+    "description": "Tyler and Dakota are a writer / designer team interested in semiotics and altered states. This is a video series in which common phrases become hypnotic mantras.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "dv6u3-vqaaa-aaaah-qcdlq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/6169B7ED_4952_4245_9C69_C782A1078B5D.jpeg",
+    "name": "The Tranquility Collection",
+    "frontend": [],
+    "description": "99 1 of 1 Hand-Crafted Pastel Paintings",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "t2eok-gyaaa-aaaah-qclwq-cai"
+  },
+  {
+    "thumbnail": "https://ckwhm-wiaaa-aaaah-qcdpa-cai.raw.ic0.app/?cc=0&type=thumbnail&tokenid=33iab-dikor-uwiaa-aaaaa-b4aq3-yaqca-aaaaa-q",
+    "name": "PatternBased",
+    "frontend": [],
+    "description": "PatternBased is a boutique creative label at the intersection of art and technology.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "ckwhm-wiaaa-aaaah-qcdpa-cai"
+  },
+  {
+    "thumbnail": "https://gevsk-tqaaa-aaaah-qaoca-cai.raw.ic0.app/?tokenid=vqwej-jikor-uwiaa-aaaaa-b4adq-qaqca-aaaac-q",
+    "name": "ICMojis",
+    "frontend": [
+      "https://graci-aaaaa-aaaah-aaqjq-cai.raw.ic0.app/"
+    ],
+    "description": "A collection inspired in old school forum emotes, designed by the artist @Visions_GFX, also part of the interactive strategy game ICMoji Origins.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "gevsk-tqaaa-aaaah-qaoca-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/dab/operainstant.png",
+    "name": "Imagine",
+    "frontend": [],
+    "description": "Imagine is NFT Studio's first collection of fully interactive 3D NFT's. They push the limits of minting technology and expand the boundaries of what is possible in the NFT industry. Dare to Imagine.",
+    "details": {
+      "standard": "DepartureLabs"
+    },
+    "principal_id": "wzocv-baaaa-aaaaj-aaawa-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/MemeCake-logo.png",
+    "name": "Meme Cake",
+    "frontend": [],
+    "description": "7,777 Dick NFT's",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "txr2a-fqaaa-aaaah-qcmkq-cai"
+  },
+  {
+    "thumbnail": "https://qcg3w-tyaaa-aaaah-qakea-cai.raw.ic0.app/Token/1",
+    "name": "Wrapped ICPunks",
+    "frontend": [
+      "https://icpunks.com/"
+    ],
+    "description": "ICPunks wrapped under the EXT standard. 10,000 randomly generated, unique collectible clowns with proof of ownership stored on the Internet Computer blockchain. Created as a reference to a meme comparing the Internet Computer token (ICP) with the Insane Clown Posse.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "bxdf4-baaaa-aaaah-qaruq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/TheHierophant-Logo.png",
+    "name": "The Hierophant",
+    "frontend": [],
+    "description": "Saga is bringing Tarot into the Metaverse. These collectible Major Arcana NFTs celebrate and support our first official deck.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "6kk5l-syaaa-aaaaj-qau2q-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/pokedbot.jpg",
+    "name": "Poked Bots",
+    "frontend": [],
+    "description": " 10,000 unique bot-themed collectible NFTs on the Internet Computer blockchain by Poked Studio.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "bzsui-sqaaa-aaaah-qce2a-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/btcflower.png",
+    "name": "BTC Flower",
+    "frontend": [],
+    "description": "2009 unique NFTs by Paris-based street artist Ludo on the Internet Computer.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "pk6rk-6aaaa-aaaae-qaazq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/zombieLogo.png",
+    "name": "Crazy Zombie",
+    "frontend": [],
+    "description": "Zombies affected by the Covid-19 epidemic gradually mutate and familiarize themselves with the new environment. Each zombie has different environmental accessories.",
+    "details": {
+      "standard": "C3"
+    },
+    "principal_id": "iyzne-taaaa-aaaah-qcjga-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/icturtleslogo__1_.png",
+    "name": "ICTurtles",
+    "frontend": [],
+    "description": "Customizable & breedable NFTS, built on GameFi, dropping with accessories, providing passive income to holders.",
+    "details": {
+      "standard": "DepartureLabs"
+    },
+    "principal_id": "fl5nr-xiaaa-aaaai-qbjmq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/pods-logo.png",
+    "name": "POD",
+    "frontend": [],
+    "description": "The distrikt PODs collection is made up of 10,000 vessels that will traverse the IC ecosystem. Your POD contains multitudes and shelters unlimited potential. When you hold a distrikt POD you hold the key to unlock experience in multiple dimensions, available only to the initiated.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "ah2fs-fqaaa-aaaak-aalya-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/ICFlies-logo.gif",
+    "name": "Infinity Flies",
+    "frontend": [],
+    "description": "Drop collection for Infinity Frogs holders",
+    "details": {
+      "standard": "ICPunks"
+    },
+    "principal_id": "vrny5-4iaaa-aaaah-qclbq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/ICCuteMon-CrowdFundNFT-logo.png",
+    "name": "IC-CuteMon (CrowdfundNFT)",
+    "frontend": [],
+    "description": "NFT collection by CuteMon Lover used to crowdfund on CrowdfundNFT.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "zaint-baaaa-aaaak-aaoyq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/3D_moonwalkers_icon__800x800_.png",
+    "name": "The Moonwalkers",
+    "frontend": [
+      "https://zfjzz-4aaaa-aaaah-aasbq-cai.raw.ic0.app/"
+    ],
+    "description": "These Animal Astronauts unlock massive influence in the growing ecosystem of the IC Gallery. The Moonwalker collection combines 3 essential forces of the Metaverse into 1 NFT: a 2D Profile Picture, a 3D Video, and a 3D Model.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "er7d4-6iaaa-aaaaj-qac2q-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/MetaChess-Logo.png",
+    "name": "MetaChess",
+    "frontend": [],
+    "description": "400 3D rendered Chess Pieces on the Internet Computer",
+    "details": {
+      "standard": "ICPunks"
+    },
+    "principal_id": "4qqvt-3yaaa-aaaah-qczya-cai"
+  },
+  {
+    "thumbnail": "https://kss7i-hqaaa-aaaah-qbvmq-cai.raw.ic0.app/?tokenid=bubur-lykor-uwiaa-aaaaa-b4anl-eaqca-aaaae-a",
+    "name": "ICelebrity",
+    "frontend": [],
+    "description": "An NFT collection of 100 unique minted celebrities (Hollywood, Football Players, Singers and more).",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "kss7i-hqaaa-aaaah-qbvmq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/ICPBunny.png",
+    "name": "ICPBunny (Testnet)",
+    "frontend": [
+      "https://hae47-fyaaa-aaaaf-qaeiq-cai.raw.ic0.app/"
+    ],
+    "description": "Testnet. A bunny-themed NFT collection that uses utility tokens to enable yieldable and breedable NFTs on the Internet Computer.",
+    "details": {
+      "standard": "ICPunks"
+    },
+    "principal_id": "6olkk-7iaaa-aaaah-qboaa-cai"
+  },
+  {
+    "thumbnail": "https://fleek-team-bucket.s3.fleek.co/fleek-team-bucket/logos/IC-Flowers-logo.jpg",
+    "name": "ICFlowers",
+    "frontend": [],
+    "description": "3000 unique flower NFTs on the IC",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "nncvb-tyaaa-aaaah-abh2q-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/cryptoText-Logo.png",
+    "name": "cryptoText",
+    "frontend": [],
+    "description": "ASCII Logos of Top 200 Cryptocurrencies",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "sbcwr-3qaaa-aaaam-qamoa-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/EarlyDogTrophies-Logo.png",
+    "name": "Early Dog Trophies",
+    "frontend": [],
+    "description": "The Legendary Early Dog Trophies are the first of the exclusive and supreme collections rewarding DogFinity holders. Unique sounds, perks to merchandise & future drops + DogAO governance access.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "qjyju-jqaaa-aaaam-qamca-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/ICG-Logo.jpeg",
+    "name": "IC Genesis",
+    "frontend": [],
+    "description": "193 Data Driven Artworks",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "v3b6z-ziaaa-aaaam-qam4q-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/Eimolad-logo.jpeg",
+    "name": "Dwarf Elders of Eimolad",
+    "frontend": [],
+    "description": "2880 Unique animated Elder Dwarfs have decided to take their part in the world of Eimolad. World of Eimolad is a P2E MMORPG game and dwarves are one of the core races of the game.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "ri5pt-5iaaa-aaaan-qactq-cai"
+  },
+  {
+    "thumbnail": "https://nbg4r-saaaa-aaaah-qap7a-cai.raw.ic0.app/?tokenid=wdyem-pikor-uwiaa-aaaaa-b4ad7-yaqca-aacsh-a",
+    "name": "Starverse",
+    "frontend": [
+      "https://starverse.toniqlabs.com/"
+    ],
+    "description": "Starverse is an NFT collection of rare and unique Stars, a collaboration between DSCVR and ToniqLabs. The Starverse symbolizes the unlimited potential of the Internet Computer with it’s infinite size and unstoppable nature.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "nbg4r-saaaa-aaaah-qap7a-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/VRSTL-Logo.png",
+    "name": "DRIP BANG",
+    "frontend": [],
+    "description": "VRSTLstudios presents its second drop: DRIP BANG ⚠️ WARNING: May contain metaverse-ready wearables, and more…",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "x4oqm-bqaaa-aaaam-qahaq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/logo_wwc.png",
+    "name": "World Wide Crazy",
+    "frontend": [],
+    "description": "2222 Crazy Cats NFT. Hilarious every day.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "twfpe-jaaaa-aaaah-abjza-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/NnsDAO-Starfish-Logo.png",
+    "name": "NnsDAO Starfish",
+    "frontend": [],
+    "description": "The Unstoppable Power of Leaderless Organizations.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "vcpye-qyaaa-aaaak-qafjq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/Dragon-Logo.jpeg",
+    "name": "Dfinity Dragonz",
+    "frontend": [],
+    "description": "Meka Dragonz living on the Internet Computer",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "556r5-uqaaa-aaaah-qcz7q-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/MoraCity-Logo.png",
+    "name": "Mora Planet",
+    "frontend": [],
+    "description": "A total of 5 series, 9999 planet NFTs. The five series are Buddha, machine, fantasy, explosion, and virus. Mora planet is free to airdrop and will not be charged in any form.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "slzze-ciaaa-aaaah-aa7ra-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/PHASMA-Logo.jpeg",
+    "name": "PHASMA",
+    "frontend": [],
+    "description": "PHASMA is an Internet Computer-based NFTs collection of 1,500 curated pieces.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "lcgbg-kaaaa-aaaam-qaota-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/heart_PNG51349 (2).png",
+    "name": "ICLove",
+    "frontend": [],
+    "description": "ICLove is an Dapp base on ICP. Record you love on blockchain. Show your love to your lover, family and friends.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "mfhqa-iyaaa-aaaai-abona-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/Thanat0s-CrowdfundNFT-Logo.png",
+    "name": "Thanat0s (CrowdfundNFT)",
+    "frontend": [],
+    "description": "Thanat0s NFT collection for the purpose of crowdfunding on CrowdfundNFT",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "sc2f4-niaaa-aaaak-aapfa-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/qT2iRnME_400x400__1_.jpg",
+    "name": "ICircle - Pythagoras",
+    "frontend": [],
+    "description": "ICircle NFT is a generative art created by combining mathematics, creative coding, and aesthetic soul, which results in beautiful art. ICircle is formed by mathematical functions and applied geometry.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "z7mqv-liaaa-aaaah-qcnqa-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/FPDAO-Logo.jpeg",
+    "name": "FPDAO Flower",
+    "frontend": [],
+    "description": "FP DAO is going Soulbound, because when what's yours is yours forever, the SEC dies. To make governance more about who you are than what you have, we need Soul Bound Tokens. FP DAO Flower is the genesis symbol for this initiative.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "t3drq-7iaaa-aaaae-qac2a-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/2D-Assassins-logo.jpeg",
+    "name": "2D Assassins",
+    "frontend": [],
+    "description": "Frog Nation 2.0 is a community that unites like minded people who value freedom of speech and liberty, the community that pushes forward the ideology of decentralization of power.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "bkvll-jiaaa-aaaah-qcqnq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/P2J-Logo.png",
+    "name": "P2J",
+    "frontend": [],
+    "description": "N/A",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "ag2h7-riaaa-aaaah-qce6q-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/IKUZO-Logo.png",
+    "name": "IKUZO",
+    "frontend": [],
+    "description": "IKUZO is a unique collection of 5555 NFTs in the internet computer network. Ikuzo will be a project built on art and community. Our main mentality is to be a blue chip project. We aim to achieve this goal with our art and our community Owning one of the Ikuzo nfts will offer you privileges. These are future airdrops and deals. To deliver premium quality to our community, Ikuzo nfts was brought to life by top marketers and an outstanding artist.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "6km5p-fiaaa-aaaah-qczxa-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/Hatch-Text-Logo.png",
+    "name": "Hatch DIPV2",
+    "frontend": [],
+    "description": "A test of hatch launchpad with DIPV2 standard.",
+    "details": {
+      "standard": "DIP721v2"
+    },
+    "principal_id": "fj3wa-caaaa-aaaai-qi4ha-cai"
+  },
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/190.png",
+    "name": "ICity ICmoe",
+    "frontend": [],
+    "description": "ICmoe is composed of 8888 cute pixel moe-chan, they will become important identity credentials in the later ecology of ICity, and will play a huge role in land minting and DAO functions.\r\n",
+    "details": {
+      "standard": "C3"
+    },
+    "principal_id": "q5gez-uaaaa-aaaah-qcyuq-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/ICDreamWhale-Logo.png",
+    "name": "IC Dream Whale",
+    "frontend": [],
+    "description": "6666 Pure hand-painted, dreaming, freedom-loving, peace-loving whale, living on the Internet computer",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "2tvxo-eqaaa-aaaai-acjla-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/DogFinity-Logo.png",
+    "name": "DogFinity",
+    "frontend": [],
+    "description": "3969 Early Dogs. Are you early?",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "y5prr-fiaaa-aaaam-qagga-cai"
+  },
+  {
+    "thumbnail": "https://storageapi.fleek.co/fleek-team-bucket/logos/SaChan-CrowdFund-Logo.jpeg",
+    "name": "Sa-chan (CrowdfundNFT)",
+    "frontend": [],
+    "description": "NFT collection used to crowdfund for Sa-chan on CrowdfundNFT.",
+    "details": {
+      "standard": "EXT"
+    },
+    "principal_id": "4odun-ayaaa-aaaak-aarbq-cai"
+  }
+]

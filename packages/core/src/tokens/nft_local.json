@@ -1,0 +1,14 @@
+[
+  {
+    "thumbnail": "https://storageapi2.fleek.co/fleek-team-bucket/logos/crowns-ooo.png",
+    "name": "CAP Crowns",
+    "frontend": [
+      "https://crowns.ooo/"
+    ],
+    "description": "Crowns are a collection of 10,000 uniquely generated NFTs on the Internet Computer. With a mix of traditional and psychedelic materials, and a CAP-powered transaction history for full provenance.",
+    "details": {
+      "standard": "DIP721v2"
+    },
+    "principal_id": "wckdt-raaaa-aaaaa-aaatq-cai"
+  }
+]

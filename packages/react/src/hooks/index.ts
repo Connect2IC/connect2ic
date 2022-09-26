@@ -7,6 +7,7 @@ import { useSignMessage } from "./useSignMessage"
 import { useTransfer } from "./useTransfer"
 import { useWallet } from "./useWallet"
 import { useClient } from "./useClient"
+import { useToken } from "./useToken"
 
 export {
   useWallet,
@@ -18,4 +19,5 @@ export {
   useSignMessage,
   useTransfer,
   useClient,
+  useToken,
 }
