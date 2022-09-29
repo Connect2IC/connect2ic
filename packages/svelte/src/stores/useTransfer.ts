@@ -18,7 +18,7 @@ export const useTransfer = ({ amount, to }: Props) => {
   const { activeProvider, principal } = useConnect()
   const loading = writable(true)
   const error = writable<{ kind: TransferError }>()
-  const payload = writable<{ height: number }>()
+  const payload = writable<{ height?: number, transactionId?: string }>()
 
   const transfer = async (): Promise<TransferResult> => {
     const $wallet = get(wallet)

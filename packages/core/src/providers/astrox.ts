@@ -189,8 +189,28 @@ class AstroX implements IConnector, IWalletConnector {
     }
   }
 
-  async requestTransfer(opts: { amount: number, to: string, standard?: string, symbol?: string, decimals?: number }) {
-    const { to, amount, standard = "ICP", symbol = "ICP", decimals = 8 } = opts
+  async requestTransfer(opts: {
+    amount: number
+    to: string
+    symbol?: string
+    standard?: string
+    decimals?: number
+    fee?: number
+    memo?: bigint
+    createdAtTime?: Date
+    fromSubAccount?: number
+  }) {
+    const {
+      to,
+      amount,
+      standard = "ICP",
+      symbol = "ICP",
+      decimals = 8,
+      fee = 0,
+      memo = BigInt(0),
+      createdAtTime = new Date(),
+      fromSubAccount = 0,
+    } = opts
     try {
       const result = await this.#ic?.requestTransfer({
         amount: BigInt(amount * (10 ** decimals)),
@@ -198,7 +218,12 @@ class AstroX implements IConnector, IWalletConnector {
         standard,
         symbol,
         // TODO: ?
-        sendOpts: {},
+        sendOpts: {
+          fee: BigInt(fee),
+          memo,
+          from_subaccount: fromSubAccount,
+          created_at_time: createdAtTime,
+        },
       })
       // TODO: why string? check astrox-js
       if (typeof result === "string") {

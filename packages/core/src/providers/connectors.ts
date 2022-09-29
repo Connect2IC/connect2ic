@@ -123,6 +123,11 @@ export interface IWalletConnector {
     to: string
     symbol?: string
     standard?: string
+    decimals?: number
+    fee?: number
+    memo?: bigint
+    createdAtTime?: Date
+    fromSubAccount?: number
   }) => Promise<TransferResult>
   requestTransferNFT?: (args: {
     to: string

@@ -217,13 +217,28 @@ class ICX implements IConnector, IWalletConnector {
     }
   }
 
-  async requestTransfer(args) {
+  async requestTransfer(opts: {
+    amount: number
+    to: string
+    symbol?: string
+    standard?: string
+    decimals?: number
+    fee?: number
+    memo?: bigint
+    createdAtTime?: Date
+    fromSubAccount?: number
+  }) {
     const {
-      amount,
       to,
-      symbol = "ICP",
+      amount,
       standard = "ICP",
-    } = args
+      symbol = "ICP",
+      decimals = 8,
+      fee = 0,
+      memo = BigInt(0),
+      createdAtTime = new Date(),
+      fromSubAccount = 0,
+    } = opts
     try {
       const tokenInfo = this.#supportedTokenList.find(({
                                                          symbol: tokenSymbol,
@@ -238,6 +253,12 @@ class ICX implements IConnector, IWalletConnector {
         to,
         symbol,
         standard,
+        sendOpts: {
+          fee: BigInt(fee),
+          memo,
+          from_subaccount: fromSubAccount,
+          created_at_time: createdAtTime,
+        },
       })
       if (!response || response.kind === TransactionMessageKind.fail) {
         // message?

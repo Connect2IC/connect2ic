@@ -229,11 +229,28 @@ class PlugWallet implements IConnector, IWalletConnector {
     }
   }
 
-  async requestTransfer({
-                          amount,
-                          to,
-                          // TODO: why is this needed??
-                        }: { amount: number, to: string }) {
+  async requestTransfer(opts: {
+    amount: number
+    to: string
+    symbol?: string
+    standard?: string
+    decimals?: number
+    fee?: number
+    memo?: bigint
+    createdAtTime?: Date
+    fromSubAccount?: number
+  }) {
+    const {
+      to,
+      amount,
+      standard = "ICP",
+      symbol = "ICP",
+      decimals = 8,
+      fee = 0,
+      memo = BigInt(0),
+      createdAtTime = new Date(),
+      fromSubAccount = 0,
+    } = opts
     try {
       const result = await this.#ic?.requestTransfer({
         to,
