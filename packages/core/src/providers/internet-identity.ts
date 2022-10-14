@@ -1,43 +1,39 @@
 import { AuthClient } from "@dfinity/auth-client"
 import { Actor, ActorSubclass, HttpAgent } from "@dfinity/agent"
-import type { IConnector } from "../connectors"
+import type { Identity } from "@dfinity/agent"
+import type { IConnector } from "./connectors"
 // @ts-ignore
-import nfidLogoLight from "../assets/nfid.png"
+import dfinityLogoLight from "../assets/dfinity.svg"
 // @ts-ignore
-import nfidLogoDark from "../assets/nfid.png"
+import dfinityLogoDark from "../assets/dfinity.svg"
 import { IDL } from "@dfinity/candid"
 import {
   ok,
   err,
 } from "neverthrow"
-import { ConnectError, CreateActorError, DisconnectError, InitError } from "../connectors"
+import { ConnectError, CreateActorError, DisconnectError, InitError } from "./connectors"
 
-class NFID implements IConnector {
+class InternetIdentity implements IConnector {
 
   public meta = {
     features: [],
     icon: {
-      light: nfidLogoLight,
-      dark: nfidLogoDark,
+      light: dfinityLogoLight,
+      dark: dfinityLogoDark,
     },
-    id: "nfid",
-    name: "NFID",
+    id: "ii",
+    name: "Internet Identity",
   }
 
   #config: {
     whitelist: Array<string>
-    appName: string
     host: string
     providerUrl: string
     dev: boolean
   }
-  #identity?: any
+  #identity?: Identity
   #principal?: string
-  #client?: any
-
-  get identity() {
-    return this.#identity
-  }
+  #client?: AuthClient
 
   get principal() {
     return this.#principal
@@ -51,8 +47,7 @@ class NFID implements IConnector {
     this.#config = {
       whitelist: [],
       host: window.location.origin,
-      providerUrl: "https://nfid.one",
-      appName: "my-ic-app",
+      providerUrl: "https://identity.ic0.app",
       dev: true,
       ...userConfig,
     }
@@ -68,12 +63,11 @@ class NFID implements IConnector {
 
   async init() {
     try {
-      // TODO: pass in config or not?
       this.#client = await AuthClient.create()
       const isConnected = await this.isConnected()
       if (isConnected) {
         this.#identity = this.#client.getIdentity()
-        this.#principal = this.#identity.getPrincipal().toString()
+        this.#principal = this.#identity?.getPrincipal().toString()
       }
       return ok({ isConnected })
     } catch (e) {
@@ -82,27 +76,28 @@ class NFID implements IConnector {
     }
   }
 
-  async isConnected() {
+  async isConnected(): Promise<boolean> {
     try {
       if (!this.#client) {
         return false
       }
-      return await this.#client.isAuthenticated()
+      return await this.#client!.isAuthenticated()
     } catch (e) {
       console.error(e)
       return false
     }
   }
 
-  async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory) {
+  async createActor<Service>(canisterId, idlFactory) {
     try {
-      // TODO: allow passing identity?
+      // TODO: pass identity?
       const agent = new HttpAgent({
         ...this.#config,
         identity: this.#identity,
       })
 
       if (this.#config.dev) {
+        // Fetch root key for certificate validation during development
         // Fetch root key for certificate validation during development
         const res = await agent.fetchRootKey().then(() => ok(true)).catch(e => err({ kind: CreateActorError.FetchRootKeyFailed }))
         if (res.isErr()) {
@@ -123,22 +118,18 @@ class NFID implements IConnector {
 
   async connect() {
     try {
-      await new Promise((resolve, reject) => {
-        this.#client.login({
+      await new Promise<void>((resolve, reject) => {
+        this.#client?.login({
           // TODO: local
-          identityProvider: this.#config.providerUrl + `/authenticate/?applicationName=${this.#config.appName}`,
+          identityProvider: this.#config.providerUrl,
           onSuccess: resolve,
           onError: reject,
         })
       })
-      const identity = this.#client.getIdentity()
-      const principal = identity.getPrincipal().toString()
-      // TODO: why is this check here?
-      if (identity) {
-        this.#identity = identity
-        this.#principal = principal
-        return ok(true)
-      }
+      const identity = this.#client?.getIdentity()
+      const principal = identity?.getPrincipal().toString()
+      this.#identity = identity
+      this.#principal = principal
       return ok(true)
     } catch (e) {
       console.error(e)
@@ -148,7 +139,7 @@ class NFID implements IConnector {
 
   async disconnect() {
     try {
-      await this.#client.logout()
+      await this.#client?.logout()
       return ok(true)
     } catch (e) {
       console.error(e)
@@ -158,5 +149,5 @@ class NFID implements IConnector {
 }
 
 export {
-  NFID,
+  InternetIdentity,
 }

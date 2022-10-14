@@ -26,14 +26,13 @@ export default class EXT extends NFT {
   standard = NFTStandard.ext
 
   actor: ActorSubclass<NTF_EXT>
+  canisterId: string
 
-  constructor(canisterId: string, agent: HttpAgent) {
-    super(canisterId, agent)
+  constructor(actor: ActorSubclass<NTF_EXT>, canisterId: string) {
+    super()
 
-    this.actor = Actor.createActor(IDL, {
-      agent,
-      canisterId,
-    })
+    this.actor = actor
+    this.canisterId = canisterId
   }
 
   async getUserTokens(principal: Principal): Promise<NFTDetails[]> {
@@ -51,14 +50,13 @@ export default class EXT extends NFT {
     })
   }
 
-  async transfer(to: Principal, tokenIndex: number): Promise<void> {
-    const tokenIdentifier = getTokenIdentifier(this.canisterId, tokenIndex)
-    const from = await this.agent.getPrincipal()
+  async transfer(args: { from: Principal, to: Principal, tokenIndex: number }): Promise<void> {
+    const tokenIdentifier = getTokenIdentifier(this.canisterId, args.tokenIndex)
     const dummyMemmo = new Array(32).fill(0)
 
     const transferResult = await this.actor.transfer({
-      to: { principal: to },
-      from: { principal: from },
+      to: { principal: args.to },
+      from: { principal: args.from },
       token: tokenIdentifier,
       amount: BigInt(1),
       memo: dummyMemmo,

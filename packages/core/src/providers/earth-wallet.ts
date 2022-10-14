@@ -1,4 +1,4 @@
-import type { IConnector, IWalletConnector } from "../connectors"
+import type { IConnector, IWalletConnector } from "./connectors"
 import { IDL } from "@dfinity/candid"
 // @ts-ignore
 import earthLogoLight from "../assets/earth.png"

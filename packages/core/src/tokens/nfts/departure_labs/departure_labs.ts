@@ -11,14 +11,12 @@ export default class DepartureLabs extends NFT {
   standard = NFTStandard.departuresLabs
 
   actor: ActorSubclass<NFT_DEPARTURE_LABS>
+  canisterId: string
 
-  constructor(canisterId: string, agent: HttpAgent) {
-    super(canisterId, agent)
-
-    this.actor = Actor.createActor(IDL, {
-      agent,
-      canisterId,
-    })
+  constructor(actor: ActorSubclass<NFT_DEPARTURE_LABS>, canisterId: string) {
+    super()
+    this.actor = actor
+    this.canisterId = canisterId
   }
 
   async getUserTokens(principal: Principal): Promise<NFTDetails[]> {
@@ -35,8 +33,8 @@ export default class DepartureLabs extends NFT {
     return tokensData.map(token => this.serializeTokenData(token))
   }
 
-  async transfer(to: Principal, tokenIndex: number): Promise<void> {
-    const transferResult = await this.actor.transfer(to, tokenIndex.toString(10))
+  async transfer(args: { from: Principal, to: Principal, tokenIndex: number }): Promise<void> {
+    const transferResult = await this.actor.transfer(args.to, args.tokenIndex.toString(10))
     if ("err" in transferResult) throw new Error(Object.keys(transferResult.err)[0])
   }
 

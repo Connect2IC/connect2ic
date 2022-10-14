@@ -1,7 +1,8 @@
 import {
   createMachine,
   assign,
-  interpret, Interpreter,
+  interpret,
+  Interpreter,
 } from "xstate"
 import type { MachineConfig } from "xstate"
 import Emitter from "event-e3"
@@ -9,6 +10,7 @@ import type { IDL } from "@dfinity/candid"
 import type { CreateActorResult, IConnector } from "./providers/connectors"
 import { Anonymous } from "./providers"
 import { assign as assignImmer } from "@xstate/immer"
+import { NFTStandards } from "./tokens"
 
 type Provider = IConnector
 
@@ -20,60 +22,50 @@ export type RootContext = {
   //   local: {
   //     host: string
   //     whitelist: Array<string>
-  //     principal?: string
   //   }
   //   ic: {
   //     host: string
   //     whitelist: Array<string>
-  //     principal?: string
   //   }
   // }
-  connectingProvider?: string
-  activeProvider?: Provider
-  networks: {
-    [networkName: string]: {
-      providers: {
-        [providerId: string]: {
-          connector: Provider
-          canisters: {
-            [canisterId: string]: {
-              actor: CreateActorResult<any>
-              canisterName: string
-              idlFactory: IDL.InterfaceFactory
-            }
-          }
-        }
-      }
-      anonymousProvider: {
-        connector: Provider
-        canisters: {
-          [canisterId: string]: {
-            actor: CreateActorResult<any>
-            canisterName: string
-            idlFactory: IDL.InterfaceFactory
-          }
-        }
+  canisters: {
+    [canisterName: string]: {
+      [networkName: string]: {
+        idlFactory: IDL.InterfaceFactory
+        canisterId: string
       }
     }
   }
-  // canisters: {
-  //   [providerId: string]: {
-  //     local: {
-  //       [canisterId: string]: {
-  //         actor: CreateActorResult<any>
-  //         canisterName: string
-  //         idlFactory: IDL.InterfaceFactory
-  //       }
-  //     }
-  //     ic: {
-  //       [canisterId: string]: {
-  //         actor: CreateActorResult<any>
-  //         canisterName: string
-  //         idlFactory: IDL.InterfaceFactory
-  //       }
-  //     }
-  //   }
-  // }
+  anonymousActors: {
+    [canisterName: string]: {
+      [networkName: string]: {
+        idlFactory: IDL.InterfaceFactory
+        canisterId: string
+        actor: CreateActorResult<any>
+      }
+    }
+  }
+  actors: {
+    [canisterName: string]: {
+      [networkName: string]: {
+        idlFactory: IDL.InterfaceFactory
+        canisterId: string
+        actor: CreateActorResult<any>
+      }
+    }
+  }
+  connectingProvider?: Provider
+  activeProvider?: Provider
+  providers: {
+    [networkName: string]: {
+      [providerId: string]: Provider
+    }
+  }
+  anonymousProviders: {
+    [networkName: string]: {
+      anonymous: Provider
+    }
+  }
 }
 
 
@@ -141,10 +133,10 @@ export type RootEvent<Service = any> =
 const saveAnonymousActor = assignImmer((context: RootContext, event: SaveAnonymousActorEvent<any>) => {
   const { networkName, canisterName, canisterId, actor, idlFactory } = event.data
   // TODO: normalize?
-  context.networks[networkName].anonymousProvider.canisters = {
-    ...context.networks[networkName].anonymousProvider.canisters,
-    [canisterId]: {
-      canisterName,
+  context.anonymousActors[canisterName] = {
+    ...context.anonymousActors[canisterName],
+    [networkName]: {
+      canisterId,
       actor,
       idlFactory,
     },
@@ -152,12 +144,12 @@ const saveAnonymousActor = assignImmer((context: RootContext, event: SaveAnonymo
 })
 
 const saveActor = assignImmer((context: RootContext, event: SaveActorEvent<any>) => {
-  const { providerId, networkName, canisterName, canisterId, actor, idlFactory } = event.data
+  const { networkName, canisterName, canisterId, actor, idlFactory } = event.data
   // TODO: normalize?
-  context.networks[networkName].providers[providerId].canisters = {
-    ...context.networks[networkName].providers[providerId].canisters,
-    [canisterId]: {
-      canisterName,
+  context.actors[canisterName] = {
+    ...context.actors[canisterName],
+    [networkName]: {
+      canisterId,
       actor,
       idlFactory,
     },
@@ -172,6 +164,13 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
     events: {} as RootEvent,
   },
   states: {
+    // TODO: send params to INIT?
+    // To not have to store them in the context
+    // inactive: {
+    //   on: {
+    //     INIT: {}
+    //   }
+    // },
     initializing: {
       on: {
         DONE: {
@@ -180,9 +179,6 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
         },
         DONE_AND_CONNECTED: {
           target: "connected",
-          actions: [assignImmer((context, event) => {
-            context.activeProvider = event.data.activeProvider
-          })],
         },
         ERROR: {
           // ?
@@ -194,19 +190,19 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
       invoke: {
         id: "init",
         src: (context, event) => async (callback, onReceive) => {
-          const { networks, preferredNetwork, networksConfig } = context
-          const { anonymousProvider, providers } = networks[preferredNetwork]
+          const { anonymousProviders, providers, preferredNetwork, networksConfig, canisters } = context
+          const anonymousProvider = anonymousProviders[preferredNetwork].anonymous
 
           await Promise.all([
-            ...Object.values(providers).map(p => p.connector.init()),
-            anonymousProvider.connector.init(),
+            ...Object.values(providers[preferredNetwork]).map(p => p.init()),
+            anonymousProvider.init(),
           ])
 
-          Object.keys(networksConfig).forEach(networkName => {
-            const network = networksConfig[networkName]
-            Object.entries(network.canisters ?? {}).forEach(async ([canisterName, val]) => {
-              const { canisterId, idlFactory } = val
-              const actor = await anonymousProvider.connector.createActor(canisterId, idlFactory)
+          Object.keys(canisters).forEach(canisterName => {
+            const canister = canisters[canisterName]
+            Object.keys(canister).forEach(async networkName => {
+              const { canisterId, idlFactory } = canister[networkName]
+              const actor = await anonymousProvider.createActor(canisterId, idlFactory)
               callback({
                 type: "SAVE_ANONYMOUS_ACTOR",
                 data: {
@@ -220,9 +216,10 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
             })
           })
 
-          let connectedProviders = Object.values(providers).map(p => new Promise<Provider>(async (resolve, reject) => {
-            const isConnected = await p.connector.isConnected()
-            isConnected ? resolve(p.connector) : reject()
+          // TODO: all networks?
+          let connectedProviders = Object.values(providers[preferredNetwork]).map(p => new Promise<Provider>(async (resolve, reject) => {
+            const isConnected = await p.isConnected()
+            isConnected ? resolve(p) : reject()
           }))
 
           // // TODO: create canisters
@@ -284,20 +281,15 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
         },
         CANCEL_CONNECT: {
           target: "idle",
+          actions: ["onCancel"],
         },
         CONNECT_DONE: {
           target: "connected",
-          actions: [
-            assign((context, event) => ({
-              activeProvider: event.data.activeProvider,
-            })),
-          ],
         },
         ERROR: {
           // actions: assign((context, event) => {
           //   return ({
           //     provider: event.data.provider,
-          //     principal: event.data.principal,
           //   })
           // }),
         },
@@ -313,7 +305,7 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
           if (_event.type !== "CONNECT") {
             return
           }
-          const provider = context.networks[context.preferredNetwork].providers[_event.data.provider]
+          const provider = context.providers[context.preferredNetwork][_event.data.provider]
           if (!provider) {
             callback({
               type: "ERROR",
@@ -323,12 +315,12 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
             })
             return
           }
-          const result = await provider.connector.connect()
+          const result = await provider.connect()
           result.match(() => {
               callback({
                 type: "CONNECT_DONE",
                 data: {
-                  activeProvider: provider.connector,
+                  activeProvider: provider,
                 },
               })
             },
@@ -375,10 +367,10 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
             return
           }
           // Initialize
-          Object.keys(context.networksConfig).forEach((networkName) => {
-            const networkConfig = context.networksConfig[networkName]
-            Object.keys(networkConfig.canisters ?? {}).forEach(async (canisterName) => {
-              const { canisterId, idlFactory } = networkConfig.canisters![canisterName]
+          Object.keys(context.canisters).forEach(canisterName => {
+            const canister = context.canisters[canisterName]
+            Object.keys(canister).forEach(async networkName => {
+              const { canisterId, idlFactory } = canister[networkName]
               const actor = await context.activeProvider!.createActor(canisterId, idlFactory)
               callback({
                 type: "SAVE_ACTOR",
@@ -404,9 +396,16 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
         SAVE_ACTOR: {
           actions: [saveActor],
         },
+        // TODO:
+        // REMOVE_ACTOR: {
+        //   actions: [removeActor],
+        // },
         SAVE_ANONYMOUS_ACTOR: {
           actions: [saveAnonymousActor],
         },
+        // REMOVE_ANONYMOUS_ACTOR: {
+        //   actions: [removeAnonymousActor],
+        // },
       },
     },
     disconnecting: {
@@ -445,6 +444,17 @@ type Config = {
 }
 
 type NetworkConfig = {
+  whitelist?: Array<string>
+  host?: string
+  autoConnect?: boolean
+  providerUrl?: string
+  ledgerCanisterId?: string
+  ledgerHost?: string
+  appName?: string
+}
+
+type ClientOptions = {
+  preferredNetwork?: string
   canisters?: {
     [canisterName: string]: {
       canisterId: string
@@ -452,18 +462,6 @@ type NetworkConfig = {
     }
   }
   providers: Array<Provider> | ((config: Config) => Array<Provider>)
-  providerConfig?: {
-    whitelist?: Array<string>
-    host?: string
-    autoConnect?: boolean
-    ledgerCanisterId?: string
-    ledgerHost?: string
-    appName?: string
-  }
-}
-
-type ClientOptions = {
-  preferredNetwork?: string
   networks: {
     [networkName: string]: NetworkConfig
   }
@@ -502,13 +500,98 @@ class Client {
     this._service.send({ type: "DISCONNECT" })
   }
 
-  public createActor(data) {
-    this._service.send({ type: "CREATE_ACTOR", data })
+  public async createActor(canisterId, interfaceFactory) {
+    if (!this._service.state.context.activeProvider) {
+      return
+    }
+    // this._service.send({
+    //   type: "CREATE_ACTOR", data: {
+    //     [this._service.state.context.preferredNetwork]: {
+    //       canisterName: canisterId,
+    //       canisterId,
+    //       idlFactory: interfaceFactory,
+    //     },
+    //   },
+    // })
+    return await this._service.state.context.activeProvider.createActor(
+      canisterId,
+      interfaceFactory,
+    )
   }
 
-  public createAnonymousActor(data) {
-    this._service.send({ type: "CREATE_ANONYMOUS_ACTOR", data })
+  public createCanister({ canisterId, idlFactory }) {
+    // this._service.subscribe((state) => {})
+
+    let anonymousActor
+    this.createAnonymousActor(canisterId, idlFactory).then(actor => {
+      // TODO: init first
+      anonymousActor = actor
+    })
+    return {
+      // TODO: how to handle different networks?
+      canisterId,
+      get: (fn, options = {}) => {
+        // TODO: network?
+        const { mode = "auto", network = "local" } = options
+        let unsub1
+        let unsub2
+        if (mode === "auto" || mode === "anonymous") {
+          console.log({ anonymousActor })
+          fn(anonymousActor)
+        }
+        this._service.subscribe((state) => {
+          if (mode === "authenticated" || mode === "auto") {
+            // TODO: no this. client
+            unsub1 = this._emitter.on("connect", async () => {
+              const actor = await this.createActor(canisterId, idlFactory)
+              console.log("onConnected", actor)
+              fn(actor)
+            })
+          }
+          if (mode === "auto" || mode === "anonymous") {
+            unsub2 = this._emitter.on("disconnect", () => {
+              fn(anonymousActor)
+            })
+          }
+          return () => {
+            // check if unsub possible
+            unsub1?.()
+            unsub2?.()
+          }
+        })
+      },
+    }
   }
+
+  public async createAnonymousActor(canisterId, interfaceFactory) {
+    const result = await this._service.state.context.anonymousProviders[this._service.state.context.preferredNetwork].anonymous.createActor(
+      canisterId,
+      interfaceFactory,
+    )
+    return result
+  }
+
+  // // TODO: get IDL from canister?
+  public async getNFTInfo({ canisterId, interfaceFactory = NFTStandards["DIP721v2"].IDL.default }) {
+    const nftActor = await this.createAnonymousActor(canisterId, interfaceFactory)
+    if (nftActor.isOk()) {
+      //@ts-ignore
+      const wrapper = new NFTStandards["DIP721v2"].Wrapper.default(nftActor.value, canisterId)
+      const details = await nftActor.value.metadata()
+      return { standard: "DIP721v2", logo: details.logo, name: details.name, symbol: details.symbol }
+    }
+  }
+
+  // public async createNFTActor({ canisterId, standard }) {
+  //   const interfaceFactory = NFTStandards[standard].IDL.default
+  //   // TODO: not just anon
+  //   const nftActor = await this.createAnonymousActor(canisterId, interfaceFactory)
+  //   if (nftActor.isOk()) {
+  //     //@ts-ignore
+  //     const wrapper = new NFTStandards["DIP721v2"].Wrapper.default(nftActor.value, canisterId)
+  //     return wrapper
+  //   }
+  // }
 
   public get providers() {
     return this._service.state.context[this._service.state.context.preferredNetwork].providers
@@ -519,7 +602,7 @@ class Client {
   }
 
   public get anonymousProvider() {
-    return this._service.state.context.networks[this._service.state.context.preferredNetwork].anonymousProvider
+    return this._service.state.context.anonymousProviders[this._service.state.context.preferredNetwork].anonymous
   }
 
   public get status() {
@@ -527,83 +610,86 @@ class Client {
   }
 }
 
-const createClient = ({
-                        networks = {},
-                        preferredNetwork = "local",
-                      }: ClientOptions) => {
-
-  const defaults = {
-    ic: {
-      providerConfig: {
+const createClient = (config: ClientOptions) => {
+  const {
+    preferredNetwork = "local",
+    canisters = {},
+    providers = [],
+    networks = {
+      ic: {
         host: "https://ic0.app",
       },
-      providers: [],
-      canisters: {},
-    },
-    local: {
-      providerConfig: {
+      local: {
         host: window.location.origin,
       },
-      providers: [],
-      canisters: {},
     },
-  }
+  } = config
 
   const networksConfig: ClientOptions["networks"] = {
     ...Object.keys(networks).reduce((acc, networkName) => ({
       ...acc,
       [networkName]: {
-        ...defaults[networkName],
         ...networks[networkName],
-        providerConfig: {
-          ...defaults[networkName].providerConfig,
-          ...networks[networkName].providerConfig,
-          whitelist: Object.values(networks[networkName].canisters ?? {}).map(canister => (canister as {
-            canisterId: string
-            idlFactory: IDL.InterfaceFactory
-          }).canisterId),
-        },
+        whitelist: Object.values(canisters ?? {}).map(canister => (canister as {
+          canisterId: string
+          idlFactory: IDL.InterfaceFactory
+        }).canisterId),
       },
     }), {}),
   }
 
-  console.log(networksConfig)
+  // TODO: per network canister configuration
+  const canisterConfig = Object.keys(canisters).reduce((acc, canisterName) => ({
+    ...acc,
+    [canisterName]: {
+      ...(Object.keys(networks).reduce((acc, networkName) => ({
+        ...acc,
+        [networkName]: {
+          idlFactory: canisters[canisterName].idlFactory,
+          canisterId: canisters[canisterName].canisterId,
+        },
+      }), {})),
+    },
+  }), {})
 
   const emitter = new Emitter()
 
   const rootMachine = createMachine<RootContext, RootEvent>({
     id: "root",
     initial: "idle",
+    predictableActionArguments: true,
     context: {
       // TODO: move to config?
+      canisters: canisterConfig,
+      anonymousActors: {},
+      actors: {},
       autoConnect: true,
       preferredNetwork,
       activeProvider: undefined,
+      connectingProvider: undefined,
+      // TODO: remove?
       networksConfig,
-      networks: Object.keys(networksConfig).reduce((acc, networkName) => {
+      anonymousProviders: Object.keys(networksConfig).reduce((acc, networkName) => {
         const networkConfig = networksConfig[networkName]
-        const providers =
-          typeof networkConfig.providers === "function"
-            ? networkConfig.providers(networkConfig.providerConfig ?? {})
-            : networkConfig.providers
-        providers?.forEach(p => p.config = networkConfig.providerConfig)
-
+        // providers?.forEach(p => p.config = networkConfig)
         return {
           ...acc,
           [networkName]: {
-            ...networkConfig,
-            anonymousProvider: {
-              connector: new Anonymous(networkConfig.providerConfig),
-              // TODO: init?
-              canisters: {},
-            },
-            providers: providers?.reduce((acc, provider) => ({
+            anonymous: new Anonymous(networkConfig),
+          },
+        }
+      }, {}),
+      providers: Object.keys(networksConfig).reduce((acc, networkName) => {
+        const networkConfig = networksConfig[networkName]
+        const createdProviders = typeof providers === "function" ? providers(networkConfig) : providers
+        // providers?.forEach(p => p.config = networkConfig)
+        return {
+          ...acc,
+          [networkName]: {
+            ...(createdProviders?.reduce((acc, provider) => ({
               ...acc,
-              [provider.meta.id]: {
-                connector: provider,
-                canisters: {},
-              },
-            }), {}) ?? {},
+              [provider.meta.id]: provider,
+            }), {}) ?? {}),
           },
         }
       }, {}),
@@ -625,16 +711,28 @@ const createClient = ({
       onInit: () => {
         emitter.emit("init")
       },
-      onConnect: (context, event: ConnectEvent) => {
+      onConnect: assign((context, event) => {
         emitter.emit("connect", event.data)
-        // TODO: check if works
-        return assign({
-          connectingProvider: event.data,
-        })
-      },
-      onConnecting: () => {
+        return {
+          connectingProvider: undefined,
+          activeProvider: event.data.activeProvider,
+        }
+      }),
+      onCancel: assign((context, event) => {
+        emitter.emit("cancel")
+        // TODO:?
+        return {
+          connectingProvider: undefined,
+        }
+      }),
+      onConnecting: assign((context, event) => {
         emitter.emit("connecting")
-      },
+        const connectingProvider = context.providers[context.preferredNetwork][event.data.provider]
+        // TODO: not working
+        return {
+          connectingProvider,
+        }
+      }),
       onDisconnecting: () => {
         emitter.emit("disconnecting")
       },

@@ -4,7 +4,7 @@ import type { ActorSubclass, Identity } from "@dfinity/agent"
 import {
   PermissionsType,
 } from "@astrox/connection/lib/esm/types"
-import type { IConnector, IWalletConnector } from "../connectors"
+import type { IConnector, IWalletConnector } from "./connectors"
 // @ts-ignore
 import astroXLogoLight from "../assets/astrox_light.svg"
 // @ts-ignore

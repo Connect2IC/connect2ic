@@ -1,4 +1,4 @@
-import type { IConnector, IWalletConnector } from "../connectors"
+import type { IConnector, IWalletConnector } from "./connectors"
 // @ts-ignore
 import plugLogoLight from "../assets/plugLight.svg"
 // @ts-ignore
@@ -10,7 +10,7 @@ import {
   ok,
   err,
 } from "neverthrow"
-import { BalanceError, ConnectError, CreateActorError, DisconnectError, InitError, TransferError } from "../connectors"
+import { BalanceError, ConnectError, CreateActorError, DisconnectError, InitError, TransferError } from "./connectors"
 
 type Plug = {
   createActor: <T>(args: { canisterId: string, interfaceFactory: IDL.InterfaceFactory }) => Promise<ActorSubclass<T>>

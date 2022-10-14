@@ -28,14 +28,13 @@ export default class ERC721 extends NFT {
   standard = NFTStandard.dip721
 
   actor: ActorSubclass<Interface>
+  canisterId: string
 
-  constructor(canisterId: string, agent: HttpAgent) {
-    super(canisterId, agent)
+  constructor(actor: ActorSubclass<Interface>, canisterId: string) {
+    super()
 
-    this.actor = Actor.createActor(IDL, {
-      agent,
-      canisterId,
-    })
+    this.actor = actor
+    this.canisterId = canisterId
   }
 
   async getUserTokens(principal: Principal): Promise<NFTDetails[]> {
@@ -49,10 +48,8 @@ export default class ERC721 extends NFT {
     })
   }
 
-  async transfer(to: Principal, tokenIndex: number): Promise<void> {
-    const from = await this.agent.getPrincipal()
-
-    const transferResult = await this.actor.transferFromDip721(from, to, BigInt(tokenIndex))
+  async transfer(args: { from: Principal, to: Principal, tokenIndex: number }): Promise<void> {
+    const transferResult = await this.actor.transferFromDip721(args.from, args.to, BigInt(args.tokenIndex))
     if ("Err" in transferResult) throw new Error(`${Object.keys(transferResult.Err)[0]}: ${Object.values(transferResult.Err)[0]}`)
   }
 

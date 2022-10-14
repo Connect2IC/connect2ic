@@ -18,9 +18,10 @@ export const useConnect = (props?: Props) => {
   const {
     client,
   } = useContext(Connect2ICContext)
-  const { principal, activeProvider, status } = useSelector(client._service, (state) => ({
-    principal: state.context.principal,
+  const { principal, activeProvider, status, connectingProvider } = useSelector(client._service, (state) => ({
+    principal: state.context.activeProvider?.principal,
     activeProvider: state.context.activeProvider,
+    connectingProvider: state.context.connectingProvider,
     status: state.value,
   }))
 
@@ -36,6 +37,7 @@ export const useConnect = (props?: Props) => {
   return {
     principal,
     activeProvider,
+    connectingProvider,
     status,
     isInitializing: client._service.state?.matches({ idle: "initializing" }) ?? false,
     isConnected: client._service.state?.matches({ idle: "connected" }) ?? false,

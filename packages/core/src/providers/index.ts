@@ -1,11 +1,11 @@
-import { AstroX } from "./astrox/connector"
-import { InternetIdentity } from "./internet-identity/connector"
-import { PlugWallet } from "./plug-wallet/connector"
-import { StoicWallet } from "./stoic-wallet/connector"
-import { InfinityWallet } from "./infinity-wallet/connector"
-import { NFID } from "./nfid/connector"
-import { Anonymous } from "./anonymous/connector"
-import { ICX } from "./icx/connector"
+import { AstroX } from "./astrox"
+import { InternetIdentity } from "./internet-identity"
+import { PlugWallet } from "./plug-wallet"
+import { StoicWallet } from "./stoic-wallet"
+import { InfinityWallet } from "./infinity-wallet"
+import { NFID } from "./nfid"
+import { Anonymous } from "./anonymous"
+import { ICX } from "./icx"
 // import { EarthWallet } from "./earth-wallet"
 import type { IConnector, IWalletConnector } from "./connectors"
 
@@ -32,6 +32,13 @@ type Config = {
     ledgerHost?: string
     appName?: string
   }
+  // whitelist?: Array<string>
+  // host?: string
+  // autoConnect?: boolean
+  // providerUrl?: string
+  // ledgerCanisterId?: string
+  // ledgerHost?: string
+  // appName?: string
 }
 
 let isICX = !!window.icx

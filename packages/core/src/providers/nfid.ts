@@ -1,39 +1,43 @@
 import { AuthClient } from "@dfinity/auth-client"
 import { Actor, ActorSubclass, HttpAgent } from "@dfinity/agent"
-import type { Identity } from "@dfinity/agent"
-import type { IConnector } from "../connectors"
+import type { IConnector } from "./connectors"
 // @ts-ignore
-import dfinityLogoLight from "../assets/dfinity.svg"
+import nfidLogoLight from "../assets/nfid.png"
 // @ts-ignore
-import dfinityLogoDark from "../assets/dfinity.svg"
+import nfidLogoDark from "../assets/nfid.png"
 import { IDL } from "@dfinity/candid"
 import {
   ok,
   err,
 } from "neverthrow"
-import { ConnectError, CreateActorError, DisconnectError, InitError } from "../connectors"
+import { ConnectError, CreateActorError, DisconnectError, InitError } from "./connectors"
 
-class InternetIdentity implements IConnector {
+class NFID implements IConnector {
 
   public meta = {
     features: [],
     icon: {
-      light: dfinityLogoLight,
-      dark: dfinityLogoDark,
+      light: nfidLogoLight,
+      dark: nfidLogoDark,
     },
-    id: "ii",
-    name: "Internet Identity",
+    id: "nfid",
+    name: "NFID",
   }
 
   #config: {
     whitelist: Array<string>
+    appName: string
     host: string
     providerUrl: string
     dev: boolean
   }
-  #identity?: Identity
+  #identity?: any
   #principal?: string
-  #client?: AuthClient
+  #client?: any
+
+  get identity() {
+    return this.#identity
+  }
 
   get principal() {
     return this.#principal
@@ -47,7 +51,8 @@ class InternetIdentity implements IConnector {
     this.#config = {
       whitelist: [],
       host: window.location.origin,
-      providerUrl: "https://identity.ic0.app",
+      providerUrl: "https://nfid.one",
+      appName: "my-ic-app",
       dev: true,
       ...userConfig,
     }
@@ -63,11 +68,12 @@ class InternetIdentity implements IConnector {
 
   async init() {
     try {
+      // TODO: pass in config or not?
       this.#client = await AuthClient.create()
       const isConnected = await this.isConnected()
       if (isConnected) {
         this.#identity = this.#client.getIdentity()
-        this.#principal = this.#identity?.getPrincipal().toString()
+        this.#principal = this.#identity.getPrincipal().toString()
       }
       return ok({ isConnected })
     } catch (e) {
@@ -76,28 +82,27 @@ class InternetIdentity implements IConnector {
     }
   }
 
-  async isConnected(): Promise<boolean> {
+  async isConnected() {
     try {
       if (!this.#client) {
         return false
       }
-      return await this.#client!.isAuthenticated()
+      return await this.#client.isAuthenticated()
     } catch (e) {
       console.error(e)
       return false
     }
   }
 
-  async createActor<Service>(canisterId, idlFactory) {
+  async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory) {
     try {
-      // TODO: pass identity?
+      // TODO: allow passing identity?
       const agent = new HttpAgent({
         ...this.#config,
         identity: this.#identity,
       })
 
       if (this.#config.dev) {
-        // Fetch root key for certificate validation during development
         // Fetch root key for certificate validation during development
         const res = await agent.fetchRootKey().then(() => ok(true)).catch(e => err({ kind: CreateActorError.FetchRootKeyFailed }))
         if (res.isErr()) {
@@ -118,18 +123,22 @@ class InternetIdentity implements IConnector {
 
   async connect() {
     try {
-      await new Promise<void>((resolve, reject) => {
-        this.#client?.login({
+      await new Promise((resolve, reject) => {
+        this.#client.login({
           // TODO: local
-          identityProvider: this.#config.providerUrl,
+          identityProvider: this.#config.providerUrl + `/authenticate/?applicationName=${this.#config.appName}`,
           onSuccess: resolve,
           onError: reject,
         })
       })
-      const identity = this.#client?.getIdentity()
-      const principal = identity?.getPrincipal().toString()
-      this.#identity = identity
-      this.#principal = principal
+      const identity = this.#client.getIdentity()
+      const principal = identity.getPrincipal().toString()
+      // TODO: why is this check here?
+      if (identity) {
+        this.#identity = identity
+        this.#principal = principal
+        return ok(true)
+      }
       return ok(true)
     } catch (e) {
       console.error(e)
@@ -139,7 +148,7 @@ class InternetIdentity implements IConnector {
 
   async disconnect() {
     try {
-      await this.#client?.logout()
+      await this.#client.logout()
       return ok(true)
     } catch (e) {
       console.error(e)
@@ -149,5 +158,5 @@ class InternetIdentity implements IConnector {
 }
 
 export {
-  InternetIdentity,
+  NFID,
 }

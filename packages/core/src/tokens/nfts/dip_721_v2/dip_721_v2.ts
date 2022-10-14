@@ -34,14 +34,25 @@ export default class ERC721 extends NFT {
   standard = NFTStandard.dip721v2
 
   actor: ActorSubclass<Interface>
+  canisterId: string
 
-  constructor(canisterId: string, agent: HttpAgent) {
-    super(canisterId, agent)
+  constructor(actor: ActorSubclass<Interface>, canisterId: string) {
+    super()
 
-    this.actor = Actor.createActor(IDL, {
-      agent,
-      canisterId,
-    })
+    this.actor = actor
+    this.canisterId = canisterId
+  }
+
+  async mint(receiver: Principal, amount: number, metadata: any): Promise<any> {
+    console.log("mint", this.actor)
+    const mintResult = await this.actor.mint(receiver, BigInt(amount), metadata)
+    console.log({ mintResult })
+    if ("Err" in mintResult) {
+      console.error(mintResult.Err)
+    }
+    if ("Ok" in mintResult) {
+      return mintResult
+    }
   }
 
   async getUserTokens(principal: Principal): Promise<NFTDetails[]> {
@@ -56,8 +67,8 @@ export default class ERC721 extends NFT {
     })
   }
 
-  async transfer(to: Principal, tokenIndex: number): Promise<void> {
-    const transferResult = await this.actor.transfer(to, BigInt(tokenIndex))
+  async transfer(args: { from: Principal, to: Principal, tokenIndex: number }): Promise<void> {
+    const transferResult = await this.actor.transfer(args.to, BigInt(args.tokenIndex))
     if ("Err" in transferResult) throw new Error(`${Object.keys(transferResult.Err)[0]}: ${Object.values(transferResult.Err)[0]}`)
   }
 

@@ -18,14 +18,13 @@ export default class ICPUNKS extends NFT {
   standard = NFTStandard.icpunks
 
   actor: ActorSubclass<NFT_ICPUNKS>
+  canisterId: string
 
-  constructor(canisterId: string, agent: HttpAgent) {
-    super(canisterId, agent)
+  constructor(actor: ActorSubclass<NFT_ICPUNKS>, canisterId: string) {
+    super()
 
-    this.actor = Actor.createActor(IDL, {
-      agent,
-      canisterId,
-    })
+    this.actor = actor
+    this.canisterId = canisterId
   }
 
   async getUserTokens(principal: Principal): Promise<NFTDetails[]> {
@@ -36,8 +35,8 @@ export default class ICPUNKS extends NFT {
     return tokensData.map(token => this.serializeTokenData(token))
   }
 
-  async transfer(to: Principal, tokenIndex: number): Promise<void> {
-    const success = await this.actor.transfer_to(to, BigInt(tokenIndex))
+  async transfer(args: { from: Principal, to: Principal, tokenIndex: number }): Promise<void> {
+    const success = await this.actor.transfer_to(args.to, BigInt(args.tokenIndex))
     if (!success) {
       throw new Error("Error transfering token")
     }

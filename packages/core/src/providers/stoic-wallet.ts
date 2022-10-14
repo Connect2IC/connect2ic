@@ -1,6 +1,6 @@
 import { StoicIdentity } from "ic-stoic-identity"
 import { Actor, ActorSubclass, HttpAgent } from "@dfinity/agent"
-import type { IConnector } from "../connectors"
+import type { IConnector } from "./connectors"
 // @ts-ignore
 import stoicLogoLight from "../assets/stoic.png"
 // @ts-ignore
@@ -10,7 +10,7 @@ import {
   ok,
   err,
 } from "neverthrow"
-import { ConnectError, CreateActorError, DisconnectError, InitError } from "../connectors"
+import { ConnectError, CreateActorError, DisconnectError, InitError } from "./connectors"
 
 class StoicWallet implements IConnector {
 

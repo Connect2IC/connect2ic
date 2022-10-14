@@ -8,6 +8,7 @@ import { useTransfer } from "./useTransfer"
 import { useWallet } from "./useWallet"
 import { useClient } from "./useClient"
 import { useToken } from "./useToken"
+import { useNFT } from "./useNFT"
 
 export {
   useWallet,
@@ -20,4 +21,5 @@ export {
   useTransfer,
   useClient,
   useToken,
+  useNFT,
 }

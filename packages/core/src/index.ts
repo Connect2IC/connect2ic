@@ -5,7 +5,9 @@ import type { Provider } from "./providers"
 
 // TODO: separate?
 // tokens
-export { getIdl, getMethods } from "./tokens/tokens"
+export * as Token from "./tokens/tokens"
+export { NFTStandards } from "./tokens/nfts"
+// export { getNFTActor } from "./tokens"
 export type { InternalTokenMethods } from "./tokens/tokens/methods"
 
 export {
@@ -16,6 +18,7 @@ export {
   DisconnectError,
   ConnectError,
 } from "./providers/connectors"
+
 export type {
   IWalletConnector,
   IConnector,

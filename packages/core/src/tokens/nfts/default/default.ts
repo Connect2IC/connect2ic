@@ -1,23 +1,20 @@
-import { HttpAgent } from "@dfinity/agent"
 import { Principal } from "@dfinity/principal"
 
 import { NFTDetails } from "../interfaces/nft"
+import { ActorSubclass } from "@dfinity/agent"
 
 export default abstract class NFT {
   abstract standard: string
 
-  agent: HttpAgent
-
-  canisterId: string
-
-  constructor(canisterId: string, agent: HttpAgent) {
-    this.agent = agent
-    this.canisterId = canisterId
-  }
+  constructor() {}
 
   abstract getUserTokens(principal: Principal): Promise<NFTDetails[]>;
 
-  abstract transfer(principal: Principal, tokenIndex: number): Promise<void>;
+  abstract transfer(args: {
+                      to: Principal,
+                      from: Principal,
+                      tokenIndex: number,
+                    }): Promise<void>;
 
   abstract details(tokenIndex: number): Promise<NFTDetails>;
 }

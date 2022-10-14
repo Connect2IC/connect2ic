@@ -3,22 +3,24 @@ import { getTokenActor } from "./registries/token_registry/token_registry"
 import type { GetNFTActorParams } from "./registries/nfts_registry/nfts_registry"
 import type { Token } from "./tokens/interfaces/token"
 import * as STANDARDS from "./constants/standards"
-import { CCC, DepartureLabs, DIP721, DIP721v2, EXT, ICPunks } from "./nfts"
+import { CCC, DepartureLabs, DIP721, DIP721v2, EXT, ICPunks, NFTStandards } from "./nfts"
 import { Principal } from "@dfinity/principal"
-import type { DABCollection, NFTCollection, NFTStandards } from "./nfts/interfaces/nft"
+import type { DABCollection, NFTCollection } from "./nfts/interfaces/nft"
 import type { default as NFT } from "./nfts/default/default"
 import { err, ok, Result } from "neverthrow"
 import localAllNFTs from "./nft_local.json"
 
-const NFT_STANDARDS: { [key: string]: NFTStandards } = {
-  [STANDARDS.NFT.ext]: EXT.Wrapper.default,
-  [STANDARDS.NFT.icpunks]: ICPunks.Wrapper.default,
-  [STANDARDS.NFT.departuresLabs]: DepartureLabs.Wrapper.default,
-  [STANDARDS.NFT.erc721]: DIP721.Wrapper.default,
-  [STANDARDS.NFT.dip721]: DIP721.Wrapper.default,
-  [STANDARDS.NFT.dip721v2]: DIP721v2.Wrapper.default,
-  [STANDARDS.NFT.c3]: CCC.Wrapper.default,
-}
+export { NFTStandards }
+
+// const NFT_STANDARDS: { [key: string]: NFTStandards } = {
+//   [STANDARDS.NFT.ext]: EXT.Wrapper.default,
+//   [STANDARDS.NFT.icpunks]: ICPunks.Wrapper.default,
+//   [STANDARDS.NFT.departuresLabs]: DepartureLabs.Wrapper.default,
+//   [STANDARDS.NFT.erc721]: DIP721.Wrapper.default,
+//   [STANDARDS.NFT.dip721]: DIP721.Wrapper.default,
+//   [STANDARDS.NFT.dip721v2]: DIP721v2.Wrapper.default,
+//   [STANDARDS.NFT.c3]: CCC.Wrapper.default,
+// }
 
 const index = [
   {
@@ -180,12 +182,18 @@ export const getAddressFormat = standard => {
 }
 
 export const getNFTActor = ({ canisterId, agent, standard }: GetNFTActorParams): NFT => {
-  if (!(standard in NFT_STANDARDS)) {
+  if (!(standard in NFTStandards)) {
     console.error(`Standard ${standard} is not implemented`)
     throw new Error(`standard is not supported: ${standard}`)
   }
-  return new NFT_STANDARDS[standard](canisterId, agent)
+  return new NFTStandards[standard].Wrapper(canisterId, agent)
 }
+
+// export const getNFTInfo = async ({ nftCanisterId }): Promise<DABCollection | undefined> => {
+//   // const result = await
+//   if (!result) return result
+//   return { ...result, icon: result.thumbnail, standard: result.details.standard as string }
+// }
 
 export const getUserCollectionTokens = async (
   collection: DABCollection,

@@ -5,7 +5,10 @@ import type { Provider } from "@connect2ic/core"
 
 export const useProviders = (): Array<Provider> => {
   const { client } = useContext(Connect2ICContext)
-  const providers = useSelector(client._service, (state) => state.context.providers)
+  // TODO: support networks
+  const providers = useSelector(client._service, (state) => {
+    return Object.values(state.context.providers["local"])
+  })
 
   return providers ?? [] as const
 }

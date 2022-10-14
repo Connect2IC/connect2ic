@@ -4,6 +4,7 @@ import { useConnect } from "./useConnect"
 import { Connect2ICContext } from "../context"
 import type { ActorSubclass, Actor } from "@dfinity/agent"
 import { IDL } from "@dfinity/candid"
+import { useClient } from "./useClient"
 
 // TODO: ??
 // @ts-ignore
@@ -11,54 +12,48 @@ export const useCanisterAdvanced = <T>(
   canisterConfig: {
     canisterId: string
     idlFactory: IDL.InterfaceFactory
-    network: "ic" | "local"
+    network: "ic" | "local" | string
   },
-  options: { mode: string } = {
-    mode: "auto", // "anonymous" | "connected"
+  options: { mode?: string } = {
+    mode: "anonymous", // "anonymous" | "connected"
   },
 ) => {
   const { mode } = options
-  const { client } = useContext(Connect2ICContext)
-
-  useEffect(() => {
-    console.log(canisterConfig)
-    // if (!canisterConfig) {
-    //   return
-    // }
-    // // TODO: reuse canisters?
-    // if (client.activeProvider) {
-    //   // TODO: use client to create
-    //   // TODO: select network
-    //   client.createActor(canisterConfig)
-    //   // client.activeProvider.createActor(canisterInfo.canisterId, canisterInfo.idlFactory)
-    // } else {
-    //   client.createAnonymousActor(canisterConfig)
-    //   // client.anonymousProvider.createActor(canisterInfo.canisterId, canisterInfo.idlFactory)
-    // }
-    // // TODO: canisterConfig makes it update infinitely
-  }, [canisterConfig])
-
-  // TODO: move to client?
-  const anonymousCanister = useSelector(client._service, (state) => {
-    return state.context.canisters.anonymous[canisterConfig.network][canisterConfig.canisterId]?.["anonymous"]
-  })
-  const providerCanister = useSelector(client._service, (state) => {
-    if (!state.context.activeProvider) {
-      return
-    }
-    return state.context.canisters[state.context.activeProvider.meta.id]?.[canisterConfig.network][canisterConfig.canisterId]
-  })
-  const { isConnected } = useConnect()
-
+  const client = useClient()
+  const { activeProvider, isConnected } = useConnect()
+  // TODO: put all inside getCanister in client?
+  const [anonymousCanister, setAnonymousCanister] = useState<ActorSubclass<any>>()
+  const [providerCanister, setProviderCanister] = useState<ActorSubclass<any>>()
   const canister = isConnected && (mode !== "anonymous") && providerCanister ? providerCanister : anonymousCanister
 
+  useEffect(() => {
+    ;(async () => {
+      const result = await client.createAnonymousActor(canisterConfig.canisterId, canisterConfig.idlFactory)
+      if (result.isOk()) {
+        setAnonymousCanister(result.value)
+      }
+    })()
+  }, [])
+
+  useEffect(() => {
+    ;(async () => {
+      if (isConnected) {
+        const result = await client.createActor(canisterConfig.canisterId, canisterConfig.idlFactory)
+        if (result.isOk()) {
+          setProviderCanister(result.value)
+        }
+      }
+    })()
+    // TODO: watch canisterConfig
+  }, [isConnected])
+
   return [
-    canister?.actor.isOk() ? canister.actor.value : undefined,
+    canister,
     {
-      error: canister?.actor.isErr() ? canister.actor.error : undefined,
+      error: undefined,
       // TODO: ?
-      loading: !(canister?.actor),
-      idl: canister?.idlFactory,
+      loading: !canister,
+      idl: canisterConfig.idlFactory,
     },
-  ] as const
+  ]
 }

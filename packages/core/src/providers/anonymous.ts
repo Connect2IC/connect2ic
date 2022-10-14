@@ -1,7 +1,7 @@
 import { AuthClient } from "@dfinity/auth-client"
 import { Actor, ActorSubclass, HttpAgent } from "@dfinity/agent"
 import type { Identity } from "@dfinity/agent"
-import type { CreateActorResult, IConnector } from "../connectors"
+import type { CreateActorResult, IConnector } from "./connectors"
 // @ts-ignore
 import dfinityLogoLight from "../assets/dfinity.svg"
 // @ts-ignore
@@ -11,7 +11,7 @@ import {
   ok,
   err,
 } from "neverthrow"
-import { ConnectError, CreateActorError, DisconnectError, InitError } from "../connectors"
+import { ConnectError, CreateActorError, DisconnectError, InitError } from "./connectors"
 import { ECDSAKeyIdentity } from "@dfinity/identity"
 
 class Anonymous implements IConnector {
@@ -95,6 +95,9 @@ class Anonymous implements IConnector {
 
   async createActor<Service>(canisterId, idlFactory, config = {}) {
     try {
+      if (!this.#agent) {
+        return err({ kind: CreateActorError.NotInitialized })
+      }
       const actor = Actor.createActor<Service>(idlFactory, {
         agent: this.#agent,
         canisterId,

@@ -1,4 +1,4 @@
-import { Actor, ActorSubclass, HttpAgent } from "@dfinity/agent"
+import { ActorSubclass } from "@dfinity/agent"
 import { Principal } from "@dfinity/principal"
 
 import NFT_C3, { TokenDetails, TransferResponse } from "./interfaces"
@@ -11,14 +11,12 @@ export default class CCC extends NFT {
   standard = NFTStandard.c3
 
   actor: ActorSubclass<NFT_C3>
+  canisterId: string
 
-  constructor(canisterId: string, agent: HttpAgent) {
-    super(canisterId, agent)
-
-    this.actor = Actor.createActor(IDL, {
-      agent,
-      canisterId,
-    })
+  constructor(actor: ActorSubclass<NFT_C3>, canisterId: string) {
+    super()
+    this.actor = actor
+    this.canisterId = canisterId
   }
 
   async getUserTokens(principal: Principal): Promise<NFTDetails[]> {
@@ -35,8 +33,7 @@ export default class CCC extends NFT {
     return tokensData.map(token => this.serializeTokenData(token.detail, token.principal))
   }
 
-  async transfer(to: Principal, tokenIndex: number): Promise<void> {
-    const from = await this.agent.getPrincipal()
+  async transfer({ to, from, tokenIndex }) {
     const transferResult: TransferResponse = await this.actor.transferFrom(from, to, BigInt(tokenIndex))
     if ("err" in transferResult) throw new Error(Object.keys(transferResult.err)[0])
   }

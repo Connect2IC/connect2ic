@@ -1,11 +1,11 @@
 import type { IDL } from "@dfinity/candid"
 import type { ActorSubclass, Identity } from "@dfinity/agent"
-import type { IConnector, IWalletConnector } from "../connectors"
+import type { IConnector, IWalletConnector } from "./connectors"
 import { AstroXWebViewHandler } from "@astrox/sdk-webview"
 // @ts-ignore
-import astroXLogoLight from "../../assets/astrox_light.svg"
+import astroXLogoLight from "../assets/astrox_light.svg"
 // @ts-ignore
-import astroXLogoDark from "../../assets/astrox.png"
+import astroXLogoDark from "../assets/astrox.png"
 import {
   ok,
   err, Result,
@@ -20,7 +20,7 @@ import {
   TransferError,
   TokensError,
   NFTsError,
-} from "../connectors"
+} from "./connectors"
 import { TransactionMessageKind, TransactionType } from "@astrox/sdk-webview/build/types"
 
 class ICX implements IConnector, IWalletConnector {

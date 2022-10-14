@@ -1,4 +1,4 @@
-import type { IConnector, IWalletConnector } from "../connectors"
+import type { IConnector, IWalletConnector } from "./connectors"
 import type { ActorSubclass, Agent, Identity } from "@dfinity/agent"
 import type { IDL } from "@dfinity/candid"
 // @ts-ignore
@@ -7,7 +7,7 @@ import infinityLogoLight from "../assets/infinity.png"
 import infinityLogoDark from "../assets/infinity.png"
 import type { Principal } from "@dfinity/principal"
 import { err, ok } from "neverthrow"
-import { ConnectError, CreateActorError, DisconnectError, InitError } from "../connectors"
+import { ConnectError, CreateActorError, DisconnectError, InitError } from "./connectors"
 
 type Config = {
   defaultNetwork: "ic" | "local"
