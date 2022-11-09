@@ -145,12 +145,14 @@ class ICX implements IConnector, IWalletConnector {
     }
   }
 
-  async connect() {
+  async connect(config = {}) {
+    const { delegationModes = undefined } = config
     try {
       if (!this.#ic) {
         return err({ kind: ConnectError.NotInitialized })
       }
       await this.#ic.connect({
+        delegationModes,
         delegationTargets: this.#config.whitelist,
         host: this.#config.host,
         noUnify: this.#config.noUnify,
@@ -183,6 +185,10 @@ class ICX implements IConnector, IWalletConnector {
     canisterId: string;
     to: string;
     standard: string;
+    memo?: bigint
+    fee?: number
+    createdAtTime?: Date
+    fromSubAccount?: number
   }) {
     try {
       const {
@@ -191,6 +197,10 @@ class ICX implements IConnector, IWalletConnector {
         canisterId,
         standard,
         to,
+        fee = 0,
+        memo = BigInt(0),
+        createdAtTime = new Date(),
+        fromSubAccount = 0,
       } = args
       if (!this.#ic) {
         return err({ kind: TransferError.NotInitialized })
@@ -201,6 +211,12 @@ class ICX implements IConnector, IWalletConnector {
         canisterId,
         standard,
         to,
+        sendOpts: {
+          fee: BigInt(fee),
+          memo,
+          from_subaccount: fromSubAccount,
+          created_at_time: createdAtTime,
+        },
       })
       if (response.kind === TransactionMessageKind.fail) {
         return err({ kind: TransferError.TransferFailed })

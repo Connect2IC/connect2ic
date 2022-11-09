@@ -1,4 +1,4 @@
-import { inject, computed,  onMounted, onUnmounted } from "vue"
+import { inject, computed, onMounted, onUnmounted } from "vue"
 import { useSelector } from "@xstate/vue"
 import { contextKey } from "../context"
 import { useActor } from "@xstate/vue"
@@ -6,6 +6,7 @@ import { useActor } from "@xstate/vue"
 type Props = {
   onConnect?: () => void
   onDisconnect?: () => void
+  delegationModes?: Array<string>
 }
 
 const useConnect = (props: Props = {}) => {
@@ -14,6 +15,7 @@ const useConnect = (props: Props = {}) => {
     },
     onDisconnect = () => {
     },
+    delegationModes = undefined,
   } = props
   const { client } = inject(contextKey)
   const principal = useSelector(client._service, state => state.context.principal)
@@ -47,7 +49,8 @@ const useConnect = (props: Props = {}) => {
     isInitializing,
     isIdle,
     connect: (provider) => {
-      client.connect(provider)
+      //@ts-ignore
+      client.connect(provider, { delegationModes })
     },
     cancelConnect: () => {
       client.cancelConnect()

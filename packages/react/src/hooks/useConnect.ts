@@ -7,14 +7,15 @@ type Props = {
   onDisconnect?: () => void
 }
 
-export const useConnect = (props?: Props) => {
+export const useConnect = (props: Props = {}) => {
   // TODO: handle
   const {
     onConnect = () => {
     },
     onDisconnect = () => {
     },
-  } = props ?? {}
+    delegationModes = undefined,
+  } = props
   const {
     client,
   } = useContext(Connect2ICContext)
@@ -43,7 +44,7 @@ export const useConnect = (props?: Props) => {
     isDisconnecting: client._service.state?.matches({ idle: "disconnecting" }) ?? false,
     isIdle: client._service.state?.matches({ idle: "idle" }) ?? false,
     connect: (provider: string) => {
-      client.connect(provider)
+      client.connect(provider, { delegationModes })
     },
     cancelConnect: () => {
       client.cancelConnect()

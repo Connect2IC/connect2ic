@@ -41,7 +41,8 @@ export type RootContext = {
 
 type DoneEvent = { type: "DONE", data: { providers: Array<Provider> } }
 type DoneAndConnectedEvent = { type: "DONE_AND_CONNECTED", data: { activeProvider: Provider, providers: Array<Provider>, principal: string } }
-type ConnectEvent = { type: "CONNECT", data: { provider: string } }
+// TODO: options type
+type ConnectEvent = { type: "CONNECT", data: { provider: string, options: any } }
 type CancelConnectEvent = { type: "CANCEL_CONNECT" }
 type ConnectDoneEvent = { type: "CONNECT_DONE", data: { activeProvider: Provider, principal: string } }
 type DisconnectEvent = { type: "DISCONNECT" }
@@ -180,7 +181,7 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
             })
             return
           }
-          const result = await provider.connect()
+          const result = await provider.connect(_event.data.options)
           result.match(() => {
               callback({
                 type: "CONNECT_DONE",
@@ -301,8 +302,8 @@ class Client {
     return sub.unsubscribe
   }
 
-  connect(provider) {
-    this._service.send({ type: "CONNECT", data: { provider } })
+  connect(provider, options) {
+    this._service.send({ type: "CONNECT", data: { provider, options } })
   }
 
   cancelConnect() {

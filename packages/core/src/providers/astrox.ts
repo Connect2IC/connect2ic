@@ -151,7 +151,8 @@ class AstroX implements IConnector, IWalletConnector {
     }
   }
 
-  async connect() {
+  async connect(config = {}) {
+    const { delegationModes = undefined } = config
     try {
       if (!this.#ic) {
         return err({ kind: ConnectError.NotInitialized })
@@ -167,6 +168,7 @@ class AstroX implements IConnector, IWalletConnector {
         ledgerHost: this.#config.ledgerHost,
         delegationTargets: this.#config.whitelist,
         noUnify: this.#config.noUnify,
+        delegationModes,
       })
       this.#principal = this.#ic.principal.toText()
       // @ts-ignore

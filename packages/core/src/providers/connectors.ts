@@ -51,7 +51,7 @@ export interface IConnector {
   }
   isConnected: () => Promise<boolean>
   createActor: <Service>(canisterId: string, interfaceFactory: IDL.InterfaceFactory, config?: {}) => Promise<CreateActorResult<Service>>
-  connect: () => Promise<ConnectResult>
+  connect: (options?: { delegationModes: Array<string> }) => Promise<ConnectResult>
   disconnect: () => Promise<DisconnectResult>
   principal?: string
 }
@@ -135,6 +135,10 @@ export interface IWalletConnector {
     tokenIndex: number;
     canisterId: string;
     standard: "ICP" | "DIP20" | "EXT" | "DRC20" | string;
+    fee?: number
+    memo?: bigint
+    createdAtTime?: Date
+    fromSubAccount?: number
   }) => Promise<NFTTransferResult>
   wallets: Array<{
     accountId: string
