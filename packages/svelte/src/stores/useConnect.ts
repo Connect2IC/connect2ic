@@ -8,7 +8,6 @@ import type { Readable } from "svelte/store"
 type Props = {
   onConnect?: () => void
   onDisconnect?: () => void
-  delegationModes?: Array<string>
 }
 
 const useConnect = (props: Props = {}) => {
@@ -17,7 +16,6 @@ const useConnect = (props: Props = {}) => {
     },
     onDisconnect = () => {
     },
-    delegationModes = undefined,
   } = props
   const { client } = getContext<ContextState>(contextKey)
   const principal = useSelector(client._service, state => state.context.principal)
@@ -52,7 +50,7 @@ const useConnect = (props: Props = {}) => {
     isIdle,
     connect: (provider: string) => {
       //@ts-ignore
-      client.connect(provider, { delegationModes })
+      client.connect(provider)
     },
     cancelConnect: () => {
       client.cancelConnect()

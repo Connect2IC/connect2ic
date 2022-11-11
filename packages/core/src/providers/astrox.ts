@@ -14,7 +14,7 @@ import {
   err, Result,
 } from "neverthrow"
 import { BalanceError, ConnectError, CreateActorError, DisconnectError, InitError, TransferError } from "./connectors"
-import { TransactionMessageKind } from "@astrox/sdk-web/build/types"
+import { DelegationMode, TransactionMessageKind } from "@astrox/sdk-web/build/types"
 
 const balanceFromString = (balance: string, decimal = 8): bigint => {
   const list = balance.split(".")
@@ -50,6 +50,7 @@ class AstroX implements IConnector, IWalletConnector {
     noUnify?: boolean,
     host: string,
     dev: boolean,
+    delegationModes?: Array<DelegationMode>
   }
   #identity?: Identity
   #principal?: string
@@ -77,6 +78,7 @@ class AstroX implements IConnector, IWalletConnector {
       host: window.location.origin,
       dev: true,
       noUnify: false,
+      delegationModes: undefined,
       ...userConfig,
     }
   }
@@ -151,8 +153,7 @@ class AstroX implements IConnector, IWalletConnector {
     }
   }
 
-  async connect(config = {}) {
-    const { delegationModes = undefined } = config
+  async connect() {
     try {
       if (!this.#ic) {
         return err({ kind: ConnectError.NotInitialized })
@@ -168,7 +169,7 @@ class AstroX implements IConnector, IWalletConnector {
         ledgerHost: this.#config.ledgerHost,
         delegationTargets: this.#config.whitelist,
         noUnify: this.#config.noUnify,
-        delegationModes,
+        delegationModes: this.#config.delegationModes,
       })
       this.#principal = this.#ic.principal.toText()
       // @ts-ignore
@@ -256,6 +257,10 @@ class AstroX implements IConnector, IWalletConnector {
     canisterId: string;
     to: string;
     standard: string;
+    fee?: number
+    memo?: bigint
+    createdAtTime?: Date
+    fromSubAccount?: number
   }) {
     try {
       const {
@@ -264,6 +269,10 @@ class AstroX implements IConnector, IWalletConnector {
         canisterId,
         standard,
         to,
+        fee = 0,
+        memo = BigInt(0),
+        createdAtTime = new Date(),
+        fromSubAccount = 0,
       } = args
       if (!this.#ic) {
         return err({ kind: TransferError.NotInitialized })
@@ -274,7 +283,12 @@ class AstroX implements IConnector, IWalletConnector {
         canisterId,
         standard,
         to,
-        sendOpts: {},
+        sendOpts: {
+          fee: BigInt(fee),
+          memo,
+          from_subaccount: fromSubAccount,
+          created_at_time: createdAtTime,
+        },
         symbol: "",
       })
       if (!response || typeof response === "string" || response.kind === TransactionMessageKind.fail) {

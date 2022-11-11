@@ -7,6 +7,7 @@ import { NFID } from "./nfid"
 import { ICX } from "./icx/connector"
 // import { EarthWallet } from "./earth-wallet"
 import type { IConnector, IWalletConnector } from "./connectors"
+import { DelegationMode } from "@astrox/sdk-web/build/types"
 
 export * from "./connectors"
 export type Provider = IConnector & Partial<IWalletConnector>
@@ -21,6 +22,7 @@ type Config = {
   ledgerCanisterId: string
   ledgerHost?: string
   appName?: string
+  delegationModes?: Array<DelegationMode>
 }
 
 let isICX = !!window.icx

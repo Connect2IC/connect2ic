@@ -22,6 +22,7 @@ import {
   NFTsError,
 } from "../connectors"
 import { TransactionMessageKind, TransactionType } from "@astrox/sdk-webview/build/types"
+import { DelegationMode } from "@astrox/sdk-webview/build/types"
 
 class ICX implements IConnector, IWalletConnector {
 
@@ -43,6 +44,7 @@ class ICX implements IConnector, IWalletConnector {
     host: string
     dev: boolean
     noUnify?: boolean
+    delegationModes?: Array<DelegationMode>
   }
   #ic: AstroXWebViewHandler
   #principal?: string
@@ -145,14 +147,13 @@ class ICX implements IConnector, IWalletConnector {
     }
   }
 
-  async connect(config = {}) {
-    const { delegationModes = undefined } = config
+  async connect() {
     try {
       if (!this.#ic) {
         return err({ kind: ConnectError.NotInitialized })
       }
       await this.#ic.connect({
-        delegationModes,
+        delegationModes: this.#config.delegationModes,
         delegationTargets: this.#config.whitelist,
         host: this.#config.host,
         noUnify: this.#config.noUnify,
