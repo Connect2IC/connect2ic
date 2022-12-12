@@ -78,7 +78,7 @@ class AstroX implements IConnector, IWalletConnector {
       host: window.location.origin,
       dev: true,
       noUnify: false,
-      delegationModes: undefined,
+      delegationModes: ["global"],
       ...userConfig,
     }
   }
@@ -104,6 +104,7 @@ class AstroX implements IConnector, IWalletConnector {
         ledgerHost: this.#config.ledgerHost,
         dev: this.#config.dev,
         delegationTargets: this.#config.whitelist,
+        delegationModes: this.#config.delegationModes,
         noUnify: this.#config.noUnify,
       })
       this.#ic = (window.ic.astrox as IC) ?? ic
@@ -165,6 +166,7 @@ class AstroX implements IConnector, IWalletConnector {
         identityProvider: `${this.#config.providerUrl}/#authorize`,
         permissions: [PermissionsType.identity, PermissionsType.wallet],
         host: this.#config.host,
+        dev: this.#config.dev,
         ledgerCanisterId: this.#config.ledgerCanisterId,
         ledgerHost: this.#config.ledgerHost,
         delegationTargets: this.#config.whitelist,
@@ -199,7 +201,7 @@ class AstroX implements IConnector, IWalletConnector {
     standard?: string
     decimals?: number
     fee?: number
-    memo?: bigint
+    memo?: bigint | Array<number>
     createdAtTime?: Date
     fromSubAccount?: number
   }) {
@@ -258,7 +260,7 @@ class AstroX implements IConnector, IWalletConnector {
     to: string;
     standard: string;
     fee?: number
-    memo?: bigint
+    memo?: bigint | Array<number>
     createdAtTime?: Date
     fromSubAccount?: number
   }) {

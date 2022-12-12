@@ -186,7 +186,7 @@ class ICX implements IConnector, IWalletConnector {
     canisterId: string;
     to: string;
     standard: string;
-    memo?: bigint
+    memo?: bigint | Array<number>
     fee?: number
     createdAtTime?: Date
     fromSubAccount?: number
@@ -241,7 +241,7 @@ class ICX implements IConnector, IWalletConnector {
     standard?: string
     decimals?: number
     fee?: number
-    memo?: bigint
+    memo?: bigint | Array<number>
     createdAtTime?: Date
     fromSubAccount?: number
   }) {
