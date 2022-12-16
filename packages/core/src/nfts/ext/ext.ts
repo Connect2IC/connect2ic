@@ -5,10 +5,10 @@ import { NFTDetails } from "../interfaces/nft"
 import NTF_EXT from "./interfaces"
 import IDL from "./ext.did"
 import NFT from "../default"
-import { getAccountId } from "../../dab_utils/account"
-import { to32bits } from "../../dab_utils/number"
-import { NFT_CANISTERS } from "../../constants/canisters"
-import { NFT as NFTStandard } from "../../constants/standards"
+import { getAccountId } from "../../tokens/dab_utils/account"
+import { to32bits } from "../../tokens/dab_utils/number"
+import { NFT_CANISTERS } from "../../tokens/constants/canisters"
+import { NFT as NFTStandard } from "../../tokens/constants/standards"
 
 const getTokenIdentifier = (canister: string, index: number): string => {
   const padding = Buffer.from("\x0Atid")

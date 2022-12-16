@@ -11,6 +11,7 @@ import {
   err,
 } from "neverthrow"
 import { BalanceError, ConnectError, CreateActorError, DisconnectError, InitError, TransferError } from "./connectors"
+import { Methods } from "./connectors"
 
 type Plug = {
   createActor: <T>(args: { canisterId: string, interfaceFactory: IDL.InterfaceFactory }) => Promise<ActorSubclass<T>>
@@ -56,6 +57,12 @@ class PlugWallet implements IConnector, IWalletConnector {
     },
     id: "plug",
     name: "Plug Wallet",
+    description: "A wallet to store and manage NFTs, Tokens, and connect to dAPPs on the Internet Computer.",
+    deepLinks: {
+      android: "intent://APP_HOST/#Intent;scheme=APP_NAME;package=APP_PACKAGE;end",
+      ios: "astroxme://",
+    },
+    methods: [Methods.EXTENSION, Methods.APP],
   }
 
   #config: {
@@ -100,8 +107,6 @@ class PlugWallet implements IConnector, IWalletConnector {
       host: "https://ic0.app",
       onConnectionUpdate: () => {
         const { agent, principal, accountId } = window.ic.plug.sessionManager.sessionData
-        // TODO: recreate actors
-        // TODO: handle account switching
       },
       dev: true,
       ...userConfig,

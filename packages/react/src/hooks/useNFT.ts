@@ -1,35 +1,50 @@
 import { useContext, useEffect, useMemo, useState } from "react"
 import { NFTStandards } from "@connect2ic/core"
-import type { InternalTokenMethods } from "@connect2ic/core"
-import { useCanisterAdvanced } from "./useCanisterAdvanced"
-import { useCanisterSub } from "./useCanisterSub"
+import { ActorSubclass } from "@dfinity/agent"
+import { useCanister, UseCanisterOptions } from "./useCanister"
+import { useConnect } from "./useConnect"
+import { Principal } from "@dfinity/principal"
 
-export const useNFT = (options, canisterOptions = {}) => {
+type NFTName = "icpunks" | "crowns"
+
+type NFTOptions = {
+  network?: string
+  canisterId: string
+  standard: string
+  mode?: string
+} | {
+  // TODO: just use nft name for convenience?
+  name: string
+}
+
+export const useNFT = (options: NFTOptions) => {
   const {
     // TODO: ?
     canisterId,
-    standard,
-    canister,
-    network = "local",
+    standard = "DIP721v2",
+    network = "ic",
+    mode = "auto",
   } = options
   const { IDL: idlFactory, Wrapper } = NFTStandards[standard]
-  const [actor] = useCanisterSub(canister)
-  // const [tokenActor, info] = useCanisterAdvanced({
-  //   canisterId,
-  //   idlFactory: idlFactory.default,
-  //   // TODO: network switching
-  //   network,
-  // }, canisterOptions)
-
-  const wrappedTokenActor = useMemo(() => {
+  const { principal } = useConnect()
+  const [actor, info] = useCanister({
+    canisterId,
+    idlFactory: idlFactory.default,
+    // TODO: network switching
+    network,
+    mode,
+  })
+  const wrapper = useMemo(() => {
     if (!actor) {
       return
     }
-    return new Wrapper.default(actor, canister.canisterId)
+    return new Wrapper.default(actor, canisterId)
   }, [actor, canisterId])
 
   return [
-    wrappedTokenActor,
-    // info,
+    wrapper,
+    {
+      ...info,
+    },
   ] as const
 }

@@ -5,7 +5,7 @@ import NFT_C3, { TokenDetails, TransferResponse } from "./interfaces"
 import IDL from "./ccc.did"
 import NFT from "../default"
 import { NFTDetails } from "../interfaces/nft"
-import { NFT as NFTStandard } from "../../constants/standards"
+import { NFT as NFTStandard } from "../../tokens/constants/standards"
 
 export default class CCC extends NFT {
   standard = NFTStandard.c3

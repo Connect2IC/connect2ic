@@ -1,26 +1,17 @@
 import { HttpAgent } from "@dfinity/agent"
-import { getTokenActor } from "./registries/token_registry/token_registry"
 import type { GetNFTActorParams } from "./registries/nfts_registry/nfts_registry"
 import type { Token } from "./tokens/interfaces/token"
 import * as STANDARDS from "./constants/standards"
-import { CCC, DepartureLabs, DIP721, DIP721v2, EXT, ICPunks, NFTStandards } from "./nfts"
+import { CCC, DepartureLabs, DIP721, DIP721v2, EXT, ICPunks, NFTStandards } from "../nfts"
+import { TokenStandards, TOKEN } from "./tokens"
 import { Principal } from "@dfinity/principal"
-import type { DABCollection, NFTCollection } from "./nfts/interfaces/nft"
-import type { default as NFT } from "./nfts/default/default"
+import type { DABCollection, NFTCollection } from "../nfts/interfaces/nft"
+import type { default as DefaultNFT } from "../nfts/default/default"
+import { NFT } from "../nfts"
 import { err, ok, Result } from "neverthrow"
-import localAllNFTs from "./nft_local.json"
+import localAllNFTs from "../nfts/nft_local.json"
 
-export { NFTStandards }
-
-// const NFT_STANDARDS: { [key: string]: NFTStandards } = {
-//   [STANDARDS.NFT.ext]: EXT.Wrapper.default,
-//   [STANDARDS.NFT.icpunks]: ICPunks.Wrapper.default,
-//   [STANDARDS.NFT.departuresLabs]: DepartureLabs.Wrapper.default,
-//   [STANDARDS.NFT.erc721]: DIP721.Wrapper.default,
-//   [STANDARDS.NFT.dip721]: DIP721.Wrapper.default,
-//   [STANDARDS.NFT.dip721v2]: DIP721v2.Wrapper.default,
-//   [STANDARDS.NFT.c3]: CCC.Wrapper.default,
-// }
+export { NFTStandards, NFT, TokenStandards, TOKEN }
 
 const index = [
   {
@@ -95,25 +86,25 @@ const index = [
 const IC_HOST = window.location.origin
 const DEFAULT_AGENT = new HttpAgent({ host: IC_HOST })
 
-const getUserBalance = async (collection: Token, user: Principal): Promise<Result<{ value: string, decimals: number }, { kind: Errors }>> => {
-  try {
-    const tokenActor = await getTokenActor({
-      canisterId: collection.principal_id.toString(),
-      agent: DEFAULT_AGENT,
-      standard: collection.standard,
-    })
-    const result = await tokenActor.getBalance(Principal.from(user))
-    if (result.value === "Error") {
-      // TODO: return err()
-      return err({ kind: Errors.FetchFailed })
-    }
-    // TODO: decimals on value
-    return ok({ value: result.value, decimals: result.decimals })
-  } catch (e) {
-    // TODO: figure out why origyn errors?
-    return err({ kind: Errors.FetchFailed, message: e })
-  }
-}
+// const getUserBalance = async (collection: Token, user: Principal): Promise<Result<{ value: string, decimals: number }, { kind: Errors }>> => {
+//   try {
+//     const tokenActor = await getTokenActor({
+//       canisterId: collection.principal_id.toString(),
+//       agent: DEFAULT_AGENT,
+//       standard: collection.standard,
+//     })
+//     const result = await tokenActor.getBalance(Principal.from(user))
+//     if (result.value === "Error") {
+//       // TODO: return err()
+//       return err({ kind: Errors.FetchFailed })
+//     }
+//     // TODO: decimals on value
+//     return ok({ value: result.value, decimals: result.decimals })
+//   } catch (e) {
+//     // TODO: figure out why origyn errors?
+//     return err({ kind: Errors.FetchFailed, message: e })
+//   }
+// }
 
 export type UserToken = {
   standard: string;
@@ -181,7 +172,7 @@ export const getAddressFormat = standard => {
   return { principal: true, accountId: false }
 }
 
-export const getNFTActor = ({ canisterId, agent, standard }: GetNFTActorParams): NFT => {
+export const getNFTActor = ({ canisterId, agent, standard }: GetNFTActorParams): DefaultNFT => {
   if (!(standard in NFTStandards)) {
     console.error(`Standard ${standard} is not implemented`)
     throw new Error(`standard is not supported: ${standard}`)

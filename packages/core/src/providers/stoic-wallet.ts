@@ -11,6 +11,7 @@ import {
   err,
 } from "neverthrow"
 import { ConnectError, CreateActorError, DisconnectError, InitError } from "./connectors"
+import { Methods } from "./connectors"
 
 class StoicWallet implements IConnector {
 
@@ -22,6 +23,12 @@ class StoicWallet implements IConnector {
     },
     id: "stoic",
     name: "Stoic Wallet",
+    description: "Stoic Wallet by Toniq Labs",
+    deepLinks: {
+      android: "intent://APP_HOST/#Intent;scheme=APP_NAME;package=APP_PACKAGE;end",
+      ios: "astroxme://",
+    },
+    methods: [Methods.BROWSER],
   }
 
   #config: {

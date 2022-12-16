@@ -1,0 +1,209 @@
+type Value = 
+ variant {
+   Blob: blob;
+   Int: int;
+   Nat: nat;
+   Text: text;
+ };
+type TxnRecord = 
+ record {
+   caller: AccountId;
+   gas: Gas;
+   index: nat;
+   msgCaller: opt principal;
+   nonce: nat;
+   timestamp: Time;
+   transaction: Transaction;
+   txid: Txid__1;
+ };
+type Txid__1 = blob;
+type Txid = blob;
+type TransferFromError = 
+ variant {
+   BadBurn: record {min_burn_amount: nat;};
+   BadFee: record {expected_fee: nat;};
+   CreatedInFuture: record {ledger_time: nat64;};
+   Duplicate: record {duplicate_of: nat;};
+   GenericError: record {
+                   error_code: nat;
+                   message: text;
+                 };
+   InsufficientAllowance: record {allowance: nat;};
+   InsufficientFunds: record {balance: nat;};
+   TemporarilyUnavailable;
+   TooOld;
+ };
+type TransferFromArgs = 
+ record {
+   amount: nat;
+   created_at_time: opt nat64;
+   fee: opt nat;
+   from: Account;
+   memo: opt blob;
+   to: Account;
+ };
+type TransferError = 
+ variant {
+   BadBurn: record {min_burn_amount: nat;};
+   BadFee: record {expected_fee: nat;};
+   CreatedInFuture;
+   Duplicate: record {duplicate_of: nat;};
+   GenericError: record {
+                   error_code: nat;
+                   message: text;
+                 };
+   InsufficientFunds: record {balance: nat;};
+   TemporarilyUnavailable;
+   TooOld: record {allowed_window_nanos: Duration;};
+ };
+type TransferArgs = 
+ record {
+   amount: nat;
+   created_at_time: opt Timestamp;
+   fee: opt nat;
+   from_subaccount: opt Subaccount;
+   memo: opt blob;
+   to: Account;
+ };
+type Transaction = 
+ record {
+   data: opt blob;
+   from: AccountId;
+   operation: Operation;
+   to: AccountId;
+   value: nat;
+ };
+type Timestamp = nat64;
+type Time = int;
+type Subaccount = blob;
+type Setting = 
+ record {
+   EN_DEBUG: bool;
+   MAX_CACHE_NUMBER_PER: nat;
+   MAX_CACHE_TIME: nat;
+   MAX_STORAGE_TRIES: nat;
+ };
+type Operation = 
+ variant {
+   approve: record {allowance: nat;};
+   executeTransfer: record {
+                      fallback: nat;
+                      lockedTxid: Txid__1;
+                    };
+   lockTransfer: record {
+                   decider: AccountId;
+                   expiration: Time;
+                   locked: nat;
+                 };
+   transfer: record {action: variant {
+                               burn;
+                               mint;
+                               send;
+                             };};
+ };
+type Metadata = 
+ record {
+   content: text;
+   name: text;
+ };
+type InitArgs = 
+ record {
+   decimals: nat8;
+   fee: nat;
+   founder: opt Address;
+   metadata: opt vec Metadata;
+   name: opt text;
+   symbol: opt text;
+   totalSupply: nat;
+ };
+type Gas = 
+ variant {
+   cycles: nat;
+   noFee;
+   token: nat;
+ };
+type Duration = nat64;
+type DRC20 = 
+ service {
+   drc202_canisterId: () -> (principal) query;
+   drc202_events: (opt Address__1) -> (vec TxnRecord) query;
+   drc202_getConfig: () -> (Setting) query;
+   drc202_pool: () -> (vec record {
+                             Txid;
+                             nat;
+                           }) query;
+   drc202_txn: (Txid) -> (opt TxnRecord) query;
+   drc202_txn2: (Txid) -> (opt TxnRecord);
+   icrc1_balance_of: (Account__1) -> (nat) query;
+   icrc1_decimals: () -> (nat8) query;
+   icrc1_fee: () -> (nat) query;
+   icrc1_metadata: () -> (vec record {
+                                text;
+                                Value;
+                              }) query;
+   icrc1_minting_account: () -> (Account__1) query;
+   icrc1_name: () -> (text) query;
+   icrc1_supported_standards: () ->
+    (vec record {
+           name: text;
+           url: text;
+         }) query;
+   icrc1_symbol: () -> (text) query;
+   icrc1_total_supply: () -> (nat) query;
+   icrc1_transfer: (TransferArgs) -> (variant {
+                                        Err: TransferError;
+                                        Ok: nat;
+                                      });
+   icrc2_allowance: (AllowanceArgs) -> (nat) query;
+   icrc2_approve: (ApproveArgs) -> (variant {
+                                      Err: ApproveError;
+                                      Ok: nat;
+                                    });
+   icrc2_transfer_from: (TransferFromArgs) ->
+    (variant {
+       Err: TransferFromError;
+       Ok: nat;
+     });
+   wallet_receive: () -> ();
+ };
+type ApproveError = 
+ variant {
+   BadFee: record {expected_fee: nat;};
+   CreatedInFuture: record {ledger_time: nat64;};
+   Duplicate: record {duplicate_of: nat;};
+   GenericError: record {
+                   error_code: nat;
+                   message: text;
+                 };
+   InsufficientFunds: record {balance: nat;};
+   TemporarilyUnavailable;
+   TooOld;
+ };
+type ApproveArgs = 
+ record {
+   amount: nat;
+   created_at_time: opt nat64;
+   fee: opt nat;
+   from_subaccount: opt blob;
+   memo: opt blob;
+   spender: principal;
+ };
+type AllowanceArgs = 
+ record {
+   account: Account;
+   spender: principal;
+ };
+type Address__1 = text;
+type Address = text;
+type Account__1 = 
+ record {
+   owner: principal;
+   subaccount: opt Subaccount;
+ };
+type AccountId = blob;
+type Account = 
+ record {
+   owner: principal;
+   subaccount: opt Subaccount;
+ };
+service : (InitArgs) -> DRC20

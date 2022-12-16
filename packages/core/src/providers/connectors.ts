@@ -33,9 +33,17 @@ export enum InitError {
   NotInstalled = "NOT_INSTALLED",
   InitFailed = "INIT_FAILED",
   FetchRootKeyFailed = "FETCH_ROOT_KEY_FAILED",
+
+  Locked = "LOCKED",
 }
 
 export type InitResult = Result<{ isConnected: boolean }, CustomError<InitError>>
+
+export enum Methods {
+  BROWSER = "BROWSER",
+  EXTENSION = "EXTENSION",
+  APP = "APP"
+}
 
 export interface IConnector {
   init: () => Promise<InitResult>
@@ -46,6 +54,9 @@ export interface IConnector {
       light: string
       dark: string
     }
+    methods: Array<Methods>
+    description: string
+    deepLinks?: { android: string, ios: string }
     id: string
     name: string
   }

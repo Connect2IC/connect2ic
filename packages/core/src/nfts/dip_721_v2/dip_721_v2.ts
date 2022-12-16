@@ -1,11 +1,8 @@
-import { Actor, ActorSubclass, HttpAgent } from "@dfinity/agent"
-import { Principal } from "@dfinity/principal"
-
+import { ActorSubclass } from "@dfinity/agent"
 import { NFTDetails } from "../interfaces/nft"
 import Interface, { GenericValue, TokenMetadata } from "./interfaces"
-import IDL from "./dip_721_v2.did"
-import NFT from "../default"
-import { NFT as NFTStandard } from "../../constants/standards"
+import { NFT as NFTStandard } from "../../tokens/constants/standards"
+import { Account, NFTWrapper } from "../nft-interfaces"
 
 interface Property {
   name: string;
@@ -30,23 +27,24 @@ const extractMetadataValue = (metadata: any) => {
   return typeof value === "object" ? JSON.stringify(value) : value
 }
 
-export default class ERC721 extends NFT {
+export default class DIP721v2 implements NFTWrapper {
   standard = NFTStandard.dip721v2
 
   actor: ActorSubclass<Interface>
   canisterId: string
 
   constructor(actor: ActorSubclass<Interface>, canisterId: string) {
-    super()
-
+    // super()
     this.actor = actor
     this.canisterId = canisterId
   }
 
-  async mint(receiver: Principal, amount: number, metadata: any): Promise<any> {
-    console.log("mint", this.actor)
-    const mintResult = await this.actor.mint(receiver, BigInt(amount), metadata)
-    console.log({ mintResult })
+  public async init() {
+    // TODO: Cap
+  }
+
+  async mint(receiver: Account, metadata: any, tokenIndex: number) {
+    const mintResult = await this.actor.mint(receiver.owner, BigInt(tokenIndex), metadata)
     if ("Err" in mintResult) {
       console.error(mintResult.Err)
     }
@@ -55,24 +53,36 @@ export default class ERC721 extends NFT {
     }
   }
 
-  async getUserTokens(principal: Principal): Promise<NFTDetails[]> {
-    const userTokensResult = await this.actor.ownerTokenMetadata(principal)
+  // TODO: ?
+  async burn(tokenIndex: bigint) {
+    const burnResult = await this.actor.burn(tokenIndex)
+    if ("Err" in burnResult) {
+      console.error(burnResult.Err)
+    }
+    if ("Ok" in burnResult) {
+      return burnResult
+    }
+  }
+
+  async getUserTokens(user: Account) {
+    console.log("actor", this.actor)
+    const userTokensResult = await this.actor.ownerTokenMetadata(user.owner)
     const tokens: Array<TokenMetadata> = userTokensResult["Ok"] || []
     return tokens.map(token => {
       const tokenIndex = token.token_identifier
       const formatedMetadata = this.formatMetadata(token)
       const operator = token.operator?.[0]?.toText()
 
-      return this.serializeTokenData(formatedMetadata, tokenIndex, principal.toText(), operator)
+      return this.serializeTokenData(formatedMetadata, tokenIndex, user.owner.toText(), operator)
     })
   }
 
-  async transfer(args: { from: Principal, to: Principal, tokenIndex: number }): Promise<void> {
-    const transferResult = await this.actor.transfer(args.to, BigInt(args.tokenIndex))
+  async transfer(args: { from: Account, to: Account, tokenIndex: bigint }) {
+    const transferResult = await this.actor.transfer(args.to.owner, args.tokenIndex)
     if ("Err" in transferResult) throw new Error(`${Object.keys(transferResult.Err)[0]}: ${Object.values(transferResult.Err)[0]}`)
   }
 
-  async details(tokenIndex: number): Promise<NFTDetails> {
+  async getMetadata(tokenIndex: bigint) {
     const metadataResult = await this.actor.tokenMetadata(BigInt(tokenIndex))
 
     if ("Err" in metadataResult) throw new Error(`${Object.keys(metadataResult.Err)[0]}: ${Object.values(metadataResult.Err)[0]}`)
@@ -84,7 +94,35 @@ export default class ERC721 extends NFT {
     return this.serializeTokenData(formatedMetadata, tokenIndex, owner, operator)
   }
 
-  private serializeTokenData(metadata: any, tokenIndex: number | bigint, owner: string | undefined, operator: string | undefined): NFTDetails {
+  async collectionDetails() {
+    const [
+      result,
+      stats,
+      // supportedInterfaces,
+    ] = await Promise.all([
+      this.actor.metadata(),
+      this.actor.stats(),
+      // this.actor.supportedInterfaces(),
+    ])
+    // TODO: gitCommitHash dfxInfo rustToolchainInfo
+
+    // TODO: error handling
+    return {
+      logo: result.logo[0],
+      symbol: result.symbol[0],
+      name: result.name[0],
+      custodians: result.custodians,
+      createdAt: Number(result.created_at),
+      upgradedAt: result.upgraded_at ? Number(result.upgraded_at) : undefined,
+      cycles: Number(stats.cycles),
+      totalTransactions: Number(stats.total_transactions),
+      totalUniqueHolders: Number(stats.total_unique_holders),
+      totalSupply: Number(stats.total_supply),
+      // supportedInterfaces,
+    }
+  }
+
+  private serializeTokenData(metadata: any, tokenIndex: bigint, owner: string | undefined, operator: string | undefined): NFTDetails {
     return {
       index: BigInt(tokenIndex),
       canister: this.canisterId,

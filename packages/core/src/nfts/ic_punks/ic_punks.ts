@@ -5,8 +5,8 @@ import NFT_ICPUNKS, { TokenDesc } from "./interfaces"
 import IDL from "./icpunks.did"
 import NFT from "../default"
 import { NFTDetails } from "../interfaces/nft"
-import { NFT_CANISTERS } from "../../constants/canisters"
-import { NFT as NFTStandard } from "../../constants/standards"
+import { NFT_CANISTERS } from "../../tokens/constants/canisters"
+import { NFT as NFTStandard } from "../../tokens/constants/standards"
 
 const getICPBunnyCanisterId = index => NFT_CANISTERS.ICP_BUNNY_STORAGE[index % 10]
 

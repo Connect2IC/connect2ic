@@ -1,7 +1,7 @@
 {
   "name": "@connect2ic/react",
   "author": "Mio Quispe",
-  "version": "0.2.0-beta.16",
+  "version": "0.2.0-beta.22",
   "files": [
     "dist"
   ],
@@ -21,8 +21,14 @@
     }
   },
   "dependencies": {
+    "@dfinity/principal": "^0.14.0",
+    "@fontsource/pt-sans": "^4.5.11",
+    "@vanilla-extract/css": "^1.9.2",
+    "@walletconnect/auth-client": "^1.0.1",
     "@xstate/react": "^3.0.1",
-    "neverthrow": "^5.0.0"
+    "cap-js-without-npm-registry": "file:../../../cap-js-without-npm-registry",
+    "neverthrow": "^5.0.0",
+    "webcomponent-qr-code": "^1.1.0"
   },
   "devDependencies": {
     "@types/react": "^18.0.8",

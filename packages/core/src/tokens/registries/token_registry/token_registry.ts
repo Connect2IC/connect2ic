@@ -9,7 +9,6 @@ import { generateActor } from "../../dab_utils/actorFactory"
 import { formatMetadata, FormattedMetadata } from "../../dab_utils/registry"
 
 import { IC_HOST } from "../../constants/index"
-import { createTokenActor } from "../../tokens/index"
 import { TOKEN } from "../../constants/standards"
 import { Token } from "../../tokens/interfaces/token"
 
@@ -23,14 +22,6 @@ interface GetTokenActorParams {
   canisterId: string;
   standard: string;
   agent: HttpAgent;
-}
-
-export const getTokenActor = <T = {}>({ canisterId, agent, standard }: GetTokenActorParams) => {
-  if (!TOKEN_STANDARDS.includes(standard)) {
-    console.error(`Standard ${standard} is not implemented`)
-    throw new Error(`standard is not supported: ${standard}`)
-  }
-  return createTokenActor<T>(canisterId, agent, standard)
 }
 
 export class TokenRegistry extends Registry {
@@ -66,7 +57,6 @@ export const getTokens = async ({ agent = DEFAULT_AGENT } = {}): Promise<Token[]
 }
 
 export default {
-  getTokenActor,
   getTokens,
   addToken: async ({ agent, tokenInfo }) => new TokenRegistry(agent).add(tokenInfo),
   // editToken: async ({ agent, tokenInfo }) => new TokenRegistry(agent).edit(tokenInfo),

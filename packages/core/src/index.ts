@@ -3,12 +3,12 @@ import type { Client } from "./client"
 import type { RootEvent, RootContext } from "./client"
 import type { Provider } from "./providers"
 
-// TODO: separate?
-// tokens
-export * as Token from "./tokens/tokens"
-export { NFTStandards } from "./tokens/nfts"
-// export { getNFTActor } from "./tokens"
+export { NFTStandards, NFT } from "./nfts"
+export { TokenStandards, TOKEN } from "./tokens/tokens"
+
 export type { InternalTokenMethods } from "./tokens/tokens/methods"
+
+export { Methods } from "./providers/connectors"
 
 export {
   InitError,

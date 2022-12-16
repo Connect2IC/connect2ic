@@ -1,7 +1,8 @@
 import { IDL } from "@dfinity/candid"
 import { ActorSubclass } from "@dfinity/agent"
+import { Client } from "./client"
 
-class Canister {
+export class Canister {
   // this._service.subscribe((state) => {})
 
   public canisterId: string
@@ -9,9 +10,10 @@ class Canister {
   public anonymousActor: ActorSubclass<any>
   public providerActor: ActorSubclass<any>
 
-  constructor({ canisterId, idlFactory }) {
+  constructor({ canisterId, idlFactory, client }) {
     this.canisterId = canisterId
     this.idlFactory = idlFactory
+    this.client = client
     client.createAnonymousActor(canisterId, idlFactory).then(actor => {
       this.anonymousActor = actor
     })
@@ -29,13 +31,13 @@ class Canister {
     client._service.subscribe((state) => {
       if (mode === "authenticated" || mode === "auto") {
         // TODO: no this. client
-        unsub1 = client._emitter.on("connected", async () => {
+        unsub1 = client._emitter.on("connect", async () => {
           const actor = await client.createActor(canisterId, idlFactory)
           fn(actor)
         })
       }
       if (mode === "auto" || mode === "anonymous") {
-        unsub2 = client._emitter.on("disconnected", () => {
+        unsub2 = client._emitter.on("disconnect", () => {
           fn(anonymousActor)
         })
       }
@@ -46,3 +48,4 @@ class Canister {
       }
     })
   }
+}

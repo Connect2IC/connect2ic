@@ -4,7 +4,9 @@ import * as DepartureLabs from "./departure_labs"
 import * as DIP721 from "./dip_721"
 import * as DIP721v2 from "./dip_721_v2"
 import * as CCC from "./ccc"
-import { NFT } from "../constants/standards"
+import { NFT } from "../tokens/constants/standards"
+
+export { NFT }
 
 export const NFTStandards = {
   [NFT.ext]: EXT,

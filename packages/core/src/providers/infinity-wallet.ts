@@ -8,6 +8,7 @@ import infinityLogoDark from "../assets/infinity.png"
 import type { Principal } from "@dfinity/principal"
 import { err, ok } from "neverthrow"
 import { ConnectError, CreateActorError, DisconnectError, InitError } from "./connectors"
+import { Methods } from "./connectors"
 
 type Config = {
   defaultNetwork: "ic" | "local"
@@ -40,6 +41,12 @@ class InfinityWallet implements IConnector {
     },
     id: "infinity",
     name: "Infinity Wallet",
+    description: "Your Crypto & NFT Wallet on the IC",
+    deepLinks: {
+      android: "intent://APP_HOST/#Intent;scheme=APP_NAME;package=APP_PACKAGE;end",
+      ios: "astroxme://"
+    },
+    methods: [Methods.EXTENSION]
   }
 
   #config: Config

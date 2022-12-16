@@ -22,6 +22,7 @@ import {
   NFTsError,
 } from "./connectors"
 import { TransactionMessageKind, TransactionType } from "@astrox/sdk-webview/build/types"
+import { Methods } from "./connectors"
 
 class ICX implements IConnector, IWalletConnector {
 
@@ -33,6 +34,7 @@ class ICX implements IConnector, IWalletConnector {
     },
     id: "icx",
     name: "ICX",
+    methods: [Methods.APP]
   }
 
   #config: {

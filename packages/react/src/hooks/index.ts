@@ -1,25 +1,11 @@
-import { useConnect } from "./useConnect"
-import { useCanister } from "./useCanister"
-import { useBalance } from "./useBalance"
-import { useDialog } from "./useDialog"
-import { useProviders } from "./useProviders"
-import { useSignMessage } from "./useSignMessage"
-import { useTransfer } from "./useTransfer"
-import { useWallet } from "./useWallet"
-import { useClient } from "./useClient"
-import { useToken } from "./useToken"
-import { useNFT } from "./useNFT"
-
-export {
-  useWallet,
-  useConnect,
-  useCanister,
-  useBalance,
-  useDialog,
-  useProviders,
-  useSignMessage,
-  useTransfer,
-  useClient,
-  useToken,
-  useNFT,
-}
+export { useConnect } from "./useConnect"
+export { useCanister, useCanisterById, useCanisters } from "./useCanister"
+export { useBalance } from "./useBalance"
+export { useDialog } from "./useDialog"
+export { useProviders } from "./useProviders"
+export { useSignMessage } from "./useSignMessage"
+export { useTransfer } from "./useTransfer"
+export { useWallet } from "./useWallet"
+export { useClient } from "./useClient"
+export { useToken } from "./useToken"
+export { useNFT } from "./useNFT"

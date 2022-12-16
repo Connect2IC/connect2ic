@@ -1,12 +1,40 @@
+/*!* pt-sans-latin-ext-400-normal*!*/
+/*@font-face {*/
+/*    font-family: 'PT Sans';*/
+/*    font-style: normal;*/
+/*    font-display: swap;*/
+/*    font-weight: 400;*/
+/*    src: url('./pt-sans-latin-ext-400-normal.woff2') format('woff2'), url('./pt-sans-all-400-normal.woff') format('woff');*/
+/*    unicode-range: U+0100-024F,U+0259,U+1E00-1EFF,U+2020,U+20A0-20AB,U+20AD-20CF,U+2113,U+2C60-2C7F,U+A720-A7FF;*/
+/*}*/
+
 .dialog-styles span {
     font-family: -apple-system, BlinkMacSystemFont, "Arial", "Helvetica Neue", sans-serif;
+    /*font-family: "PT Sans", BlinkMacSystemFont, "Arial", "Helvetica Neue", sans-serif;*/
+}
+
+.button-text {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding-right: 15px;
+}
+
+.img-container {
+    height: 75px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .img-styles {
-    height: 55px;
-    width: 55px;
-    padding: 10px;
-    box-sizing: content-box;
+    width: 100%;
+    height: 100%;
+    max-height: 45px;
+    max-width: 45px;
 }
 
 @media all and (max-width: 300px) {
@@ -20,6 +48,7 @@
 }
 
 .dialog-styles {
+    color: #23232F;
     position: fixed;
     top: 0;
     left: 0;
@@ -42,16 +71,64 @@
 .dialog-container {
     display: grid;
     grid-gap: 5px;
-    padding: 10px;
-    background: #f4f4f4;
-    border-radius: 15px;
+    padding: 0 30px;
+    background: #F2F2F6;
+    border-radius: 25px;
     overflow: auto;
     grid-template-columns: 1fr;
     cursor: initial;
     animation: move-in 0.18s;
-    max-width: 420px;
+    max-width: 450px;
+    max-height: 540px;
     width: 100%;
     box-sizing: border-box;
+}
+
+.method-container {
+    display: flex;
+    justify-content: center;
+    padding: 30px 0;
+}
+
+.method-button {
+    width: 144px;
+    height: 144px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background: white;
+    border-radius: 10px;
+    border: none;
+}
+
+.method-button:hover {
+    /*transform: scale(1.02);*/
+    /*transition: all 0.2s;*/
+}
+
+.dialog-title {
+    font-weight: 400;
+    margin: 0;
+    width: 100%;
+}
+
+.dialog-top-icon {
+    cursor: pointer;
+    padding: 15px;
+}
+
+.dialog-top-right-icon {
+    cursor: pointer;
+    padding: 15px;
+    margin-right: -15px;
+}
+
+.dialog-top-left-icon {
+    cursor: pointer;
+    padding: 15px;
+    margin-right: 15px;
+    margin-left: -15px;
 }
 
 .dark .dialog-container {
@@ -86,18 +163,20 @@
 }
 
 .button-styles {
-    background: transparent;
+    background: white;
     max-width: 100%;
     width: 100%;
     height: 75px;
-    padding: 10px;
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
     border: none;
-    border-radius: 11px;
+    border-radius: 15px;
     outline: 0;
     cursor: pointer;
     transition: transform 0.15s;
-    display: flex;
-    align-items: center;
+    display: grid;
+    grid-template-columns: 80px 1fr;
 }
 
 .dark .button-styles {
@@ -105,44 +184,76 @@
 }
 
 .button-label {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    font-size: 21px;
-    font-weight: 300;
-    color: #424242;
+    margin-bottom: 0;
+    font-size: 18px;
     text-align: left;
+}
+
+.button-description {
+    font-size: 12px;
+    margin-top: -3px;
+    line-height: 1.2;
+    text-align: left;
+    color: #9C9CA4;
+}
+
+.dialog-top {
+    display: flex;
+    padding: 15px 0;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background: #f2f2f6;
+}
+
+.dialog-bottom {
+    display: flex;
+    padding-bottom: 20px;
+    padding-top: 15px;
+    justify-content: center;
+    position: sticky;
+    bottom: 0;
+    font-size: 12px;
+    margin-top: -3px;
+    line-height: 1.2;
+    text-align: left;
+    color: #5D5D6C;
+    background: #f2f2f6;
+}
+
+.qr-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.qr-bg {
+    height: 340px;
+    width: 340px;
+    background: white;
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+qr-code {
+    display: flex;
+    justify-content: center;
+    height: 100%;
 }
 
 .dark .button-label {
     color: white;
 }
 
-@media all and (max-width: 300px) {
-    .button-label {
-        font-size: 6vw;
-    }
-}
-
 .button-styles:hover {
-    transform: scale(1.02);
-    font-weight: 800!important;
-    transition: all 0.2s;
+    /*transform: scale(1.02);*/
+    /*transition: all 0.2s;*/
     background: white;
 }
 
 .dark .button-styles:hover {
     background: #545454;
-}
-
-.button-styles > div {
-    display: flex;
-    padding: 0 15px;
-    border-radius: 10px;
-    font-weight: 400;
-    height: 100%;
-    flex-direction: column;
-    align-items: flex-start;
-    justify-content: center;
 }
 
 .connect-button {
@@ -160,4 +271,41 @@
 .connect-button:hover {
     transform: scale(1.03);
     transition: all 0.4s;
+}
+
+.dialog-content {
+    /*padding-top: 15px;*/
+}
+
+.loading-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px;
+}
+
+.loading-img {
+    height: 100px;
+    width: 100px;
+}
+
+@media only screen and (max-width: 480px) {
+    .dialog-styles {
+        justify-content: end;
+        padding: 0;
+    }
+    .dialog-container {
+        width: 100%;
+        max-width: 100%;
+        max-height: 100%;
+        height: 50%;
+        border-radius: 15px 15px 0 0;
+    }
+    .dialog-top {
+        padding-bottom: 0;
+    }
+    .dialog-bottom {
+        padding-bottom: 15px;
+        padding-top: 15px;
+    }
 }

@@ -13,7 +13,15 @@ import {
   ok,
   err, Result,
 } from "neverthrow"
-import { BalanceError, ConnectError, CreateActorError, DisconnectError, InitError, TransferError } from "./connectors"
+import {
+  BalanceError,
+  ConnectError,
+  CreateActorError,
+  DisconnectError,
+  InitError,
+  Methods,
+  TransferError,
+} from "./connectors"
 import { TransactionMessageKind } from "@astrox/sdk-web/build/types"
 
 const balanceFromString = (balance: string, decimal = 8): bigint => {
@@ -40,6 +48,12 @@ class AstroX implements IConnector, IWalletConnector {
     },
     id: "astrox",
     name: "AstroX ME",
+    description: "Your Self-Custody Passport to Web3 Apps.",
+    deepLinks: {
+      android: "intent://APP_HOST/#Intent;scheme=APP_NAME;package=APP_PACKAGE;end",
+      ios: "astroxme://",
+    },
+    methods: [Methods.BROWSER, Methods.APP],
   }
 
   #config: {

@@ -12,6 +12,7 @@ import {
   err,
 } from "neverthrow"
 import { ConnectError, CreateActorError, DisconnectError, InitError } from "./connectors"
+import { Methods } from "./connectors"
 
 class InternetIdentity implements IConnector {
 
@@ -23,6 +24,12 @@ class InternetIdentity implements IConnector {
     },
     id: "ii",
     name: "Internet Identity",
+    description: "Internet Identity is the identity provider for the Internet Computer.",
+    deepLinks: {
+      android: "intent://APP_HOST/#Intent;scheme=APP_NAME;package=APP_PACKAGE;end",
+      ios: "astroxme://"
+    },
+    methods: [Methods.BROWSER]
   }
 
   #config: {
@@ -59,6 +66,10 @@ class InternetIdentity implements IConnector {
 
   get config() {
     return this.#config
+  }
+
+  get identity() {
+    return this.#identity
   }
 
   async init() {

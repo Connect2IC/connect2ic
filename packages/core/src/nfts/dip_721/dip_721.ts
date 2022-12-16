@@ -5,7 +5,8 @@ import { NFTDetails } from "../interfaces/nft"
 import Interface, { MetadataPart, MetadataVal } from "./interfaces"
 import IDL from "./dip_721.did"
 import NFT from "../default"
-import { NFT as NFTStandard } from "../../constants/standards"
+import { NFT as NFTStandard } from "../../tokens/constants/standards"
+import { Account, NFTWrapper } from "../nft-interfaces"
 
 interface Property {
   name: string;
@@ -24,21 +25,24 @@ const extractMetadataValue = (metadata: any) => {
   return typeof value === "object" ? JSON.stringify(value) : value
 }
 
-export default class ERC721 extends NFT {
+export default class DIP721 implements NFTWrapper {
   standard = NFTStandard.dip721
 
   actor: ActorSubclass<Interface>
   canisterId: string
 
   constructor(actor: ActorSubclass<Interface>, canisterId: string) {
-    super()
-
+    // super()
     this.actor = actor
     this.canisterId = canisterId
   }
 
-  async getUserTokens(principal: Principal): Promise<NFTDetails[]> {
-    const userTokensResult = await this.actor.getMetadataForUserDip721(principal)
+  public async init() {
+
+  }
+
+  async getUserTokens(user: Account) {
+    const userTokensResult = await this.actor.getMetadataForUserDip721(user.owner)
     const tokens = userTokensResult || []
     return tokens.map(token => {
       const tokenIndex = token.token_id
@@ -48,12 +52,22 @@ export default class ERC721 extends NFT {
     })
   }
 
-  async transfer(args: { from: Principal, to: Principal, tokenIndex: number }): Promise<void> {
-    const transferResult = await this.actor.transferFromDip721(args.from, args.to, BigInt(args.tokenIndex))
+  async mint(receiver: Account, metadata: any) {
+    const mintResult = await this.actor.mintDip721(receiver.owner, metadata)
+    if ("Err" in mintResult) {
+      console.error(mintResult.Err)
+    }
+    if ("Ok" in mintResult) {
+      return mintResult
+    }
+  }
+
+  async transfer(args: { from: Account, to: Account, tokenIndex: number }) {
+    const transferResult = await this.actor.transferFromDip721(args.from.owner, args.to.owner, BigInt(args.tokenIndex))
     if ("Err" in transferResult) throw new Error(`${Object.keys(transferResult.Err)[0]}: ${Object.values(transferResult.Err)[0]}`)
   }
 
-  async details(tokenIndex: number): Promise<NFTDetails> {
+  async getMetadata(tokenIndex: bigint) {
     const metadataResult = await this.actor.getMetadataDip721(BigInt(tokenIndex))
 
     if ("Err" in metadataResult) throw new Error(`${Object.keys(metadataResult.Err)[0]}: ${Object.values(metadataResult.Err)[0]}`)

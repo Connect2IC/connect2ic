@@ -16,6 +16,7 @@ class EarthWallet implements IConnector, IWalletConnector {
     },
     id: "earth",
     name: "Earth Wallet",
+    methods: ["extension"],
   }
 
   #config: {

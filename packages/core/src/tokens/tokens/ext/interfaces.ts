@@ -58,11 +58,21 @@ export interface Listing {
   price: bigint;
 }
 
+type Account = {
+  owner: Principal;
+  subaccount: SubAccount;
+}
+
 export interface TokenMetaData {
   name: string;
   decimals: number;
   symbol: string;
-  fee?: number;
+  fee: number;
+  feeTo: Account;
+  holderNumber: number;
+  standard: string;
+  totalSupply: bigint;
+  owner: Account
 }
 
 export type Extension = string;
@@ -102,11 +112,9 @@ type TransferError =
 
 type TransferResult = Result<Balance, TransferError>;
 
-export interface FungibleMetadata {
-  fungible: TokenMetaData & {
-    metadata?: Int8Array[];
-  };
-}
+export type FungibleMetadata = TokenMetaData & {
+  metadata?: Int8Array[];
+};
 
 export interface NonFungibleMetadata {
   nonfungible: {

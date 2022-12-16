@@ -11,6 +11,7 @@ import {
   err,
 } from "neverthrow"
 import { ConnectError, CreateActorError, DisconnectError, InitError } from "./connectors"
+import { Methods } from "./connectors"
 
 class NFID implements IConnector {
 
@@ -22,6 +23,12 @@ class NFID implements IConnector {
     },
     id: "nfid",
     name: "NFID",
+    description: "NFID is the digital identity for signing in to applications privately and securely",
+    deepLinks: {
+      android: "intent://APP_HOST/#Intent;scheme=APP_NAME;package=APP_PACKAGE;end",
+      ios: "astroxme://"
+    },
+    methods: [Methods.BROWSER],
   }
 
   #config: {

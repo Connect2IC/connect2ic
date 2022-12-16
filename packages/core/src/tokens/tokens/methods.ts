@@ -21,6 +21,7 @@ export interface SendParams {
   to: string;
   from: string;
   amount: bigint;
+  memo?: string;
   opts?: any;
 }
 
@@ -35,7 +36,7 @@ export interface BalanceResponse {
   error?: string;
 }
 
-interface AddedMehtodsToken {
+interface AddedMethodsToken {
   send: ({ to, from, amount }: SendParams) => Promise<SendResponse>;
   getMetadata: () => Promise<Metadata>;
   getBalance: (user: Principal) => Promise<BalanceResponse>;
@@ -43,7 +44,7 @@ interface AddedMehtodsToken {
   getDecimals: () => Promise<number>;
 }
 
-export type TokenServiceExtended<T> = T & AddedMehtodsToken;
+export type TokenServiceExtended<T> = T & AddedMethodsToken;
 
 export interface InternalTokenMethods {
   send: (actor: ActorSubclass<any>, { to, from, amount }: SendParams) => Promise<SendResponse>;
@@ -74,7 +75,7 @@ const getDecimals = async (_actor: ActorSubclass<any>) => {
 }
 
 export const getDecimalsFromMetadata = (metadata: Metadata): number => {
-  return "fungible" in metadata ? metadata.fungible.decimals : 0
+  return metadata.decimals ?? 0
 }
 
 export const parseAmountToSend = (amount: string, decimals: number): bigint => {
