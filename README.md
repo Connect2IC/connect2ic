@@ -10,6 +10,8 @@ There are many new wallets coming out and adding support for these isn't always 
 ## Full documentation
 Visit https://connect2ic.github.io/docs/
 
+See https://github.com/MioQuispe/create-ic-app/ for examples
+
 ## Community
 You can ask us questions directly :)
 https://discord.com/invite/4kqMVknpgZ
