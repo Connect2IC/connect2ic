@@ -9,6 +9,7 @@ import { getAccountId } from "../../tokens/dab_utils/account"
 import { to32bits } from "../../tokens/dab_utils/number"
 import { NFT_CANISTERS } from "../../tokens/constants/canisters"
 import { NFT as NFTStandard } from "../../tokens/constants/standards"
+import { Account, NFTWrapper } from "../nft-interfaces"
 
 const getTokenIdentifier = (canister: string, index: number): string => {
   const padding = Buffer.from("\x0Atid")
@@ -22,17 +23,28 @@ const extImageUrl = (canisterId, index, tokenIdentifier) =>
     [NFT_CANISTERS.WRAPPED_DRIP]: `https://${NFT_CANISTERS.IC_DRIP}.raw.ic0.app?tokenId=${index}`,
   }[canisterId] || `https://${canisterId}.raw.ic0.app/?type=thumbnail&tokenid=${tokenIdentifier}`)
 
-export default class EXT extends NFT {
+export default class EXT implements NFTWrapper {
   standard = NFTStandard.ext
 
   actor: ActorSubclass<NTF_EXT>
   canisterId: string
 
   constructor(actor: ActorSubclass<NTF_EXT>, canisterId: string) {
-    super()
-
+    // super()
     this.actor = actor
     this.canisterId = canisterId
+  }
+
+  async mint(receiver: Account, metadata: any, tokenIndex: bigint) {
+    // TODO:
+    // const index = (tokenIndex || tokenIndex === 0n) ? tokenIndex : BigInt((await this.collectionDetails()).totalSupply)
+    // const mintResult = await this.actor.mint(receiver.owner, index, metadata)
+    // if ("Err" in mintResult) {
+    //   console.error(mintResult.Err)
+    // }
+    // if ("Ok" in mintResult) {
+    //   return mintResult
+    // }
   }
 
   async getUserTokens(principal: Principal): Promise<NFTDetails[]> {

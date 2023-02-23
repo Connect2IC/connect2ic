@@ -46,10 +46,10 @@ export enum Methods {
 }
 
 export interface IConnector {
+  wallets: Array<IWalletConnector>
   init: () => Promise<InitResult>
   config: any
   meta: {
-    features: Array<string>
     icon: {
       light: string
       dark: string
@@ -70,6 +70,7 @@ export interface IConnector {
 export enum BalanceError {
   NotInitialized = "NOT_INITIALIZED",
   QueryBalanceFailed = "QUERY_BALANCE_FAILED",
+  QueryBalanceRejected = "QUERY_BALANCE_REJECTED",
 }
 
 export type BalanceResult = Result<Array<{
@@ -116,6 +117,7 @@ export enum TransferError {
   NotInitialized = "NOT_INITIALIZED",
   TokenNotSupported = "TOKEN_NOT_SUPPORTED",
   NotConnected = "NOT_CONNECTED",
+  TransferRejected = "TRANSFER_REJECTED",
 }
 
 export type TransferResult = Result<{ height?: number; transactionId?: string; }, CustomError<TransferError>>
@@ -142,10 +144,6 @@ export interface IWalletConnector {
     canisterId: string;
     standard: "ICP" | "DIP20" | "EXT" | "DRC20" | string;
   }) => Promise<NFTTransferResult>
-  wallets: Array<{
-    accountId: string
-    principal: string
-  }>
   queryBalance: () => Promise<BalanceResult>
   // queryTokens: () => Promise<TokensResult>
   // queryNFTs: () => Promise<NFTsResult>

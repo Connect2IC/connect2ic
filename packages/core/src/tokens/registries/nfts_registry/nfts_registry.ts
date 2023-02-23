@@ -5,8 +5,7 @@ import fetch from "cross-fetch"
 import localAllNFTs from "../nft.json"
 
 import NFTRegistryInterface from "./interfaces"
-import { NFTCollection, NFTStandards } from "../../../nfts/interfaces/nft"
-import { DABCollection } from "../../../nfts/interfaces/dab_nfts"
+import { DABCollection, NFTCollection } from "../../../nfts/interfaces/nft"
 
 import EXT from "../../../nfts/ext/ext"
 import ICPunks from "../../../nfts/ic_punks/ic_punks"
@@ -23,6 +22,7 @@ import Registry from "../standard_registry/standard_registry"
 import { generateActor } from "../../dab_utils/actorFactory"
 import { formatMetadata, FormattedMetadata } from "../../dab_utils/registry"
 import CCC from "../../../nfts/ccc/ccc"
+import { NFTStandards } from "../../../nfts/nft-interfaces"
 
 const CANISTER_ID = "ctqxp-yyaaa-aaaah-abbda-cai"
 const BATCH_AMOUNT = 5

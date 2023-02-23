@@ -318,39 +318,6 @@ class Client {
     return result
   }
 
-  // TODO: put in useNFT()?
-  // // TODO: get IDL from canister?
-  public async getNFTInfo({ canisterId, interfaceFactory = NFTStandards["DIP721v2"].IDL.default }) {
-    const nftActor = await this.createAnonymousActor(canisterId, interfaceFactory)
-    if (nftActor.isOk()) {
-      //@ts-ignore
-      const details = await nftActor.value.metadata()
-      return { standard: "DIP721v2", logo: details.logo, name: details.name, symbol: details.symbol }
-    }
-  }
-
-  // TODO: put in useToken()?
-  // // TODO: get IDL from canister?
-  public async getTokenInfo({ canisterId, idlFactory = TokenStandards["DIP20"].IDL.default }) {
-    const tokenActor = await this.createAnonymousActor(canisterId, idlFactory)
-    if (tokenActor.isOk()) {
-      //@ts-ignore
-      const details = await tokenActor.value.getTokenInfo()
-      return { standard: "DIP20", logo: details.logo, name: details.name, symbol: details.symbol }
-    }
-  }
-
-  // public async createNFTActor({ canisterId, standard }) {
-  //   const interfaceFactory = NFTStandards[standard].IDL.default
-  //   // TODO: not just anon
-  //   const nftActor = await this.createAnonymousActor(canisterId, interfaceFactory)
-  //   if (nftActor.isOk()) {
-  //     //@ts-ignore
-  //     const wrapper = new NFTStandards["DIP721v2"].Wrapper.default(nftActor.value, canisterId)
-  //     return wrapper
-  //   }
-  // }
-
   public get providers() {
     return this._service.state.context[this._service.state.context.preferredNetwork].providers
   }

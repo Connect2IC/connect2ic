@@ -43,8 +43,9 @@ export default class DIP721v2 implements NFTWrapper {
     // TODO: Cap
   }
 
-  async mint(receiver: Account, metadata: any, tokenIndex: number) {
-    const mintResult = await this.actor.mint(receiver.owner, BigInt(tokenIndex), metadata)
+  async mint(receiver: Account, metadata: any, tokenIndex: bigint) {
+    const index = (tokenIndex || tokenIndex === BigInt(0)) ? tokenIndex : BigInt((await this.collectionDetails()).totalSupply)
+    const mintResult = await this.actor.mint(receiver.owner, index, metadata)
     if ("Err" in mintResult) {
       console.error(mintResult.Err)
     }

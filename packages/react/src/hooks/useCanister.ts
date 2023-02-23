@@ -1,11 +1,11 @@
 import { useContext, useEffect, useMemo, useState } from "react"
-import { useSelector } from "@xstate/react"
 import { useConnect } from "./useConnect"
 import { Connect2ICContext } from "../context"
 import type { ActorSubclass, Actor } from "@dfinity/agent"
 import { IDL } from "@dfinity/candid"
+import { CreateActorError, CreateActorResult } from "@connect2ic/core"
 
-export const useCanisterById = <T>(canisterId, options: UseCanisterOptions = {
+export const useCanisterById = <T>(canisterId, options: UseCanisterOptions<T> = {
   mode: "auto", // "anonymous" | "connected"
   network: "local",
 }) => {
@@ -20,37 +20,44 @@ export const useCanisters = () => {
   return canisters
 }
 
-export type UseCanisterOptions = {
-  mode: string
-  network: string
-  // idlFactory?: IDL.InterfaceFactory
-  canisterId?: string,
-  idlFactory?: IDL.InterfaceFactory,
+export type CanisterOptions<T> = {
+  mode?: string
+  network?: string
+}
+
+type CanisterDeclaration<T> = {
+  // TODO: mandatory
+  canisterId: string,
+  idlFactory: IDL.InterfaceFactory,
+  service?: T,
 }
 
 // TODO: ??
-export const useCanister = <T>(canisterName?, options: UseCanisterOptions = {
+export const useCanister = <T>(canisterNameOrDeclaration: string | CanisterDeclaration<T>, options: CanisterOptions<T> = {
   mode: "auto", // "anonymous" | "connected"
   network: "local",
-}) => {
-  const hasCanisterName = typeof canisterName !== "object"
-  if (!hasCanisterName) {
-    options = canisterName as UseCanisterOptions
-  }
+}): [T | undefined, { error?: CreateActorError, loading: boolean, idl: IDL.InterfaceFactory, canisterId: string }] => {
+  const hasCanisterName = typeof canisterNameOrDeclaration === "string"
+  // if (!hasCanisterName) {
+  //   options = canisterNameOrDeclaration as CanisterDeclaration<T>
+  // }
   const { mode } = options
   const { client, canisters } = useContext(Connect2ICContext)
   const { activeProvider, isConnected } = useConnect()
-  let canisterId = hasCanisterName ? canisters[canisterName].canisterId : options.canisterId
-  let idlFactory = hasCanisterName ? canisters[canisterName].idlFactory : options.idlFactory
-  const [anonymousCanister, setAnonymousCanister] = useState<ActorSubclass<any>>()
-  const [authCanister, setAuthCanister] = useState<ActorSubclass<any>>()
+  let canisterId = hasCanisterName ? canisters[canisterNameOrDeclaration].canisterId : canisterNameOrDeclaration.canisterId
+  let idlFactory = hasCanisterName ? canisters[canisterNameOrDeclaration].idlFactory : canisterNameOrDeclaration.idlFactory
+  const [anonymousCanister, setAnonymousCanister] = useState<ActorSubclass<T>>()
+  const [authCanister, setAuthCanister] = useState<ActorSubclass<T>>()
   const modes = {
     "auto": ((mode === "auto") && isConnected) ? authCanister : anonymousCanister,
     "anonymous": ((mode === "anonymous") && !isConnected) ? anonymousCanister : undefined,
     "connected": ((mode === "connected") && isConnected) ? authCanister : undefined,
   }
-  const canister = modes[mode]
+  // TODO: get error type
+  const canisterResult: CreateActorResult<T> = modes[mode]
 
+  // TODO: reuse actors when used multiple times
+  // See react-query
   useEffect(() => {
     (async () => {
       const anonymousActor = await client.createAnonymousActor(
@@ -77,14 +84,25 @@ export const useCanister = <T>(canisterName?, options: UseCanisterOptions = {
     // TODO: options?
   }, [canisterId, idlFactory, activeProvider])
 
+  let actor
+  if (canisterResult?.isOk()) {
+    actor = canisterResult.value
+  }
+  let error
+  if (canisterResult?.isErr()) {
+    error = canisterResult.error
+  }
+  // TODO: ?
+  let loading = !canisterResult
+
   return [
-    canister?.isOk() ? canister.value : undefined,
+    actor as typeof canisterNameOrDeclaration.service,
     {
-      error: canister?.isErr() ? canister.error : undefined,
-      // TODO: ?
-      loading: !(canister),
-      idl: idlFactory,
-      canisterId: canisterId || canisters[canisterName].canisterId,
+      error,
+      loading,
+      // TODO: force idlFactory to be defined
+      idl: idlFactory!,
+      canisterId: hasCanisterName ? canisters[canisterNameOrDeclaration].canisterId : canisterId!,
     },
   ]
 }

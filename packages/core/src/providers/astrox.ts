@@ -38,7 +38,126 @@ const balanceFromString = (balance: string, decimal = 8): bigint => {
   return aboveZeroBigInt + belowZeroBigInt
 }
 
-class AstroX implements IConnector, IWalletConnector {
+type Config = {
+  whitelist: Array<string>,
+  providerUrl: string,
+  ledgerCanisterId: string,
+  ledgerHost?: string,
+  noUnify?: boolean,
+  host: string,
+  dev: boolean,
+}
+
+class Wallet implements IWalletConnector {
+
+  #ic: IC
+  #config: Config
+
+  constructor(userConfig: Config, ic: IC) {
+    this.#config = userConfig
+    this.#ic = ic
+  }
+
+  async requestTransfer(opts: { amount: number, to: string, standard?: string, symbol?: string, decimals?: number }) {
+    const { to, amount, standard = "ICP", symbol = "ICP", decimals = 8 } = opts
+    try {
+      const result = await this.#ic?.requestTransfer({
+        amount: BigInt(amount * (10 ** decimals)),
+        to,
+        standard,
+        symbol,
+        // TODO: ?
+        sendOpts: {},
+      })
+      // TODO: why string? check astrox-js
+      if (typeof result === "string") {
+        return err({ kind: TransferError.FaultyAddress })
+      }
+      // check astrox-js
+      if (!result) {
+        return err({ kind: TransferError.TransferFailed })
+      }
+      switch (result?.kind) {
+        case "transaction-client-success":
+          return ok({
+            // TODO: why is payload optional? check astrox-js
+            height: Number(result.payload?.blockHeight),
+          })
+        default:
+          return err({ kind: TransferError.TransferFailed })
+      }
+    } catch (e) {
+      console.error(e)
+      return err({ kind: TransferError.TransferFailed })
+    }
+  }
+
+  async requestTransferNFT(args: {
+    tokenIdentifier: string;
+    tokenIndex: number;
+    canisterId: string;
+    to: string;
+    standard: string;
+  }) {
+    try {
+      const {
+        tokenIdentifier,
+        tokenIndex,
+        canisterId,
+        standard,
+        to,
+      } = args
+      if (!this.#ic) {
+        return err({ kind: TransferError.NotInitialized })
+      }
+      const response = await this.#ic.requestTransfer({
+        tokenIdentifier,
+        tokenIndex,
+        canisterId,
+        standard,
+        to,
+        sendOpts: {},
+        symbol: "",
+      })
+      if (!response || typeof response === "string" /* || response.kind === TransactionMessageKind.fail*/) {
+        return err({ kind: TransferError.TransferFailed })
+      }
+      if (response.kind === TransactionMessageKind.success) {
+        return ok({
+          // ...response.payload,
+          // TODO: fixxxxxxxx
+          transactionId: String(response.payload?.blockHeight),
+          // height: Number(response.payload?.blockHeight),
+        })
+      }
+      return err({ kind: TransferError.TransferFailed })
+    } catch (e) {
+      console.error(e)
+      return err({ kind: TransferError.TransferFailed })
+    }
+  }
+
+  async queryBalance() {
+    try {
+      const ICPBalance = Number(await this.#ic?.queryBalance()) ?? 0
+      return ok([{
+        amount: ICPBalance / 100000000,
+        canisterId: this.#config.ledgerCanisterId,
+        decimals: 8,
+        // TODO: plug returns image?
+        // image: "Dfinity.svg",
+        name: "ICP",
+        symbol: "ICP",
+      }])
+    } catch (e) {
+      console.error(e)
+      return err({ kind: BalanceError.QueryBalanceFailed })
+    }
+  }
+
+}
+
+class AstroX implements IConnector {
 
   public meta = {
     features: ["wallet"],
@@ -56,29 +175,18 @@ class AstroX implements IConnector, IWalletConnector {
     methods: [Methods.BROWSER, Methods.APP],
   }
 
-  #config: {
-    whitelist: Array<string>,
-    providerUrl: string,
-    ledgerCanisterId: string,
-    ledgerHost?: string,
-    noUnify?: boolean,
-    host: string,
-    dev: boolean,
-  }
+  #config: Config
   #identity?: Identity
   #principal?: string
   #ic?: IC
-  #wallet?: {
-    principal: string;
-    accountId: string;
-  }
+  #wallets: Array<IWalletConnector> = []
 
   get principal() {
     return this.#principal
   }
 
   get wallets() {
-    return this.#wallet ? [this.#wallet] : []
+    return this.#wallets
   }
 
 
@@ -184,7 +292,8 @@ class AstroX implements IConnector, IWalletConnector {
       this.#principal = this.#ic.principal.toText()
       // @ts-ignore
       this.#identity = this.#ic.identity
-      this.#wallet = this.#ic.wallet
+      // TODO: move out or not? how to pass this.#ic if yes
+      this.#wallets = [new Wallet(this.#config, this.#ic)]
       return ok(true)
     } catch (e) {
       console.error(e)
@@ -202,102 +311,6 @@ class AstroX implements IConnector, IWalletConnector {
     }
   }
 
-  async requestTransfer(opts: { amount: number, to: string, standard?: string, symbol?: string, decimals?: number }) {
-    const { to, amount, standard = "ICP", symbol = "ICP", decimals = 8 } = opts
-    try {
-      const result = await this.#ic?.requestTransfer({
-        amount: BigInt(amount * (10 ** decimals)),
-        to,
-        standard,
-        symbol,
-        // TODO: ?
-        sendOpts: {},
-      })
-      // TODO: why string? check astrox-js
-      if (typeof result === "string") {
-        return err({ kind: TransferError.FaultyAddress })
-      }
-      // check astrox-js
-      if (!result) {
-        return err({ kind: TransferError.TransferFailed })
-      }
-      switch (result?.kind) {
-        case "transaction-client-success":
-          return ok({
-            // TODO: why is payload optional? check astrox-js
-            height: Number(result.payload?.blockHeight),
-          })
-        default:
-          return err({ kind: TransferError.TransferFailed })
-      }
-    } catch (e) {
-      console.error(e)
-      return err({ kind: TransferError.TransferFailed })
-    }
-  }
-
-  async requestTransferNFT(args: {
-    tokenIdentifier: string;
-    tokenIndex: number;
-    canisterId: string;
-    to: string;
-    standard: string;
-  }) {
-    try {
-      const {
-        tokenIdentifier,
-        tokenIndex,
-        canisterId,
-        standard,
-        to,
-      } = args
-      if (!this.#ic) {
-        return err({ kind: TransferError.NotInitialized })
-      }
-      const response = await this.#ic.requestTransfer({
-        tokenIdentifier,
-        tokenIndex,
-        canisterId,
-        standard,
-        to,
-        sendOpts: {},
-        symbol: "",
-      })
-      if (!response || typeof response === "string" || response.kind === TransactionMessageKind.fail) {
-        return err({ kind: TransferError.TransferFailed })
-      }
-      if (response.kind === TransactionMessageKind.success) {
-        return ok({
-          // TODO: fix
-          ...response.payload,
-          // height: Number(response.payload.blockHeight),
-        })
-      }
-      return err({ kind: TransferError.TransferFailed })
-    } catch (e) {
-      console.error(e)
-      return err({ kind: TransferError.TransferFailed })
-    }
-  }
-
-  async queryBalance() {
-    try {
-      const ICPBalance = Number(await this.#ic?.queryBalance()) ?? 0
-      return ok([{
-        amount: ICPBalance / 100000000,
-        canisterId: this.#config.ledgerCanisterId,
-        decimals: 8,
-        // TODO: plug returns image?
-        // image: "Dfinity.svg",
-        name: "ICP",
-        symbol: "ICP",
-      }])
-    } catch (e) {
-      console.error(e)
-      return err({ kind: BalanceError.QueryBalanceFailed })
-    }
-  }
-
   // async signMessage({ message }: { message: string }): Promise<SignerResponseSuccess | string | undefined> {
   //   return this.#ic?.signMessage({
   //     signerProvider: this.#config.providerUrl,
@@ -306,7 +319,106 @@ class AstroX implements IConnector, IWalletConnector {
   // }
 
   // getManagementCanister: (...args) => this.#ic.getManagementCanister(...args),
+
+  // TODO: ?
   // batchTransactions: (...args) => this.#ic.batchTransactions(...args),
+
+
+  // async requestTransfer(opts: { amount: number, to: string, standard?: string, symbol?: string, decimals?: number }) {
+  //   const { to, amount, standard = "ICP", symbol = "ICP", decimals = 8 } = opts
+  //   try {
+  //     const result = await this.#ic?.requestTransfer({
+  //       amount: BigInt(amount * (10 ** decimals)),
+  //       to,
+  //       standard,
+  //       symbol,
+  //       // TODO: ?
+  //       sendOpts: {},
+  //     })
+  //     // TODO: why string? check astrox-js
+  //     if (typeof result === "string") {
+  //       return err({ kind: TransferError.FaultyAddress })
+  //     }
+  //     // check astrox-js
+  //     if (!result) {
+  //       return err({ kind: TransferError.TransferFailed })
+  //     }
+  //     switch (result?.kind) {
+  //       case "transaction-client-success":
+  //         return ok({
+  //           // TODO: why is payload optional? check astrox-js
+  //           height: Number(result.payload?.blockHeight),
+  //         })
+  //       default:
+  //         return err({ kind: TransferError.TransferFailed })
+  //     }
+  //   } catch (e) {
+  //     console.error(e)
+  //     return err({ kind: TransferError.TransferFailed })
+  //   }
+  // }
+  //
+  // async requestTransferNFT(args: {
+  //   tokenIdentifier: string;
+  //   tokenIndex: number;
+  //   canisterId: string;
+  //   to: string;
+  //   standard: string;
+  // }) {
+  //   try {
+  //     const {
+  //       tokenIdentifier,
+  //       tokenIndex,
+  //       canisterId,
+  //       standard,
+  //       to,
+  //     } = args
+  //     if (!this.#ic) {
+  //       return err({ kind: TransferError.NotInitialized })
+  //     }
+  //     const response = await this.#ic.requestTransfer({
+  //       tokenIdentifier,
+  //       tokenIndex,
+  //       canisterId,
+  //       standard,
+  //       to,
+  //       sendOpts: {},
+  //       symbol: "",
+  //     })
+  //     if (!response || typeof response === "string" || response.kind === TransactionMessageKind.fail) {
+  //       return err({ kind: TransferError.TransferFailed })
+  //     }
+  //     if (response.kind === TransactionMessageKind.success) {
+  //       return ok({
+  //         // TODO: fix
+  //         ...response.payload,
+  //         // height: Number(response.payload.blockHeight),
+  //       })
+  //     }
+  //     return err({ kind: TransferError.TransferFailed })
+  //   } catch (e) {
+  //     console.error(e)
+  //     return err({ kind: TransferError.TransferFailed })
+  //   }
+  // }
+  //
+  // async queryBalance() {
+  //   try {
+  //     const ICPBalance = Number(await this.#ic?.queryBalance()) ?? 0
+  //     return ok([{
+  //       amount: ICPBalance / 100000000,
+  //       canisterId: this.#config.ledgerCanisterId,
+  //       decimals: 8,
+  //       // TODO: plug returns image?
+  //       // image: "Dfinity.svg",
+  //       name: "ICP",
+  //       symbol: "ICP",
+  //     }])
+  //   } catch (e) {
+  //     console.error(e)
+  //     return err({ kind: BalanceError.QueryBalanceFailed })
+  //   }
+  // }
 }
 
 export {

@@ -1,4 +1,0 @@
-{
-  "main": "dist/connect2ic-core-providers-infinity-wallet.cjs.js",
-  "module": "dist/connect2ic-core-providers-infinity-wallet.esm.js"
-}

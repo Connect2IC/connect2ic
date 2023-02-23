@@ -1,0 +1,4 @@
+{
+  "main": "dist/connect2ic-core-providers-bitfinity-wallet.cjs.js",
+  "module": "dist/connect2ic-core-providers-bitfinity-wallet.esm.js"
+}

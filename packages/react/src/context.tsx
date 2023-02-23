@@ -18,12 +18,12 @@ const Connect2ICContext = createContext<{
   canisterIds: {
     [canisterId: string]: string
   }
-  capRouterId: string
+  capRouterId?: string
 }>({} as any)
 
 type Props = {
   client: Client
-  capRouterId: string
+  capRouterId?: string
   canisters: {
     [canisterName: string]: {
       canisterId: string

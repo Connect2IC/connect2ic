@@ -1,6 +1,6 @@
 import { AuthClient } from "@dfinity/auth-client"
 import { Actor, ActorSubclass, HttpAgent } from "@dfinity/agent"
-import type { IConnector } from "./connectors"
+import type { IConnector, IWalletConnector } from "./connectors"
 // @ts-ignore
 import nfidLogoLight from "../assets/nfid.png"
 // @ts-ignore
@@ -8,10 +8,70 @@ import nfidLogoDark from "../assets/nfid.png"
 import { IDL } from "@dfinity/candid"
 import {
   ok,
-  err,
+  err, Result,
 } from "neverthrow"
-import { ConnectError, CreateActorError, DisconnectError, InitError } from "./connectors"
+import { ConnectError, CreateActorError, DisconnectError, InitError, TransferError, BalanceError } from "./connectors"
 import { Methods } from "./connectors"
+import { requestTransfer, requestAccounts, RequestTransferParams } from "@nfid/wallet"
+
+const APPLICATION_LOGO_URL = "https://nfid.one/icons/favicon-96x96.png"
+const APP_META = `applicationName=RequestTransfer&applicationLogo=${APPLICATION_LOGO_URL}`
+const NFID_ORIGIN = "https://nfid.one"
+const REQ_TRANSFER = "wallet/request-transfer"
+
+const PROVIDER_URL = new URL(`${NFID_ORIGIN}/${REQ_TRANSFER}?${APP_META}`)
+
+class Wallet implements IWalletConnector {
+  constructor() {
+  }
+
+  async requestTransfer(opts: { amount: number, to: string, standard?: string, symbol?: string, decimals?: number }) {
+    const result = await requestTransfer(
+      {
+        to: opts.to,
+        amount: opts.amount,
+      },
+      { provider: PROVIDER_URL },
+    )
+    if (result.status === "SUCCESS") {
+      return ok({ height: result.height })
+    }
+    if (result.status === "REJECTED") {
+      return err({ kind: TransferError.TransferRejected })
+    }
+    // if (result.status === 'ERROR') {
+    return err({ kind: TransferError.TransferFailed })
+    // }
+  }
+
+  async queryBalance() {
+    const result = await requestAccounts({
+      provider: PROVIDER_URL,
+    })
+    if (result.status === "SUCCESS") {
+      // TODO: transform result
+      // return ok(result.accounts.map((account) => ({
+      //   balance: account.balance,
+      // })))
+      // TODO: !!!!!!!!
+      return ok(result.accounts)
+      // export type BalanceResult = Result<Array<{
+      //   amount: number
+      //   canisterId: string
+      //   decimals: number
+      //   image?: string
+      //   name: string
+      //   symbol: string
+      // }>, CustomError<BalanceError>>
+    }
+    if (result.status === "REJECTED") {
+      return err({ kind: BalanceError.QueryBalanceRejected })
+    }
+    // if (result.status === "ERROR") {
+    return err({ kind: BalanceError.QueryBalanceFailed })
+    // }
+  }
+}
 
 class NFID implements IConnector {
 
@@ -26,7 +86,7 @@ class NFID implements IConnector {
     description: "NFID is the digital identity for signing in to applications privately and securely",
     deepLinks: {
       android: "intent://APP_HOST/#Intent;scheme=APP_NAME;package=APP_PACKAGE;end",
-      ios: "astroxme://"
+      ios: "astroxme://",
     },
     methods: [Methods.BROWSER],
   }
@@ -41,6 +101,12 @@ class NFID implements IConnector {
   #identity?: any
   #principal?: string
   #client?: any
+  #wallets: Array<IWalletConnector> = []
+
+  get wallets() {
+    // TODO: @nfid/wallet
+    return []
+  }
 
   get identity() {
     return this.#identity

@@ -10,8 +10,14 @@ import {
   ok,
   err,
 } from "neverthrow"
-import { ConnectError, CreateActorError, DisconnectError, InitError } from "./connectors"
+import { ConnectError, CreateActorError, DisconnectError, InitError, IWalletConnector } from "./connectors"
 import { Methods } from "./connectors"
+
+// class Wallet implements IWalletConnector {
+//   constructor() {
+//   }
+//
+// }
 
 class StoicWallet implements IConnector {
 
@@ -30,6 +36,7 @@ class StoicWallet implements IConnector {
     },
     methods: [Methods.BROWSER],
   }
+  #wallets: Array<IWalletConnector> = []
 
   #config: {
     whitelist: Array<string>
@@ -39,6 +46,10 @@ class StoicWallet implements IConnector {
   }
   #identity?: any
   #principal?: string
+
+  get wallets() {
+    return this.#wallets
+  }
 
   get identity() {
     return this.#identity

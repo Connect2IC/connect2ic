@@ -13,7 +13,7 @@ import {
 import { BalanceError, ConnectError, CreateActorError, DisconnectError, InitError, TransferError } from "./connectors"
 import { Methods } from "./connectors"
 
-type Plug = {
+type PlugInjectedProvider = {
   createActor: <T>(args: { canisterId: string, interfaceFactory: IDL.InterfaceFactory }) => Promise<ActorSubclass<T>>
   agent: Agent
   createAgent: (options: { host: string, whitelist: Array<string> }) => Promise<Agent>
@@ -47,7 +47,79 @@ type Plug = {
   getManagementCanister: () => Promise<ActorSubclass | undefined>
 }
 
-class PlugWallet implements IConnector, IWalletConnector {
+class Wallet implements IWalletConnector {
+  #injectedProvider: PlugInjectedProvider
+
+  constructor(injectedProvider: PlugInjectedProvider) {
+    this.#injectedProvider = injectedProvider
+  }
+
+  // TODO: support tokens
+  async requestTransfer({
+                          amount,
+                          to,
+                          // TODO: why is type annotation needed??
+                        }: { amount: number, to: string }) {
+    try {
+      const result = await this.#injectedProvider.requestTransfer({
+        to,
+        amount: amount * 100000000,
+      })
+
+      switch (!!result) {
+        case true:
+          return ok({ height: result!.height })
+        default:
+          // TODO: ?
+          return err({ kind: TransferError.TransferFailed })
+      }
+    } catch (e) {
+      console.error(e)
+      return err({ kind: TransferError.TransferFailed })
+    }
+  }
+
+  // TODO:
+  // async requestTransferNFT({
+  //                            to,
+  //                            // TODO: why is type annotation needed??
+  //                          }: { amount: number, to: string }) {
+  //   try {
+  //     const result = await this.#injectedProvider.requestTransfer({
+  //       to,
+  //       amount: 1,
+  //     })
+  //
+  //     switch (!!result) {
+  //       case true:
+  //         return ok({
+  //           // height: result!.height
+  //         })
+  //       default:
+  //         // TODO: ?
+  //         return err({ kind: TransferError.TransferFailed })
+  //     }
+  //   } catch (e) {
+  //     console.error(e)
+  //     return err({ kind: TransferError.TransferFailed })
+  //   }
+  // }
+
+  async queryBalance() {
+    try {
+      if (!this.#injectedProvider) {
+        return err({ kind: BalanceError.NotInitialized })
+      }
+      const assets = await this.#injectedProvider.requestBalance()
+      return ok(assets)
+    } catch (e) {
+      console.error(e)
+      return err({ kind: BalanceError.QueryBalanceFailed })
+    }
+  }
+}
+
+class PlugWallet implements IConnector {
 
   public meta = {
     features: ["wallet"],
@@ -75,18 +147,15 @@ class PlugWallet implements IConnector, IWalletConnector {
   #identity?: any
   #principal?: string
   #client?: any
-  #ic?: Plug
-  #wallet?: {
-    principal: string;
-    accountId: string;
-  }
+  #injectedProvider?: PlugInjectedProvider
+  #wallets: Array<IWalletConnector> = []
 
   get identity() {
     return this.#identity
   }
 
   get wallets() {
-    return this.#wallet ? [this.#wallet] : []
+    return this.#wallets
   }
 
   get principal() {
@@ -98,7 +167,7 @@ class PlugWallet implements IConnector, IWalletConnector {
   }
 
   get ic() {
-    return this.#ic
+    return this.#injectedProvider
   }
 
   constructor(userConfig = {}) {
@@ -111,7 +180,7 @@ class PlugWallet implements IConnector, IWalletConnector {
       dev: true,
       ...userConfig,
     }
-    this.#ic = window.ic?.plug
+    this.#injectedProvider = window.ic?.plug
   }
 
   set config(config) {
@@ -125,25 +194,22 @@ class PlugWallet implements IConnector, IWalletConnector {
   async init() {
     // TODO: handle account switching
     try {
-      if (!this.#ic) {
+      if (!this.#injectedProvider) {
         return err({ kind: InitError.NotInstalled })
       }
       // TODO: enum
       const status = await this.status()
 
       if (status !== "disconnected") {
-        await this.#ic.createAgent({
+        await this.#injectedProvider.createAgent({
           host: this.#config.host,
           whitelist: this.#config.whitelist,
         })
       }
       if (status === "connected") {
         // Never finishes if locked
-        this.#principal = (await this.#ic.getPrincipal()).toString()
-        this.#wallet = {
-          principal: this.#principal,
-          accountId: this.#ic.accountId,
-        }
+        this.#principal = (await this.#injectedProvider.getPrincipal()).toString()
+        this.#wallets = [new Wallet(this.#injectedProvider)]
       }
       return ok({ isConnected: false })
     } catch (e) {
@@ -154,12 +220,12 @@ class PlugWallet implements IConnector, IWalletConnector {
 
   async status() {
     // TODO: enum
-    if (!this.#ic) {
+    if (!this.#injectedProvider) {
       return "disconnected"
     }
     try {
       return await Promise.race([
-        this.#ic.isConnected().then((c) => {
+        this.#injectedProvider.isConnected().then((c) => {
           return c ? "connected" : "disconnected"
         }),
         new Promise((resolve) => setTimeout(() => resolve("locked"), 1000)),
@@ -171,10 +237,10 @@ class PlugWallet implements IConnector, IWalletConnector {
 
   async isConnected() {
     try {
-      if (!this.#ic) {
+      if (!this.#injectedProvider) {
         return false
       }
-      return await this.#ic.isConnected()
+      return await this.#injectedProvider.isConnected()
     } catch (e) {
       console.error(e)
       return false
@@ -182,18 +248,18 @@ class PlugWallet implements IConnector, IWalletConnector {
   }
 
   async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory) {
-    if (!this.#ic) {
+    if (!this.#injectedProvider) {
       return err({ kind: CreateActorError.NotInitialized })
     }
     try {
       // Fetch root key for certificate validation during development
       if (this.#config.dev) {
-        const res = await this.#ic.agent.fetchRootKey().then(() => ok(true)).catch(e => err({ kind: CreateActorError.FetchRootKeyFailed }))
+        const res = await this.#injectedProvider.agent.fetchRootKey().then(() => ok(true)).catch(e => err({ kind: CreateActorError.FetchRootKeyFailed }))
         if (res.isErr()) {
           return res
         }
       }
-      const actor = await this.#ic.createActor<Service>({ canisterId, interfaceFactory: idlFactory })
+      const actor = await this.#injectedProvider.createActor<Service>({ canisterId, interfaceFactory: idlFactory })
       return ok(actor)
     } catch (e) {
       console.error(e)
@@ -203,17 +269,14 @@ class PlugWallet implements IConnector, IWalletConnector {
 
   async connect() {
     try {
-      if (!this.#ic) {
+      if (!this.#injectedProvider) {
         window.open("https://plugwallet.ooo/", "_blank")
         return err({ kind: ConnectError.NotInstalled })
       }
-      await this.#ic.requestConnect(this.#config)
-      this.#principal = (await this.#ic.getPrincipal()).toString()
+      await this.#injectedProvider.requestConnect(this.#config)
+      this.#principal = (await this.#injectedProvider.getPrincipal()).toString()
       if (this.#principal) {
-        this.#wallet = {
-          principal: this.#principal,
-          accountId: this.#ic.accountId,
-        }
+        this.#wallets = [new Wallet(this.#injectedProvider)]
         return ok(true)
       }
       return ok(true)
@@ -225,11 +288,11 @@ class PlugWallet implements IConnector, IWalletConnector {
 
   async disconnect() {
     try {
-      if (!this.#ic) {
+      if (!this.#injectedProvider) {
         return err({ kind: DisconnectError.NotInitialized })
       }
       // TODO: should be awaited but never finishes, tell Plug to fix
-      this.#ic.disconnect()
+      this.#injectedProvider.disconnect()
       return ok(true)
     } catch (e) {
       console.error(e)
@@ -237,55 +300,17 @@ class PlugWallet implements IConnector, IWalletConnector {
     }
   }
 
-  async requestTransfer({
-                          amount,
-                          to,
-                          // TODO: why is type annotation needed??
-                        }: { amount: number, to: string }) {
-    try {
-      const result = await this.#ic?.requestTransfer({
-        to,
-        amount: amount * 100000000,
-      })
-
-      switch (!!result) {
-        case true:
-          return ok({ height: result!.height })
-        default:
-          // TODO: ?
-          return err({ kind: TransferError.TransferFailed })
-      }
-    } catch (e) {
-      console.error(e)
-      return err({ kind: TransferError.TransferFailed })
-    }
-  }
-
-  async queryBalance() {
-    try {
-      if (!this.#ic) {
-        return err({ kind: BalanceError.NotInitialized })
-      }
-      const assets = await this.#ic.requestBalance()
-      return ok(assets)
-    } catch (e) {
-      console.error(e)
-      return err({ kind: BalanceError.QueryBalanceFailed })
-    }
-  }
-
   // TODO:
-
   // signMessage({ message }) {
-  //   return this.#ic?.signMessage({message})
+  //   return this.#injectedProvider?.signMessage({message})
   // }
 
   // async getManagementCanister() {
-  //   return this.#ic?.getManagementCanister()
+  //   return this.#injectedProvider?.getManagementCanister()
   // }
 
   // batchTransactions(...args) {
-  //   return this.#ic?.batchTransactions(...args)
+  //   return this.#injectedProvider?.batchTransactions(...args)
   // }
 }
 

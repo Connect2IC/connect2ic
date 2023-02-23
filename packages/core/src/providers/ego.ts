@@ -1,35 +1,40 @@
 import { AuthClient } from "@dfinity/auth-client"
-import { Actor, ActorSubclass, HttpAgent } from "@dfinity/agent"
 import type { Identity } from "@dfinity/agent"
 import type { IConnector } from "./connectors"
 // @ts-ignore
 import dfinityLogoLight from "../assets/dfinity.svg"
 // @ts-ignore
 import dfinityLogoDark from "../assets/dfinity.svg"
-import { IDL } from "@dfinity/candid"
 import {
   ok,
   err,
 } from "neverthrow"
 import { ConnectError, CreateActorError, DisconnectError, InitError, IWalletConnector } from "./connectors"
 import { Methods } from "./connectors"
+import {
+  Actor,
+  ActorSubclass,
+  HttpAgent,
+} from "@dfinity/agent"
+import { _SERVICE as walletService } from "./ego/wallet_canister"
+import { idlFactory as walletIdlFactory } from "./ego/wallet_canister.did"
+import { ProxyActor } from "./ego/proxy"
 
-class InternetIdentity implements IConnector {
-
+class Ego implements IConnector {
   public meta = {
     features: [],
     icon: {
       light: dfinityLogoLight,
       dark: dfinityLogoDark,
     },
-    id: "ii",
-    name: "Internet Identity",
-    description: "Internet Identity is the identity provider for the Internet Computer.",
+    id: "ego",
+    name: "Ego",
+    description: "Ego is a self-sovereign canister for the Internet Computer.",
     deepLinks: {
       android: "intent://APP_HOST/#Intent;scheme=APP_NAME;package=APP_PACKAGE;end",
-      ios: "astroxme://"
+      ios: "astroxme://",
     },
-    methods: [Methods.BROWSER]
+    methods: [Methods.BROWSER],
   }
 
   #config: {
@@ -37,15 +42,18 @@ class InternetIdentity implements IConnector {
     host: string
     providerUrl: string
     dev: boolean
+    walletCanisterId: string
   }
   #identity?: Identity
   #principal?: string
   #client?: AuthClient
   #wallets: Array<IWalletConnector> = []
+  #walletActor?: ActorSubclass<walletService>
 
   get wallets() {
     return this.#wallets
   }
+
   get principal() {
     return this.#principal
   }
@@ -60,6 +68,8 @@ class InternetIdentity implements IConnector {
       host: window.location.origin,
       providerUrl: "https://identity.ic0.app",
       dev: true,
+      // TODO: ???
+      walletCanisterId: "rrkah-fqaaa-aaaaa-aaaaq-cai",
       ...userConfig,
     }
   }
@@ -72,39 +82,19 @@ class InternetIdentity implements IConnector {
     return this.#config
   }
 
+  // TODO: ?
   get identity() {
     return this.#identity
   }
 
   async init() {
     try {
-      this.#client = await AuthClient.create()
       const isConnected = await this.isConnected()
       if (isConnected) {
-        this.#identity = this.#client.getIdentity()
-        this.#principal = this.#identity?.getPrincipal().toString()
+        // TODO: ?
+        // this.#identity = this.#client.getIdentity()
+        this.#principal = this.#config.walletCanisterId
       }
-      return ok({ isConnected })
-    } catch (e) {
-      console.error(e)
-      return err({ kind: InitError.InitFailed })
-    }
-  }
-
-  async isConnected(): Promise<boolean> {
-    try {
-      if (!this.#client) {
-        return false
-      }
-      return await this.#client!.isAuthenticated()
-    } catch (e) {
-      console.error(e)
-      return false
-    }
-  }
-
-  async createActor<Service>(canisterId, idlFactory) {
-    try {
       // TODO: pass identity?
       const agent = new HttpAgent({
         ...this.#config,
@@ -114,17 +104,45 @@ class InternetIdentity implements IConnector {
       if (this.#config.dev) {
         // Fetch root key for certificate validation during development
         // Fetch root key for certificate validation during development
-        const res = await agent.fetchRootKey().then(() => ok(true)).catch(e => err({ kind: CreateActorError.FetchRootKeyFailed }))
+        const res = await agent.fetchRootKey().then(() => ok(true)).catch(e => err({ kind: InitError.FetchRootKeyFailed }))
         if (res.isErr()) {
           return res
         }
       }
-      // TODO: add actorOptions?
-      const actor = Actor.createActor<Service>(idlFactory, {
+      this.#walletActor = Actor.createActor(walletIdlFactory, {
         agent,
-        canisterId,
+        canisterId: this.#config.walletCanisterId,
       })
-      return ok(actor)
+      return ok({ isConnected })
+    } catch (e) {
+      console.error(e)
+      return err({ kind: InitError.InitFailed })
+    }
+  }
+
+  async isConnected(): Promise<boolean> {
+    try {
+      // if (!this.#client) {
+      //   return false
+      // }
+      // return await this.#client!.isAuthenticated()
+      // TODO:
+      return false
+    } catch (e) {
+      console.error(e)
+      return false
+    }
+  }
+
+  async createActor<Service>(canisterId, idlFactory) {
+    try {
+      if (!this.#walletActor) {
+        // TODO: different error?
+        return err({ kind: CreateActorError.NotInitialized })
+      }
+      // TODO: add actorOptions?
+      const actor = new ProxyActor(this.#walletActor, canisterId, idlFactory)
+      return ok(actor as ActorSubclass<Service>)
     } catch (e) {
       console.error(e)
       return err({ kind: CreateActorError.CreateActorFailed })
@@ -133,18 +151,16 @@ class InternetIdentity implements IConnector {
 
   async connect() {
     try {
-      await new Promise<void>((resolve, reject) => {
-        this.#client?.login({
-          // TODO: local
-          identityProvider: this.#config.providerUrl,
-          onSuccess: resolve,
-          onError: reject,
-        })
-      })
-      const identity = this.#client?.getIdentity()
-      const principal = identity?.getPrincipal().toString()
-      this.#identity = identity
-      this.#principal = principal
+      // await new Promise<void>((resolve, reject) => {
+      //   this.#client?.login({
+      //     identityProvider: this.#config.providerUrl,
+      //     onSuccess: resolve,
+      //     onError: reject,
+      //   })
+      // })
+      // TODO: ?
+      // this.#identity = identity
+      this.#principal = this.#config.walletCanisterId
       return ok(true)
     } catch (e) {
       console.error(e)
@@ -154,7 +170,7 @@ class InternetIdentity implements IConnector {
 
   async disconnect() {
     try {
-      await this.#client?.logout()
+      // await this.#client?.logout()
       return ok(true)
     } catch (e) {
       console.error(e)
@@ -164,5 +180,5 @@ class InternetIdentity implements IConnector {
 }
 
 export {
-  InternetIdentity,
+  Ego,
 }

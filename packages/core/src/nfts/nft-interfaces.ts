@@ -1,6 +1,12 @@
 import { Principal } from "@dfinity/principal"
 import { ActorSubclass } from "@dfinity/agent"
 import { CapRoot, CapRouter } from "cap-js-without-npm-registry"
+import EXT from "./ext/ext"
+import DepartureLabs from "./departure_labs/departure_labs"
+import DIP721 from "./dip_721/dip_721"
+import DIP721v2 from "./dip_721_v2/dip_721_v2"
+import CCC from "./ccc/ccc"
+import ICPunks from "./ic_punks/ic_punks"
 
 type SubAccount = [] | [Uint8Array];
 
@@ -52,7 +58,7 @@ export interface NFTWrapper {
 
   getUserTokens(user: Account): Promise<NFTDetails[]>
 
-  mint(receiver: Account, metadata: any, tokenIndex?: number): Promise<any>
+  mint(receiver: Account, metadata: any, tokenIndex?: bigint): Promise<any>
 
   transfer(args: { from: Account, to: Account, tokenIndex: bigint }): Promise<void>
 
@@ -71,3 +77,10 @@ export interface NFTWrapper {
   }>
 }
 
+export type NFTStandards =
+  typeof EXT
+  | typeof ICPunks
+  | typeof DepartureLabs
+  | typeof DIP721
+  | typeof DIP721v2
+  | typeof CCC;

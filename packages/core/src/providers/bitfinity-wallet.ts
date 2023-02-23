@@ -1,29 +1,22 @@
 import type { IConnector, IWalletConnector } from "./connectors"
-import type { ActorSubclass, Agent, Identity } from "@dfinity/agent"
+import type { ActorSubclass, Agent } from "@dfinity/agent"
 import type { IDL } from "@dfinity/candid"
 // @ts-ignore
-import infinityLogoLight from "../assets/infinity.png"
+import bitfinityLogoLight from "../assets/bitfinity.png"
 // @ts-ignore
-import infinityLogoDark from "../assets/infinity.png"
+import bitfinityLogoDark from "../assets/bitfinity.png"
 import type { Principal } from "@dfinity/principal"
 import { err, ok } from "neverthrow"
 import { ConnectError, CreateActorError, DisconnectError, InitError } from "./connectors"
 import { Methods } from "./connectors"
 
 type Config = {
-  defaultNetwork: "ic" | "local"
-  ic: {
-    whitelist: Array<string>,
-    host: string,
-  },
-  local: {
-    whitelist: Array<string>,
-    host: string,
-  }
+  whitelist: Array<string>,
+  host: string,
 }
 
-type IC = {
-  createActor: <T>(args: { canisterId: string, interfaceFactory: IDL.InterfaceFactory }) => Promise<ActorSubclass<T>>
+type InjectedProvider = {
+  createActor: <T>(args: { canisterId: string, interfaceFactory: IDL.InterfaceFactory, host: string }) => Promise<ActorSubclass<T>>
   agent: Agent
   getPrincipal: () => Promise<Principal>
   isConnected: () => Promise<boolean>
@@ -31,16 +24,87 @@ type IC = {
   requestConnect: (Config) => Promise<boolean>
 }
 
-class InfinityWallet implements IConnector {
+// class Wallet implements IWalletConnector {
+//   #injectedProvider: InjectedProvider
+//
+//   constructor(injectedProvider: InjectedProvider) {
+//     this.#injectedProvider = injectedProvider
+//   }
+//
+//   // TODO: support tokens
+//   async requestTransfer({
+//                           amount,
+//                           to,
+//                           // TODO: why is type annotation needed??
+//                         }: { amount: number, to: string }) {
+//     try {
+//       const result = await this.#injectedProvider.requestTransfer({
+//         to,
+//         amount: amount * 100000000,
+//       })
+//
+//       switch (!!result) {
+//         case true:
+//           return ok({ height: result!.height })
+//         default:
+//           // TODO: ?
+//           return err({ kind: TransferError.TransferFailed })
+//       }
+//     } catch (e) {
+//       console.error(e)
+//       return err({ kind: TransferError.TransferFailed })
+//     }
+//   }
+//
+//   // TODO:
+//   async requestTransferNFT({
+//                              amount,
+//                              to,
+//                              // TODO: why is type annotation needed??
+//                            }: { amount: number, to: string }) {
+//     // try {
+//     //   const result = await this.#injectedProvider.requestTransfer({
+//     //     to,
+//     //     amount: amount * 100000000,
+//     //   })
+//     //
+//     //   switch (!!result) {
+//     //     case true:
+//     //       return ok({ height: result!.height })
+//     //     default:
+//     //       // TODO: ?
+//     //       return err({ kind: TransferError.TransferFailed })
+//     //   }
+//     // } catch (e) {
+//     //   console.error(e)
+//     //   return err({ kind: TransferError.TransferFailed })
+//     // }
+//   }
+//
+//   async queryBalance() {
+//     try {
+//       if (!this.#injectedProvider) {
+//         return err({ kind: BalanceError.NotInitialized })
+//       }
+//       const assets = await this.#injectedProvider.requestBalance()
+//       return ok(assets)
+//     } catch (e) {
+//       console.error(e)
+//       return err({ kind: BalanceError.QueryBalanceFailed })
+//     }
+//   }
+// }
+
+class BitfinityWallet implements IConnector {
 
   public meta = {
     features: [],
     icon: {
-      light: infinityLogoLight,
-      dark: infinityLogoDark,
+      light: bitfinityLogoLight,
+      dark: bitfinityLogoDark,
     },
-    id: "infinity",
-    name: "Infinity Wallet",
+    id: "bitfinity",
+    name: "Bitfinity Wallet",
     description: "Your Crypto & NFT Wallet on the IC",
     deepLinks: {
       android: "intent://APP_HOST/#Intent;scheme=APP_NAME;package=APP_PACKAGE;end",
@@ -53,7 +117,12 @@ class InfinityWallet implements IConnector {
   #identity?: any
   #principal?: string
   #client?: any
-  #ic?: IC
+  #ic?: InjectedProvider
+  #wallets: Array<IWalletConnector> = []
+
+  get wallets() {
+    return this.#wallets
+  }
 
   get identity() {
     return this.#identity
@@ -73,15 +142,8 @@ class InfinityWallet implements IConnector {
 
   constructor(userConfig = {}) {
     this.#config = {
-      defaultNetwork: "local",
-      local: {
-        whitelist: [],
-        host: window.location.origin,
-      },
-      ic: {
-        whitelist: [],
-        host: "https://ic0.app",
-      },
+      whitelist: [],
+      host: window.location.origin,
       ...userConfig,
     }
     this.#ic = window.ic?.infinityWallet
@@ -106,6 +168,7 @@ class InfinityWallet implements IConnector {
       if (isConnected) {
         // Otherwise agent doesn't become available. Infinity wallet should fix
         await this.connect()
+        // this.#wallets = [new Wallet(this.#ic)]
         // TODO: never finishes if user doesnt login back?
         this.#principal = (await this.#ic.getPrincipal()).toString()
       }
@@ -133,13 +196,17 @@ class InfinityWallet implements IConnector {
       return err({ kind: CreateActorError.NotInitialized })
     }
     try {
-      if (this.#config.defaultNetwork === "local") {
-        console.error("Infinity wallet doesn't support creating local actors")
-        return err({
-          kind: CreateActorError.LocalActorsNotSupported,
-        })
-      }
-      const actor = await this.#ic.createActor<Service>({ canisterId, interfaceFactory: idlFactory })
+      // if (this.#config.defaultNetwork === "local") {
+      //   console.error("Infinity wallet doesn't support creating local actors")
+      //   return err({
+      //     kind: CreateActorError.LocalActorsNotSupported,
+      //   })
+      // }
+      const actor = await this.#ic.createActor<Service>({
+        canisterId,
+        interfaceFactory: idlFactory,
+        host: this.#config.host
+      })
       return ok(actor)
     } catch (e) {
       console.error(e)
@@ -216,5 +283,5 @@ class InfinityWallet implements IConnector {
 }
 
 export {
-  InfinityWallet,
+  BitfinityWallet,
 }

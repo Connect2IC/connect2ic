@@ -1,0 +1,4 @@
+{
+  "main": "dist/connect2ic-core-providers-ego.cjs.js",
+  "module": "dist/connect2ic-core-providers-ego.esm.js"
+}

@@ -17,11 +17,13 @@ import { ECDSAKeyIdentity } from "@dfinity/identity"
 class Anonymous implements IConnector {
 
   public meta = {
-    features: [],
     icon: {
       light: dfinityLogoLight,
       dark: dfinityLogoDark,
     },
+    methods: [],
+    description: "Anonymous identity",
+    // deepLinks: { android: string, ios: string }
     id: "anonymous",
     name: "Anonymous",
   }
@@ -42,6 +44,10 @@ class Anonymous implements IConnector {
 
   get client() {
     return this.#client
+  }
+
+  get wallets() {
+    return []
   }
 
   constructor(userConfig = {}) {

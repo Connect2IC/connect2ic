@@ -1,7 +1,6 @@
 import { createClient } from "./client"
 import type { Client } from "./client"
 import type { RootEvent, RootContext } from "./client"
-import type { Provider } from "./providers"
 
 export { NFTStandards, NFT } from "./nfts"
 export { TokenStandards, TOKEN } from "./tokens/tokens"
@@ -33,7 +32,6 @@ export type {
 export type {
   RootEvent,
   RootContext,
-  Provider,
   Client,
 }
 

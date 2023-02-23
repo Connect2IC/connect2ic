@@ -21,10 +21,169 @@ import {
   TokensError,
   NFTsError,
 } from "./connectors"
-import { TransactionMessageKind, TransactionType } from "@astrox/sdk-webview/build/types"
+import {
+  SupportedToken,
+  TransactionMessageKind,
+  TransactionResponseSuccess,
+  TransactionType,
+} from "@astrox/sdk-webview/build/types"
 import { Methods } from "./connectors"
+import { Account } from "../nfts/nft-interfaces"
+import { Principal } from "@dfinity/principal"
 
-class ICX implements IConnector, IWalletConnector {
+function fromHexString(hexString: string): Uint8Array {
+  return new Uint8Array((hexString.match(/.{1,2}/g) ?? []).map(byte => parseInt(byte, 16)))
+}
+
+class Wallet implements IWalletConnector {
+  #supportedTokenList: Array<{
+    symbol: string;
+    standard: string;
+    decimals: number;
+    fee: string;
+    name: string;
+    canisterId: string;
+  }> = []
+  #ic: AstroXWebViewHandler
+  #connector: ICX
+  #account: Account
+
+  constructor(connector: ICX, ic: AstroXWebViewHandler, supportedTokenList) {
+    this.#supportedTokenList = supportedTokenList
+    this.#connector = connector
+    this.#ic = ic
+    const { principal, accountId } = this.#ic.wallet
+    // TODO: convert accountId: string to Uint8Array
+    this.#account = { owner: Principal.from(principal), subaccount: [fromHexString(accountId)] }
+  }
+
+  async requestTransferNFT(args: {
+    tokenIdentifier: string;
+    tokenIndex: number;
+    canisterId: string;
+    to: string;
+    standard: string;
+  }) {
+    try {
+      const {
+        tokenIdentifier,
+        tokenIndex,
+        canisterId,
+        standard,
+        to,
+      } = args
+      if (!this.#ic) {
+        return err({ kind: TransferError.NotInitialized })
+      }
+      const response = await this.#ic.requestTransfer({
+        tokenIdentifier,
+        tokenIndex,
+        canisterId,
+        standard,
+        to,
+      })
+      if (response.kind === TransactionMessageKind.fail) {
+        return err({ kind: TransferError.TransferFailed })
+      }
+      if (response.kind === TransactionMessageKind.success) {
+        return ok({
+          // TODO: transactionId?
+          // transactionId: response.kind
+          // ...response.payload,
+        })
+      }
+      return err({ kind: TransferError.TransferFailed })
+    } catch (e) {
+      console.error(e)
+      return err({ kind: TransferError.TransferFailed })
+    }
+  }
+
+  async requestTransfer(args) {
+    const {
+      amount,
+      to,
+      symbol = "ICP",
+      standard = "ICP",
+    } = args
+    try {
+      // TODO: some better way to do this?
+      const tokenInfo = this.#supportedTokenList.find(({
+                                                         symbol: tokenSymbol,
+                                                       }) => symbol === tokenSymbol)
+      if (!tokenInfo) {
+        return err({ kind: TransferError.TokenNotSupported })
+      }
+      // @ts-ignore
+      const response = await this.#ic?.requestTransfer({
+        //@ts-ignore
+        amount: BigInt(amount * (10 ** tokenInfo.decimals)),
+        to,
+        symbol,
+        standard,
+      })
+      if (!response || response.kind === TransactionMessageKind.fail) {
+        // message?
+        return err({ kind: TransferError.TransferFailed })
+      }
+
+      if (response.kind === TransactionMessageKind.success) {
+        return ok({
+          // TODO: transactionId ??? see astrox-js-sdk
+          // @ts-ignore
+          ...response.payload,
+          // height: (response as TransactionResponseSuccess).payload ?? Number(response.payload.blockHeight),
+        })
+      }
+      return err({ kind: TransferError.TransferFailed })
+    } catch (e) {
+      console.error(e)
+      return err({ kind: TransferError.TransferFailed })
+    }
+  }
+
+  async queryBalance() {
+    try {
+      if (!this.#ic) {
+        return err({ kind: BalanceError.NotInitialized })
+      }
+      const response = await this.#ic.queryBalance()
+      response.forEach(token => token.amount = token.amount / (10 ** token.decimals))
+      return ok(response)
+    } catch (e) {
+      console.error(e)
+      return err({ kind: BalanceError.QueryBalanceFailed })
+    }
+  }
+
+  // async queryTokens() {
+  //   try {
+  //     if (!this.#ic) {
+  //       return err({ kind: TokensError.NotInitialized })
+  //     }
+  //     const response = await this.#ic.queryBalance()
+  //     return ok(response)
+  //   } catch (e) {
+  //     console.error(e)
+  //     return err({ kind: TokensError.QueryBalanceFailed })
+  //   }
+  // }
+
+  // async queryNFTs() {
+  //   try {
+  //     if (!this.#ic) {
+  //       return err({ kind: NFTsError.NotInitialized })
+  //     }
+  //     // const response = await this.#ic.queryBalance()
+  //     return ok(response)
+  //   } catch (e) {
+  //     console.error(e)
+  //     return err({ kind: NFTsError.QueryBalanceFailed })
+  //   }
+  // }
+}
+
+class ICX implements IConnector {
 
   public meta = {
     features: ["wallet"],
@@ -34,7 +193,8 @@ class ICX implements IConnector, IWalletConnector {
     },
     id: "icx",
     name: "ICX",
-    methods: [Methods.APP]
+    methods: [Methods.APP],
+    description: "",
   }
 
   #config: {
@@ -48,25 +208,15 @@ class ICX implements IConnector, IWalletConnector {
   }
   #ic: AstroXWebViewHandler
   #principal?: string
-  #supportedTokenList: Array<{
-    symbol: string;
-    standard: string;
-    decimals: number;
-    fee: string;
-    name: string;
-    canisterId: string;
-  }> = []
-  #wallet?: {
-    principal: string;
-    accountId: string;
-  }
+  #wallets: Array<IWalletConnector> = []
+  #supportedTokenList: Array<SupportedToken>
 
   get principal() {
     return this.#principal
   }
 
   get wallets() {
-    return this.#wallet ? [this.#wallet] : []
+    return this.#wallets
   }
 
   constructor(userConfig = {}) {
@@ -81,8 +231,7 @@ class ICX implements IConnector, IWalletConnector {
       ...userConfig,
     }
     this.#ic = new AstroXWebViewHandler()
-    // // @ts-ignore
-    // this.#ic = window.icx as AstroXWebViewHandler
+    this.#supportedTokenList = []
   }
 
   set config(config) {
@@ -96,13 +245,12 @@ class ICX implements IConnector, IWalletConnector {
   async init() {
     try {
       await this.#ic.init()
-      // @ts-ignore
       this.#supportedTokenList = await this.#ic.getSupportedTokenList()
       const isConnected = await this.isConnected()
       // TODO: never connected
       if (isConnected) {
         this.#principal = this.#ic.getPrincipal().toText()
-        this.#wallet = this.#ic.wallet
+        this.#wallets = [new Wallet(this, this.#ic, this.#supportedTokenList)]
         if (this.#config.dev) {
           await this.#ic.agent.fetchRootKey()
         }
@@ -158,7 +306,6 @@ class ICX implements IConnector, IWalletConnector {
         noUnify: this.#config.noUnify,
       })
       this.#principal = this.#ic.getPrincipal().toText()
-      this.#wallet = this.#ic.wallet
       if (this.#config.dev) {
         await this.#ic.agent.fetchRootKey()
       }
@@ -178,126 +325,6 @@ class ICX implements IConnector, IWalletConnector {
       return err({ kind: DisconnectError.DisconnectFailed })
     }
   }
-
-  async requestTransferNFT(args: {
-    tokenIdentifier: string;
-    tokenIndex: number;
-    canisterId: string;
-    to: string;
-    standard: string;
-  }) {
-    try {
-      const {
-        tokenIdentifier,
-        tokenIndex,
-        canisterId,
-        standard,
-        to,
-      } = args
-      if (!this.#ic) {
-        return err({ kind: TransferError.NotInitialized })
-      }
-      const response = await this.#ic.requestTransfer({
-        tokenIdentifier,
-        tokenIndex,
-        canisterId,
-        standard,
-        to,
-      })
-      if (response.kind === TransactionMessageKind.fail) {
-        return err({ kind: TransferError.TransferFailed })
-      }
-      if (response.kind === TransactionMessageKind.success) {
-        return ok({
-          ...response.payload,
-        })
-      }
-      return err({ kind: TransferError.TransferFailed })
-    } catch (e) {
-      console.error(e)
-      return err({ kind: TransferError.TransferFailed })
-    }
-  }
-
-  async requestTransfer(args) {
-    const {
-      amount,
-      to,
-      symbol = "ICP",
-      standard = "ICP",
-    } = args
-    try {
-      const tokenInfo = this.#supportedTokenList.find(({
-                                                         symbol: tokenSymbol,
-                                                       }) => symbol === tokenSymbol)
-      if (!tokenInfo) {
-        return err({ kind: TransferError.TokenNotSupported })
-      }
-      // @ts-ignore
-      const response = await this.#ic?.requestTransfer({
-        //@ts-ignore
-        amount: BigInt(amount * (10 ** tokenInfo.decimals)),
-        to,
-        symbol,
-        standard,
-      })
-      if (!response || response.kind === TransactionMessageKind.fail) {
-        // message?
-        return err({ kind: TransferError.TransferFailed })
-      }
-
-      if (response.kind === TransactionMessageKind.success) {
-        return ok({
-          ...response.payload,
-          height: response.payload.blockHeight ?? Number(response.payload.blockHeight),
-        })
-      }
-      return err({ kind: TransferError.TransferFailed })
-    } catch (e) {
-      console.error(e)
-      return err({ kind: TransferError.TransferFailed })
-    }
-  }
-
-  async queryBalance() {
-    try {
-      if (!this.#ic) {
-        return err({ kind: BalanceError.NotInitialized })
-      }
-      const response = await this.#ic.queryBalance()
-      response.forEach(token => token.amount = token.amount / (10 ** token.decimals))
-      return ok(response)
-    } catch (e) {
-      console.error(e)
-      return err({ kind: BalanceError.QueryBalanceFailed })
-    }
-  }
-
-  // async queryTokens() {
-  //   try {
-  //     if (!this.#ic) {
-  //       return err({ kind: TokensError.NotInitialized })
-  //     }
-  //     const response = await this.#ic.queryBalance()
-  //     return ok(response)
-  //   } catch (e) {
-  //     console.error(e)
-  //     return err({ kind: TokensError.QueryBalanceFailed })
-  //   }
-  // }
-
-  // async queryNFTs() {
-  //   try {
-  //     if (!this.#ic) {
-  //       return err({ kind: NFTsError.NotInitialized })
-  //     }
-  //     // const response = await this.#ic.queryBalance()
-  //     return ok(response)
-  //   } catch (e) {
-  //     console.error(e)
-  //     return err({ kind: NFTsError.QueryBalanceFailed })
-  //   }
-  // }
 
   // TODO:
   // public async signMessage(message: string): Promise<any> => this.#ic.signMessage(message)

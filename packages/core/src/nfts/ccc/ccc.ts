@@ -3,20 +3,32 @@ import { Principal } from "@dfinity/principal"
 
 import NFT_C3, { TokenDetails, TransferResponse } from "./interfaces"
 import IDL from "./ccc.did"
-import NFT from "../default"
 import { NFTDetails } from "../interfaces/nft"
 import { NFT as NFTStandard } from "../../tokens/constants/standards"
+import { Account, NFTWrapper } from "../nft-interfaces"
 
-export default class CCC extends NFT {
+export default class CCC implements NFTWrapper {
   standard = NFTStandard.c3
 
   actor: ActorSubclass<NFT_C3>
   canisterId: string
 
   constructor(actor: ActorSubclass<NFT_C3>, canisterId: string) {
-    super()
+    // super()
     this.actor = actor
     this.canisterId = canisterId
+  }
+
+  async mint(receiver: Account, metadata: any, tokenIndex: bigint) {
+    // TODO:
+    // const index = (tokenIndex || tokenIndex === 0n) ? tokenIndex : BigInt((await this.collectionDetails()).totalSupply)
+    // const mintResult = await this.actor.mint(receiver.owner, index, metadata)
+    // if ("Err" in mintResult) {
+    //   console.error(mintResult.Err)
+    // }
+    // if ("Ok" in mintResult) {
+    //   return mintResult
+    // }
   }
 
   async getUserTokens(principal: Principal): Promise<NFTDetails[]> {
