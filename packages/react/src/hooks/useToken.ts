@@ -1,10 +1,8 @@
-import { useContext, useEffect, useMemo, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { TokenStandards, TOKEN } from "@connect2ic/core"
-import type { InternalTokenMethods } from "@connect2ic/core"
 import { useConnect } from "./useConnect"
 import { useCanister } from "./useCanister"
 import { Connect2ICContext } from "../context"
-import { CapRoot, CapRouter } from "cap-js-without-npm-registry"
 
 type TokenName = "origyn" | "xtc" | "wicp" | "icp"
 

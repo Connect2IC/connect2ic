@@ -7,7 +7,7 @@ import bitfinityLogoLight from "../assets/bitfinity.png"
 import bitfinityLogoDark from "../assets/bitfinity.png"
 import type { Principal } from "@dfinity/principal"
 import { err, ok } from "neverthrow"
-import { ConnectError, CreateActorError, DisconnectError, InitError } from "./connectors"
+import { ConnectError, CreateActorError, DisconnectError, InitError, PROVIDER_STATUS } from "./connectors"
 import { Methods } from "./connectors"
 
 type Config = {
@@ -108,9 +108,9 @@ class BitfinityWallet implements IConnector {
     description: "Your Crypto & NFT Wallet on the IC",
     deepLinks: {
       android: "intent://APP_HOST/#Intent;scheme=APP_NAME;package=APP_PACKAGE;end",
-      ios: "astroxme://"
+      ios: "astroxme://",
     },
-    methods: [Methods.EXTENSION]
+    methods: [Methods.EXTENSION],
   }
 
   #config: Config
@@ -191,7 +191,21 @@ class BitfinityWallet implements IConnector {
     }
   }
 
-  async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory) {
+  async status() {
+    // TODO: locked?
+    try {
+      if (!this.#ic) {
+        return PROVIDER_STATUS.IDLE
+      }
+      return await this.#ic.isConnected() ? PROVIDER_STATUS.CONNECTED : PROVIDER_STATUS.IDLE
+    } catch (e) {
+      console.error(e)
+      return PROVIDER_STATUS.IDLE
+    }
+  }
+
+  async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory, userConfig?: { host: string }) {
+    const config = { host: this.#config.host, ...userConfig }
     if (!this.#ic) {
       return err({ kind: CreateActorError.NotInitialized })
     }
@@ -205,7 +219,7 @@ class BitfinityWallet implements IConnector {
       const actor = await this.#ic.createActor<Service>({
         canisterId,
         interfaceFactory: idlFactory,
-        host: this.#config.host
+        host: this.#config.host,
       })
       return ok(actor)
     } catch (e) {

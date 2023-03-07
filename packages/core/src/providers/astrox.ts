@@ -1,18 +1,8 @@
 import { IC } from "@astrox/sdk-web"
 import type { IDL } from "@dfinity/candid"
 import type { ActorSubclass, Identity } from "@dfinity/agent"
-import {
-  PermissionsType,
-} from "@astrox/connection/lib/esm/types"
+import { PermissionsType } from "@astrox/connection/lib/esm/types"
 import type { IConnector, IWalletConnector } from "./connectors"
-// @ts-ignore
-import astroXLogoLight from "../assets/astrox_light.svg"
-// @ts-ignore
-import astroXLogoDark from "../assets/astrox.png"
-import {
-  ok,
-  err, Result,
-} from "neverthrow"
 import {
   BalanceError,
   ConnectError,
@@ -20,8 +10,14 @@ import {
   DisconnectError,
   InitError,
   Methods,
+  PROVIDER_STATUS,
   TransferError,
 } from "./connectors"
+// @ts-ignore
+import astroXLogoLight from "../assets/astrox_light.svg"
+// @ts-ignore
+import astroXLogoDark from "../assets/astrox.png"
+import { err, ok, Result } from "neverthrow"
 import { TransactionMessageKind } from "@astrox/sdk-web/build/types"
 
 const balanceFromString = (balance: string, decimal = 8): bigint => {
@@ -256,6 +252,18 @@ class AstroX implements IConnector {
     }
   }
 
+  async status() {
+    try {
+      if (!this.#ic) {
+        return PROVIDER_STATUS.IDLE
+      }
+      return await this.#ic.isAuthenticated() ? PROVIDER_STATUS.CONNECTED : PROVIDER_STATUS.IDLE
+    } catch (e) {
+      console.error(e)
+      return PROVIDER_STATUS.IDLE
+    }
+  }
+
   // TODO: export & use types from astrox/connection instead of dfinity/agent
   async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory): Promise<Result<ActorSubclass<Service>, { kind: CreateActorError; }>> {
     try {
@@ -274,9 +282,11 @@ class AstroX implements IConnector {
 
   async connect() {
     try {
+      console.log("connect!", this.#ic)
       if (!this.#ic) {
         return err({ kind: ConnectError.NotInitialized })
       }
+      console.log("this.#ic post")
       await this.#ic.connect({
         useFrame: !(window.innerWidth < 768),
         signerProviderUrl: `${this.#config.providerUrl}/#signer`,
@@ -289,6 +299,7 @@ class AstroX implements IConnector {
         delegationTargets: this.#config.whitelist,
         noUnify: this.#config.noUnify,
       })
+      console.log("#ic.connect post")
       this.#principal = this.#ic.principal.toText()
       // @ts-ignore
       this.#identity = this.#ic.identity

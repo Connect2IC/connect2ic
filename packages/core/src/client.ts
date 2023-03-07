@@ -1,245 +1,12 @@
-import {
-  createMachine,
-  assign,
-  interpret,
-  Interpreter,
-} from "xstate"
-import type { MachineConfig } from "xstate"
 import Emitter from "event-e3"
-import type { IDL } from "@dfinity/candid"
-import type { CreateActorResult, IConnector } from "./providers/connectors"
+import type { IConnector } from "./providers/connectors"
+import { PROVIDER_STATUS } from "./providers/connectors"
 import { Anonymous } from "./providers"
-import { assign as assignImmer } from "@xstate/immer"
-import { NFTStandards, TokenStandards } from "./tokens"
 
 type Provider = IConnector
 
-export type RootContext = {
-  autoConnect: boolean
-  preferredNetwork: string
-  networksConfig: ClientOptions["networks"]
-  // config: {
-  //   local: {
-  //     host: string
-  //     whitelist: Array<string>
-  //   }
-  //   ic: {
-  //     host: string
-  //     whitelist: Array<string>
-  //   }
-  // }
-  connectingProvider?: Provider
-  activeProvider?: Provider
-  providers: {
-    [networkName: string]: {
-      [providerId: string]: Provider
-    }
-  }
-  anonymousProviders: {
-    [networkName: string]: {
-      anonymous: Provider
-    }
-  }
-}
-
-
-type DoneEvent = {
-  type: "DONE",
-  data: {}
-}
-
-type DoneAndConnectedEvent = {
-  type: "DONE_AND_CONNECTED",
-  data: {
-    activeProvider: Provider
-  }
-}
-type ConnectEvent = { type: "CONNECT", data: { provider: string } }
-type CancelConnectEvent = { type: "CANCEL_CONNECT" }
-type ConnectDoneEvent = { type: "CONNECT_DONE", data: { activeProvider: Provider } }
-type DisconnectEvent = { type: "DISCONNECT" }
-type ErrorEvent = { type: "ERROR", data: { error: any } }
-
-export type RootEvent<Service = any> =
-  | DoneEvent
-  | ConnectDoneEvent
-  | DoneAndConnectedEvent
-  | ConnectEvent
-  | CancelConnectEvent
-  | DisconnectEvent
-  | ErrorEvent
-
-const authStates: MachineConfig<RootContext, any, RootEvent> = {
-  id: "auth",
-  initial: "initializing",
-  schema: {
-    context: {} as RootContext,
-    events: {} as RootEvent,
-  },
-  states: {
-    // TODO: send params to INIT?
-    // To not have to store them in the context
-    // inactive: {
-    //   on: {
-    //     INIT: {}
-    //   }
-    // },
-    initializing: {
-      on: {
-        DONE: {
-          target: "idle",
-          actions: [],
-        },
-        DONE_AND_CONNECTED: {
-          target: "connected",
-        },
-        ERROR: {
-          // ?
-        },
-      },
-      invoke: {
-        id: "init",
-        src: (context, event) => async (callback, onReceive) => {
-          const { anonymousProviders, providers, preferredNetwork, networksConfig } = context
-          const anonymousProvider = anonymousProviders[preferredNetwork].anonymous
-
-          await Promise.all([
-            ...Object.values(providers[preferredNetwork]).map(p => p.init()),
-            anonymousProvider.init(),
-          ])
-
-          // TODO: all networks?
-          let connectedProviders = Object.values(providers[preferredNetwork]).map(p => new Promise<Provider>(async (resolve, reject) => {
-            const isConnected = await p.isConnected()
-            isConnected ? resolve(p) : reject()
-          }))
-
-          // TODO: init failure
-          Promise.any(connectedProviders).then((connectedProvider) => {
-            callback({
-              type: "DONE_AND_CONNECTED",
-              data: {
-                activeProvider: connectedProvider,
-              },
-            })
-          }).catch(e => {
-            callback({
-              type: "DONE",
-              data: {},
-            })
-          })
-        },
-      },
-      exit: ["onInit"],
-    },
-    idle: {
-      on: {
-        CONNECT: {
-          // actions: forwardTo("connectService"),
-          target: "connecting",
-          // TODO: save connecting provider?
-        },
-      },
-    },
-    connecting: {
-      entry: ["onConnecting"],
-      on: {
-        CONNECT: {
-          // actions: forwardTo("connectService"),
-          target: "connecting",
-          // TODO: save connecting provider?
-        },
-        CANCEL_CONNECT: {
-          target: "idle",
-          actions: ["onCancel"],
-        },
-        CONNECT_DONE: {
-          target: "connected",
-        },
-        ERROR: {
-          // actions: assign((context, event) => {
-          //   return ({
-          //     provider: event.data.provider,
-          //   })
-          // }),
-        },
-      },
-      invoke: {
-        id: "connectService",
-        // src: "connectService",
-        src: (context, _event) => async (callback, onReceive) => {
-          //   // TODO: Handle cancellation with AbortController?
-          if (_event.type !== "CONNECT") {
-            return
-          }
-          const provider = context.providers[context.preferredNetwork][_event.data.provider]
-          if (!provider) {
-            callback({
-              type: "ERROR",
-              data: {
-                error: "Provider not found",
-              },
-            })
-            return
-          }
-          const result = await provider.connect()
-          result.match(() => {
-              callback({
-                type: "CONNECT_DONE",
-                data: {
-                  activeProvider: provider,
-                },
-              })
-            },
-            (e) => {
-              console.error(e)
-              callback({
-                type: "ERROR",
-                data: {
-                  error: _event,
-                },
-              })
-            },
-          )
-        },
-        autoForward: true,
-      },
-    },
-    connected: {
-      entry: ["onConnect"],
-      on: {
-        DISCONNECT: {
-          target: "disconnecting",
-          // TODO: pass provider?
-        },
-      },
-    },
-    disconnecting: {
-      invoke: {
-        id: "disconnect",
-        src: (context, event) => async () => {
-          await context.activeProvider?.disconnect()
-        },
-        onDone: {
-          target: "idle",
-          // TODO: empty context
-          actions: [
-            assign((context, event) => ({
-              activeProvider: undefined,
-            })),
-            "onDisconnect",
-          ],
-        },
-        onError: {
-          target: "connected",
-          actions: [],
-        },
-      },
-    },
-  },
-}
-
 type Config = {
+  providers: Array<IConnector>
   whitelist?: Array<string>
   host?: string
   autoConnect?: boolean
@@ -249,211 +16,220 @@ type Config = {
   appName?: string
 }
 
-type NetworkConfig = {
-  whitelist?: Array<string>
-  host?: string
-  autoConnect?: boolean
-  providerUrl?: string
-  ledgerCanisterId?: string
-  ledgerHost?: string
-  appName?: string
+enum CLIENT_STATUS {
+  INACTIVE = "inactive",
+  INITIALIZING = "initializing",
+  IDLE = "idle",
+  CONNECTING = "connecting",
+  CONNECTED = "connected",
+  LOCKED = "locked",
+  DISCONNECTING = "disconnecting",
 }
 
-type ClientOptions = {
-  preferredNetwork?: string
-  providers: Array<Provider> | ((config: Config) => Array<Provider>)
-  networks?: {
-    [networkName: string]: NetworkConfig
-  }
+type State = {
+  providers: Array<IConnector>
+  status: CLIENT_STATUS
+  activeProvider: IConnector | undefined
+  connectingProvider: IConnector | undefined
+  anonymousProvider: Anonymous
+  listeners: Array<() => void>
 }
 
-class Client {
-  public _service: Interpreter<RootContext, any, RootEvent>
-  public config
-  private _emitter: Emitter
 
-  constructor(service, emitter, config) {
-    this._service = service
-    this._emitter = emitter
-    this.config = config
+class Store<State extends Record<string, any>> {
+  private subscribers = new Set<any>()
+
+  constructor(private state: State) {
   }
 
-  on(evt, fn) {
-    this._emitter.on(evt, fn)
-    return () => this._emitter.off(evt, fn) as void
+  getValue() {
+    return this.state
   }
 
-  subscribe(fn) {
-    const sub = this._service.subscribe(fn)
-    return sub.unsubscribe
+  setValue(newState: State | ((state: State) => State)) {
+    this.state = typeof newState === "function" ?
+      newState(this.state) : newState
+    this.emit()
   }
 
-  connect(provider) {
-    this._service.send({ type: "CONNECT", data: { provider } })
+  updateValue(partialState: Partial<State>) {
+    this.state = { ...this.state, ...partialState }
+    this.emit()
   }
 
-  cancelConnect() {
-    this._service.send({ type: "CANCEL_CONNECT" })
+  subscribe(subscriber) {
+    this.subscribers.add(subscriber)
+
+    return () => this.subscribers.delete(subscriber)
   }
 
-  public disconnect() {
-    this._service.send({ type: "DISCONNECT" })
-  }
-
-  public async createActor(canisterId, interfaceFactory) {
-    if (!this._service.state.context.activeProvider) {
-      return
-    }
-    return await this._service.state.context.activeProvider.createActor(
-      canisterId,
-      interfaceFactory,
-    )
-  }
-
-  public async createAnonymousActor(canisterId, interfaceFactory) {
-    const result = await this._service.state.context.anonymousProviders[this._service.state.context.preferredNetwork].anonymous.createActor(
-      canisterId,
-      interfaceFactory,
-    )
-    return result
-  }
-
-  public get providers() {
-    return this._service.state.context[this._service.state.context.preferredNetwork].providers
-  }
-
-  public get activeProvider() {
-    return this._service.state.context[this._service.state.context.preferredNetwork].activeProvider
-  }
-
-  public get anonymousProvider() {
-    return this._service.state.context.anonymousProviders[this._service.state.context.preferredNetwork].anonymous
-  }
-
-  public get status() {
-    return this._service.state.value
+  private emit() {
+    this.subscribers.forEach((subscriber) => subscriber(this.state))
   }
 }
 
-const createClient = (config: ClientOptions) => {
+const createClient = (config: Config) => {
   const {
-    preferredNetwork = "local",
     providers = [],
-    networks = {
-      ic: {
-        host: "https://ic0.app",
-      },
-      local: {
-        host: window.location.origin,
-      },
-    },
+    host = window.location.origin,
   } = config
-
-  const networksConfig: ClientOptions["networks"] = {
-    ...Object.keys(networks).reduce((acc, networkName) => ({
-      ...acc,
-      [networkName]: {
-        ...networks[networkName],
-        // whitelist: Object.values(canisters ?? {}).map(canister => (canister as {
-        //   canisterId: string
-        //   idlFactory: IDL.InterfaceFactory
-        // }).canisterId),
-      },
-    }), {}),
-  }
-
-  const emitter = new Emitter()
-
-  const rootMachine = createMachine<RootContext, RootEvent>({
-    id: "root",
-    initial: "idle",
-    predictableActionArguments: true,
-    context: {
-      autoConnect: true,
-      preferredNetwork,
-      activeProvider: undefined,
-      connectingProvider: undefined,
-      // TODO: remove?
-      networksConfig,
-      anonymousProviders: Object.keys(networksConfig).reduce((acc, networkName) => {
-        const networkConfig = networksConfig[networkName]
-        // providers?.forEach(p => p.config = networkConfig)
-        return {
-          ...acc,
-          [networkName]: {
-            anonymous: new Anonymous(networkConfig),
-          },
-        }
-      }, {}),
-      providers: Object.keys(networksConfig).reduce((acc, networkName) => {
-        const networkConfig = networksConfig[networkName]
-        const createdProviders = typeof providers === "function" ? providers(networkConfig) : providers
-        // providers?.forEach(p => p.config = networkConfig)
-        return {
-          ...acc,
-          [networkName]: {
-            ...(createdProviders?.reduce((acc, provider) => ({
-              ...acc,
-              [provider.meta.id]: provider,
-            }), {}) ?? {}),
-          },
-        }
-      }, {}),
-    },
-    schema: {
-      context: {} as RootContext,
-      events: {} as RootEvent,
-    },
-    states: {
-      idle: {
-        ...authStates,
-      },
-    },
-  }, {
-    actions: {
-      onDisconnect: () => {
-        emitter.emit("disconnect")
-      },
-      onInit: () => {
-        emitter.emit("init")
-      },
-      onConnect: assign((context, event) => {
-        emitter.emit("connect", event.data)
-        return {
-          connectingProvider: undefined,
-          activeProvider: event.data.activeProvider,
-        }
-      }),
-      onCancel: assign((context, event) => {
-        emitter.emit("cancel")
-        // TODO:?
-        return {
-          connectingProvider: undefined,
-        }
-      }),
-      onConnecting: assign((context, event) => {
-        emitter.emit("connecting")
-        const connectingProvider = context.providers[context.preferredNetwork][event.data.provider]
-        // TODO: not working
-        return {
-          connectingProvider,
-        }
-      }),
-      onDisconnecting: () => {
-        emitter.emit("disconnecting")
-      },
-    },
+  let _store = new Store<State>({
+    providers,
+    status: CLIENT_STATUS.INACTIVE,
+    activeProvider: undefined,
+    connectingProvider: undefined,
+    anonymousProvider: new Anonymous(config),
+    listeners: [],
   })
+  const _emitter = new Emitter()
 
-  const service = interpret(rootMachine, { devTools: true })
+  const self = {
+    async init() {
+      _store.updateValue({ status: CLIENT_STATUS.INITIALIZING })
 
-  service.start()
+      await Promise.all([
+        ..._store.getValue().providers.map(p => p.init()),
+        _store.getValue().anonymousProvider.init(),
+      ])
 
-  return new Client(service, emitter, networksConfig)
+      try {
+        let connectedProvider
+        let connectedProviderStatus
+        for (const provider of _store.getValue().providers) {
+          const providerStatus = await provider.status()
+          if (providerStatus === PROVIDER_STATUS.CONNECTED) {
+            connectedProvider = provider
+            connectedProviderStatus = providerStatus
+            break
+          } else if (providerStatus === PROVIDER_STATUS.LOCKED) {
+            connectedProvider = provider
+            connectedProviderStatus = providerStatus
+            break
+          }
+        }
+        if (connectedProviderStatus === PROVIDER_STATUS.LOCKED) {
+          _store.updateValue({
+            activeProvider: connectedProvider,
+            status: CLIENT_STATUS.LOCKED,
+          })
+        } else if (connectedProviderStatus === PROVIDER_STATUS.CONNECTED) {
+          _store.updateValue({
+            activeProvider: connectedProvider,
+            status: CLIENT_STATUS.CONNECTED,
+          })
+        } else {
+          _store.updateValue({ status: CLIENT_STATUS.IDLE })
+        }
+      } catch (e) {
+        _store.updateValue({ status: CLIENT_STATUS.IDLE })
+      } finally {
+        _emitter.emit("init", { providers: self.providers })
+      }
+    },
+
+    on(evt, fn) {
+      _emitter.on(evt, fn)
+      return () => _emitter.off(evt, fn) as void
+    },
+
+    async connect(providerId) {
+      _store.updateValue({
+        status: CLIENT_STATUS.CONNECTING,
+        connectingProvider: providerId,
+      })
+      _emitter.emit("connecting", {})
+      try {
+        const provider = _store.getValue().providers.find(p => p.meta.id === providerId)
+        await provider!.connect()
+        _store.updateValue({
+          status: CLIENT_STATUS.CONNECTED,
+          activeProvider: _store.getValue().providers[providerId],
+        })
+        _emitter.emit("connect", {
+          activeProvider: self.activeProvider,
+          principal: self.principal,
+        })
+      } catch (e) {
+        _store.updateValue({ status: CLIENT_STATUS.IDLE })
+        _emitter.emit("idle", {})
+      } finally {
+        _store.updateValue({ connectingProvider: undefined })
+      }
+    },
+
+    cancelConnect() {
+      _store.updateValue({
+        status: CLIENT_STATUS.IDLE,
+        activeProvider: undefined,
+      })
+      _emitter.emit("idle", {})
+    },
+
+    async disconnect() {
+      if (_store.getValue().status !== CLIENT_STATUS.CONNECTED) {
+        return
+      }
+      _store.updateValue({ status: CLIENT_STATUS.DISCONNECTING })
+      try {
+        await self.activeProvider?.disconnect()
+        _store.updateValue({
+          status: CLIENT_STATUS.IDLE,
+          activeProvider: undefined,
+        })
+      } catch (e) {
+        _store.updateValue({ status: CLIENT_STATUS.CONNECTED })
+      } finally {
+      }
+    },
+
+    async createActor(canisterId, interfaceFactory) {
+      if (!self.activeProvider) {
+        return
+      }
+      return await _store.getValue().activeProvider!.createActor(
+        canisterId,
+        interfaceFactory,
+      )
+    },
+
+    async createAnonymousActor(canisterId, interfaceFactory) {
+      const result = await _store.getValue().anonymousProvider.createActor(
+        canisterId,
+        interfaceFactory,
+      )
+      return result
+    },
+
+    get providers() {
+      return _store.getValue().providers
+    },
+
+    get principal() {
+      return _store.getValue().activeProvider?.principal
+    },
+
+    get activeProvider() {
+      return _store.getValue().activeProvider
+    },
+
+    get anonymousProvider() {
+      return _store.getValue().anonymousProvider
+    },
+
+    get status() {
+      return _store.getValue().status
+    },
+
+    subscribe(listener) {
+      return _store.subscribe(listener)
+    },
+
+    getSnapshot() {
+      return _store.getValue()
+    },
+  }
+  return self
 }
 
-export type {
-  Client,
-}
 
-export { createClient }
+export { CLIENT_STATUS, createClient }

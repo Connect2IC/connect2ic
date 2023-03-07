@@ -9,7 +9,7 @@ import {
   ok,
   err,
 } from "neverthrow"
-import { ConnectError, CreateActorError, DisconnectError, InitError, IWalletConnector } from "./connectors"
+import { ConnectError, CreateActorError, DisconnectError, InitError, IWalletConnector, PROVIDER_STATUS } from "./connectors"
 import { Methods } from "./connectors"
 import {
   Actor,
@@ -131,6 +131,14 @@ class Ego implements IConnector {
     } catch (e) {
       console.error(e)
       return false
+    }
+  }
+
+  async status() {
+    try {
+      return PROVIDER_STATUS.IDLE
+    } catch (e) {
+      return PROVIDER_STATUS.IDLE
     }
   }
 

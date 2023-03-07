@@ -5,7 +5,12 @@ import type { ActorSubclass, Actor } from "@dfinity/agent"
 import { IDL } from "@dfinity/candid"
 import { CreateActorError, CreateActorResult } from "@connect2ic/core"
 
-export const useCanisterById = <T>(canisterId, options: UseCanisterOptions<T> = {
+export type CanisterOptions<T> = {
+  mode?: string
+  network?: string
+}
+
+export const useCanisterById = <T>(canisterId, options: CanisterOptions<T> = {
   mode: "auto", // "anonymous" | "connected"
   network: "local",
 }) => {
@@ -20,11 +25,6 @@ export const useCanisters = () => {
   return canisters
 }
 
-export type CanisterOptions<T> = {
-  mode?: string
-  network?: string
-}
-
 type CanisterDeclaration<T> = {
   // TODO: mandatory
   canisterId: string,
@@ -32,16 +32,12 @@ type CanisterDeclaration<T> = {
   service?: T,
 }
 
-// TODO: ??
 export const useCanister = <T>(canisterNameOrDeclaration: string | CanisterDeclaration<T>, options: CanisterOptions<T> = {
   mode: "auto", // "anonymous" | "connected"
   network: "local",
 }): [T | undefined, { error?: CreateActorError, loading: boolean, idl: IDL.InterfaceFactory, canisterId: string }] => {
   const hasCanisterName = typeof canisterNameOrDeclaration === "string"
-  // if (!hasCanisterName) {
-  //   options = canisterNameOrDeclaration as CanisterDeclaration<T>
-  // }
-  const { mode } = options
+  const { mode = "auto" } = options
   const { client, canisters } = useContext(Connect2ICContext)
   const { activeProvider, isConnected } = useConnect()
   let canisterId = hasCanisterName ? canisters[canisterNameOrDeclaration].canisterId : canisterNameOrDeclaration.canisterId
@@ -70,7 +66,7 @@ export const useCanister = <T>(canisterNameOrDeclaration: string | CanisterDecla
   }, [canisterId, idlFactory, client])
 
   useEffect(() => {
-    if (!activeProvider) {
+    if (!activeProvider || !isConnected) {
       return
     }
     (async () => {
@@ -96,6 +92,7 @@ export const useCanister = <T>(canisterNameOrDeclaration: string | CanisterDecla
   let loading = !canisterResult
 
   return [
+    // TODO: ?
     actor as typeof canisterNameOrDeclaration.service,
     {
       error,

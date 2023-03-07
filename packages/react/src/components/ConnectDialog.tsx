@@ -148,10 +148,15 @@ const ConnectDialog: React.FC<PropsWithChildren<Props>> = (props) => {
     setScreen(screens.SELECT_METHOD)
   }
 
-  const showConnecting = (provider) => {
+  // TODO: rename
+  const showConnecting = async (provider) => {
     setSelectedProvider(provider)
     setScreen(screens.CONNECTING)
-    connect(provider.meta.id)
+    try {
+      await connect(provider.meta.id)
+    } catch (e) {
+      // TODO:
+    }
   }
 
   // TODO: clean up
@@ -166,6 +171,9 @@ const ConnectDialog: React.FC<PropsWithChildren<Props>> = (props) => {
       description: "With extension",
       action: showConnecting,
     },
+    // [Methods.QR_CODE]: {
+    //   icon: appIconSrc,
+    // },
     [Methods.APP]: {
       icon: appIconSrc,
       // TODO: move to provider

@@ -1,10 +1,11 @@
-import React, { useContext, useEffect } from "react"
-import { useSelector } from "@xstate/react"
+import React, { useCallback, useContext, useEffect, useState, useSyncExternalStore } from "react"
 import { Connect2ICContext } from "../context"
+import { CLIENT_STATUS } from "@connect2ic/core"
 
 type Props = {
-  onConnect?: ({ provider: string }) => void
+  onConnect?: ({ provider }: { provider: string }) => void
   onDisconnect?: () => void
+  onInit?: () => void
 }
 
 export const useConnect = (props?: Props) => {
@@ -14,45 +15,45 @@ export const useConnect = (props?: Props) => {
     },
     onDisconnect = () => {
     },
+    onInit = () => {
+      // TODO: pass provider status?
+    },
   } = props ?? {}
   const {
     client,
   } = useContext(Connect2ICContext)
-  const { principal, activeProvider, status, connectingProvider } = useSelector(client._service, (state) => ({
-    principal: state.context.activeProvider?.principal,
-    activeProvider: state.context.activeProvider,
-    connectingProvider: state.context.connectingProvider,
-    status: state.value,
-  }))
+  // TODO: selector?
+  const {
+    activeProvider,
+    status,
+    connectingProvider,
+    // principal,
+  } = useSyncExternalStore(client.subscribe, client.getSnapshot)
 
   useEffect(() => {
     const unsub = client.on("connect", onConnect)
     const unsub2 = client.on("disconnect", onDisconnect)
+    const unsub3 = client.on("init", onInit)
     return () => {
       unsub()
       unsub2()
+      unsub3()
     }
   }, [client])
 
   return {
-    principal,
+    principal: activeProvider?.principal,
     activeProvider,
     connectingProvider,
     status,
-    isInitializing: client._service.state?.matches({ idle: "initializing" }) ?? false,
-    isConnected: client._service.state?.matches({ idle: "connected" }) ?? false,
-    isConnecting: client._service.state?.matches({ idle: "connecting" }) ?? false,
-    isDisconnecting: client._service.state?.matches({ idle: "disconnecting" }) ?? false,
-    isIdle: client._service.state?.matches({ idle: "idle" }) ?? false,
-    connect: (provider: string) => {
-      client.connect(provider)
-    },
-    cancelConnect: () => {
-      client.cancelConnect()
-    },
-    disconnect: () => {
-      client.disconnect()
-    },
+    isInitializing: status === CLIENT_STATUS.INITIALIZING,
+    isConnected: status === CLIENT_STATUS.CONNECTED,
+    isConnecting: status === CLIENT_STATUS.CONNECTING,
+    isDisconnecting: status === CLIENT_STATUS.DISCONNECTING,
+    isLocked: status === CLIENT_STATUS.LOCKED,
+    isIdle: status === CLIENT_STATUS.IDLE,
+    connect: async (provider: string) => client.connect(provider),
+    cancelConnect: () => client.cancelConnect(),
+    disconnect: async () => client.disconnect(),
   } as const
 }
-

@@ -11,7 +11,7 @@ import {
   ok,
   err,
 } from "neverthrow"
-import { ConnectError, CreateActorError, DisconnectError, InitError } from "./connectors"
+import { ConnectError, CreateActorError, DisconnectError, InitError, PROVIDER_STATUS } from "./connectors"
 import { ECDSAKeyIdentity } from "@dfinity/identity"
 
 class Anonymous implements IConnector {
@@ -96,6 +96,18 @@ class Anonymous implements IConnector {
     } catch (e) {
       console.error(e)
       return false
+    }
+  }
+
+  async status() {
+    try {
+      if (!this.#identity) {
+        return PROVIDER_STATUS.IDLE
+      }
+      return PROVIDER_STATUS.CONNECTED
+    } catch (e) {
+      console.error(e)
+      return PROVIDER_STATUS.IDLE
     }
   }
 

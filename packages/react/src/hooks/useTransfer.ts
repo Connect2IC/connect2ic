@@ -12,8 +12,8 @@ type Props = {
 
 export const useTransfer = ({ amount, to, from = undefined }: Props) => {
   // TODO: check if supported or not
-  const [wallet] = useWallet()
-  const { activeProvider, principal } = useConnect()
+  const wallet = useWallet()
+  const { activeProvider } = useConnect()
   const [loading, setLoading] = useState<boolean>(false)
   const [payload, setPayload] = useState<{ height: number }>()
   const [error, setError] = useState<{ kind: TransferError }>()

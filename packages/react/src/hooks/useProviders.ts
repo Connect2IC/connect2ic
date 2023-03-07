@@ -1,14 +1,12 @@
-import { useContext, useEffect } from "react"
+import { useCallback, useContext, useEffect, useSyncExternalStore } from "react"
 import { useSelector } from "@xstate/react"
 import { Connect2ICContext } from "../context"
-import type { Provider } from "@connect2ic/core"
+import type { IConnector } from "@connect2ic/core"
 
-export const useProviders = (): Array<Provider> => {
+export const useProviders = (): Array<IConnector> => {
   const { client } = useContext(Connect2ICContext)
-  // TODO: support networks
-  const providers = useSelector(client._service, (state) => {
-    return Object.values(state.context.providers["local"])
-  })
+  // TODO: selector
+  const { providers } = useSyncExternalStore(client.subscribe, client.getSnapshot)
 
   return providers ?? [] as const
 }

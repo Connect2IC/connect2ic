@@ -6,8 +6,7 @@ import type { IConnector, IWalletConnector } from "@connect2ic/core"
 
 export const useWallet = (): IWalletConnector | undefined => {
   const { client } = useContext(Connect2ICContext)
-  const activeProvider = useSelector(client._service, (state) => state.context.activeProvider)
-  const { isConnected } = useConnect()
+  const { isConnected, activeProvider } = useConnect()
   const wallet = isConnected ? activeProvider!.wallets[0] : undefined
 
   return wallet

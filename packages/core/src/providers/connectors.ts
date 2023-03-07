@@ -42,7 +42,14 @@ export type InitResult = Result<{ isConnected: boolean }, CustomError<InitError>
 export enum Methods {
   BROWSER = "BROWSER",
   EXTENSION = "EXTENSION",
-  APP = "APP"
+  APP = "APP",
+  QR_CODE = "QR_CODE",
+}
+
+export enum PROVIDER_STATUS {
+  LOCKED = "locked",
+  CONNECTED = "connected",
+  IDLE = "idle",
 }
 
 export interface IConnector {
@@ -61,6 +68,7 @@ export interface IConnector {
     name: string
   }
   isConnected: () => Promise<boolean>
+  status: () => Promise<PROVIDER_STATUS>
   createActor: <Service>(canisterId: string, interfaceFactory: IDL.InterfaceFactory, config?: {}) => Promise<CreateActorResult<Service>>
   connect: () => Promise<ConnectResult>
   disconnect: () => Promise<DisconnectResult>

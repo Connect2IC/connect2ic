@@ -1,17 +1,21 @@
 import { StoicIdentity } from "ic-stoic-identity"
-import { Actor, ActorSubclass, HttpAgent } from "@dfinity/agent"
+import { Actor, HttpAgent } from "@dfinity/agent"
 import type { IConnector } from "./connectors"
+import {
+  ConnectError,
+  CreateActorError,
+  DisconnectError,
+  InitError,
+  IWalletConnector,
+  Methods,
+  PROVIDER_STATUS,
+} from "./connectors"
+// @ts-ignore
 // @ts-ignore
 import stoicLogoLight from "../assets/stoic.png"
-// @ts-ignore
 import stoicLogoDark from "../assets/stoic.png"
 import { IDL } from "@dfinity/candid"
-import {
-  ok,
-  err,
-} from "neverthrow"
-import { ConnectError, CreateActorError, DisconnectError, InitError, IWalletConnector } from "./connectors"
-import { Methods } from "./connectors"
+import { err, ok } from "neverthrow"
 
 // class Wallet implements IWalletConnector {
 //   constructor() {
@@ -126,6 +130,16 @@ class StoicWallet implements IConnector {
     } catch (e) {
       console.error(e)
       return false
+    }
+  }
+
+  async status() {
+    try {
+      const identity = await StoicIdentity.load()
+      return !!identity ? PROVIDER_STATUS.CONNECTED : PROVIDER_STATUS.IDLE
+    } catch (e) {
+      console.error(e)
+      return PROVIDER_STATUS.IDLE
     }
   }
 

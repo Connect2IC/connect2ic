@@ -1,9 +1,9 @@
-import React, { createContext, useState, PropsWithChildren } from "react"
-import type { Client } from "@connect2ic/core"
+import React, { createContext, useState, PropsWithChildren, useEffect } from "react"
+import { createClient } from "@connect2ic/core"
 import { IDL } from "@dfinity/candid"
 
 const Connect2ICContext = createContext<{
-  client: Client
+  client: ReturnType<typeof createClient>
   dialog: {
     open: () => void
     close: () => void
@@ -22,7 +22,7 @@ const Connect2ICContext = createContext<{
 }>({} as any)
 
 type Props = {
-  client: Client
+  client: ReturnType<typeof createClient>
   capRouterId?: string
   canisters: {
     [canisterName: string]: {
@@ -53,6 +53,17 @@ const Connect2ICProvider: React.FC<PropsWithChildren<Props>> = ({
       [canisterId]: canisterName,
     })
   }, {})
+
+  // useEffect(() => {
+  //   if (!client) {
+  //     return
+  //   }
+  //   (async () => {
+  //     console.log("initializing")
+  //     await client.init()
+  //     // TODO: failure?
+  //   })()
+  // }, [client])
 
   return (
     <Connect2ICContext.Provider value={{

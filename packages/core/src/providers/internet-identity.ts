@@ -11,7 +11,7 @@ import {
   ok,
   err,
 } from "neverthrow"
-import { ConnectError, CreateActorError, DisconnectError, InitError, IWalletConnector } from "./connectors"
+import { ConnectError, CreateActorError, DisconnectError, InitError, IWalletConnector, PROVIDER_STATUS } from "./connectors"
 import { Methods } from "./connectors"
 
 class InternetIdentity implements IConnector {
@@ -100,6 +100,18 @@ class InternetIdentity implements IConnector {
     } catch (e) {
       console.error(e)
       return false
+    }
+  }
+
+  async status() {
+    try {
+      if (!this.#client) {
+        return PROVIDER_STATUS.IDLE
+      }
+      return await this.#client.isAuthenticated() ? PROVIDER_STATUS.CONNECTED : PROVIDER_STATUS.IDLE
+    } catch (e) {
+      console.error(e)
+      return PROVIDER_STATUS.IDLE
     }
   }
 

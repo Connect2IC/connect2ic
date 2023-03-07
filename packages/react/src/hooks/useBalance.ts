@@ -15,7 +15,7 @@ type Asset = {
 
 export const useBalance = () => {
   // TODO: check if supported or not
-  const [wallet] = useWallet()
+  const wallet = useWallet()
   const { activeProvider } = useConnect()
   const [assets, setAssets] = useState<Array<Asset>>()
   const [loading, setLoading] = useState(true)

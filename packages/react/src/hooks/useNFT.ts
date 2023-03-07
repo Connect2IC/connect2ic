@@ -1,9 +1,7 @@
 import { useContext, useEffect, useMemo, useState } from "react"
 import { NFTStandards } from "@connect2ic/core"
-import { ActorSubclass } from "@dfinity/agent"
-import { useCanister, UseCanisterOptions } from "./useCanister"
+import { useCanister } from "./useCanister"
 import { useConnect } from "./useConnect"
-import { Principal } from "@dfinity/principal"
 
 type NFTName = "icpunks" | "crowns"
 

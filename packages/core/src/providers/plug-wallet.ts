@@ -1,4 +1,14 @@
 import type { IConnector, IWalletConnector } from "./connectors"
+import {
+  BalanceError,
+  ConnectError,
+  CreateActorError,
+  DisconnectError,
+  InitError,
+  Methods,
+  PROVIDER_STATUS,
+  TransferError,
+} from "./connectors"
 // @ts-ignore
 import plugLogoLight from "../assets/plugLight.svg"
 // @ts-ignore
@@ -6,12 +16,9 @@ import plugLogoDark from "../assets/plugDark.svg"
 import { IDL } from "@dfinity/candid"
 import { ActorSubclass, Agent } from "@dfinity/agent"
 import { Principal } from "@dfinity/principal"
-import {
-  ok,
-  err,
-} from "neverthrow"
-import { BalanceError, ConnectError, CreateActorError, DisconnectError, InitError, TransferError } from "./connectors"
-import { Methods } from "./connectors"
+import { err, ok } from "neverthrow"
+
+export { Methods } from "./connectors"
 
 type PlugInjectedProvider = {
   createActor: <T>(args: { canisterId: string, interfaceFactory: IDL.InterfaceFactory }) => Promise<ActorSubclass<T>>
@@ -197,18 +204,20 @@ class PlugWallet implements IConnector {
       if (!this.#injectedProvider) {
         return err({ kind: InitError.NotInstalled })
       }
-      // TODO: enum
       const status = await this.status()
 
-      if (status !== "disconnected") {
+      if (status === PROVIDER_STATUS.LOCKED) {
+        return err({ kind: InitError.Locked })
+      }
+
+      if (status !== PROVIDER_STATUS.IDLE) {
         await this.#injectedProvider.createAgent({
           host: this.#config.host,
           whitelist: this.#config.whitelist,
         })
       }
-      if (status === "connected") {
-        // Never finishes if locked
-        this.#principal = (await this.#injectedProvider.getPrincipal()).toString()
+      if (status === PROVIDER_STATUS.CONNECTED) {
+        this.#principal = (await this.#injectedProvider.getPrincipal()).toString() // Never finishes if locked
         this.#wallets = [new Wallet(this.#injectedProvider)]
       }
       return ok({ isConnected: false })
@@ -221,17 +230,17 @@ class PlugWallet implements IConnector {
   async status() {
     // TODO: enum
     if (!this.#injectedProvider) {
-      return "disconnected"
+      return PROVIDER_STATUS.IDLE
     }
     try {
-      return await Promise.race([
+      return await Promise.race<PROVIDER_STATUS>([
         this.#injectedProvider.isConnected().then((c) => {
-          return c ? "connected" : "disconnected"
+          return c ? PROVIDER_STATUS.CONNECTED : PROVIDER_STATUS.IDLE
         }),
-        new Promise((resolve) => setTimeout(() => resolve("locked"), 1000)),
+        new Promise((resolve) => setTimeout(() => resolve(PROVIDER_STATUS.LOCKED), 1000)),
       ])
     } catch (e) {
-      return "disconnected"
+      return PROVIDER_STATUS.IDLE
     }
   }
 

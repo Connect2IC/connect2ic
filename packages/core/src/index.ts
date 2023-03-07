@@ -1,6 +1,4 @@
-import { createClient } from "./client"
-import type { Client } from "./client"
-import type { RootEvent, RootContext } from "./client"
+import { CLIENT_STATUS, createClient } from "./client"
 
 export { NFTStandards, NFT } from "./nfts"
 export { TokenStandards, TOKEN } from "./tokens/tokens"
@@ -29,12 +27,7 @@ export type {
   TransferResult,
 } from "./providers/connectors"
 
-export type {
-  RootEvent,
-  RootContext,
-  Client,
-}
-
 export {
   createClient,
+  CLIENT_STATUS,
 }

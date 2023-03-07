@@ -10,7 +10,15 @@ import {
   ok,
   err, Result,
 } from "neverthrow"
-import { ConnectError, CreateActorError, DisconnectError, InitError, TransferError, BalanceError } from "./connectors"
+import {
+  ConnectError,
+  CreateActorError,
+  DisconnectError,
+  InitError,
+  TransferError,
+  BalanceError,
+  PROVIDER_STATUS,
+} from "./connectors"
 import { Methods } from "./connectors"
 import { requestTransfer, requestAccounts, RequestTransferParams } from "@nfid/wallet"
 
@@ -164,6 +172,18 @@ class NFID implements IConnector {
     } catch (e) {
       console.error(e)
       return false
+    }
+  }
+
+  async status() {
+    try {
+      if (!this.#client) {
+        return PROVIDER_STATUS.IDLE
+      }
+      return await this.#client.isAuthenticated() ? PROVIDER_STATUS.CONNECTED : PROVIDER_STATUS.IDLE
+    } catch (e) {
+      console.error(e)
+      return PROVIDER_STATUS.IDLE
     }
   }
 

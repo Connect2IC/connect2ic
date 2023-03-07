@@ -19,7 +19,7 @@ import {
   InitError,
   TransferError,
   TokensError,
-  NFTsError,
+  NFTsError, PROVIDER_STATUS,
 } from "./connectors"
 import {
   SupportedToken,
@@ -273,6 +273,18 @@ class ICX implements IConnector {
     } catch (e) {
       console.error(e)
       return false
+    }
+  }
+
+  async status() {
+    try {
+      if (!this.#ic) {
+        return PROVIDER_STATUS.IDLE
+      }
+      return await this.#ic.isConnected() ? PROVIDER_STATUS.CONNECTED : PROVIDER_STATUS.IDLE
+    } catch (e) {
+      console.error(e)
+      return PROVIDER_STATUS.IDLE
     }
   }
 
