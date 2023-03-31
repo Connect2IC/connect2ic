@@ -51,6 +51,7 @@ class AstroX implements IConnector, IWalletConnector {
     host: string,
     dev: boolean,
     delegationModes?: Array<DelegationMode>
+    customDomain?: string
   }
   #identity?: Identity
   #principal?: string
@@ -106,6 +107,7 @@ class AstroX implements IConnector, IWalletConnector {
         delegationTargets: this.#config.whitelist,
         delegationModes: this.#config.delegationModes,
         noUnify: this.#config.noUnify,
+        customDomain: this.#config.customDomain,
       })
       this.#ic = (window.ic.astrox as IC) ?? ic
       this.#principal = this.#ic.principal.toText()
@@ -172,6 +174,7 @@ class AstroX implements IConnector, IWalletConnector {
         delegationTargets: this.#config.whitelist,
         noUnify: this.#config.noUnify,
         delegationModes: this.#config.delegationModes,
+        customDomain: this.#config.customDomain,
       })
       this.#principal = this.#ic.principal.toText()
       // @ts-ignore

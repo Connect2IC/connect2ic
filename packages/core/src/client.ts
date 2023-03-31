@@ -278,6 +278,7 @@ type ClientOptions = {
     ledgerCanisterId?: string
     ledgerHost?: string
     appName?: string
+    customDomain?: string
   }
 }
 

@@ -45,6 +45,7 @@ class ICX implements IConnector, IWalletConnector {
     dev: boolean
     noUnify?: boolean
     delegationModes?: Array<DelegationMode>
+    customDomain?: string
   }
   #ic: AstroXWebViewHandler
   #principal?: string
@@ -157,6 +158,7 @@ class ICX implements IConnector, IWalletConnector {
         delegationTargets: this.#config.whitelist,
         host: this.#config.host,
         noUnify: this.#config.noUnify,
+        customDomain: this.#config.customDomain,
       })
       this.#principal = this.#ic.getPrincipal().toText()
       this.#wallet = this.#ic.wallet
