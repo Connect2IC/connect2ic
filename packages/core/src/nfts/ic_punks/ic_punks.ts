@@ -1,8 +1,6 @@
 import { Actor, ActorSubclass, HttpAgent } from "@dfinity/agent"
-import { Principal } from "@dfinity/principal"
 
 import NFT_ICPUNKS, { TokenDesc } from "./interfaces"
-import IDL from "./icpunks.did"
 import { NFTDetails } from "../interfaces/nft"
 import { NFT_CANISTERS } from "../../tokens/constants/canisters"
 import { NFT as NFTStandard } from "../../tokens/constants/standards"
@@ -20,7 +18,7 @@ export default class ICPunks implements NFTWrapper {
   actor: ActorSubclass<NFT_ICPUNKS>
   canisterId: string
 
-  constructor(actor: ActorSubclass<NFT_ICPUNKS>, canisterId: string) {
+  constructor({ actor, canisterId }: { actor: ActorSubclass<NFT_ICPUNKS>, canisterId: string }) {
     // super()
 
     this.actor = actor
@@ -39,24 +37,30 @@ export default class ICPunks implements NFTWrapper {
     // }
   }
 
-  async getUserTokens(principal: Principal): Promise<NFTDetails[]> {
-    const tokensIndexes = await this.actor.user_tokens(principal)
+  async getUserTokens(user: Account): Promise<NFTDetails[]> {
+    const tokensIndexes = await this.actor.user_tokens(user.owner)
 
     const tokensData = await Promise.all(tokensIndexes.map(tokenIndex => this.actor.data_of(tokenIndex)))
 
     return tokensData.map(token => this.serializeTokenData(token))
   }
 
-  async transfer(args: { from: Principal, to: Principal, tokenIndex: number }): Promise<void> {
-    const success = await this.actor.transfer_to(args.to, BigInt(args.tokenIndex))
+  async transfer(args: { from: Account, to: Account, tokenIndex: any }) {
+    const success = await this.actor.transfer_to(args.to.owner, BigInt(args.tokenIndex))
     if (!success) {
       throw new Error("Error transfering token")
     }
   }
 
-  async details(tokenIndex: number): Promise<NFTDetails> {
-    const tokenData = await this.actor.data_of(BigInt(tokenIndex))
+  async collectionDetails(tokenIndex: number): Promise<NFTDetails> {
+    // const tokenData = await this.actor.data_of(BigInt(tokenIndex))
+    //
+    // return this.serializeTokenData(tokenData)
+    // TODO: ..???
+  }
 
+  async getMetadata(tokenIndex: bigint) {
+    const tokenData = await this.actor.data_of(BigInt(tokenIndex))
     return this.serializeTokenData(tokenData)
   }
 

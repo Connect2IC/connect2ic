@@ -1,4 +1,4 @@
-export default ({ IDL }) => {
+export const idlFactory = ({ IDL }) => {
   const AccountIdentifier = IDL.Text
   const User = IDL.Variant({
     principal: IDL.Principal,

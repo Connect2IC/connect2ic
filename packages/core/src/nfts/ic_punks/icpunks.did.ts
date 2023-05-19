@@ -1,6 +1,6 @@
 /* eslint-disable camelcase */
 /* eslint-disable @typescript-eslint/camelcase */
-export default ({ IDL }) => {
+export const idlFactory = ({ IDL }) => {
   const Property = IDL.Record({ value: IDL.Text, name: IDL.Text })
   const TokenDesc = IDL.Record({
     id: IDL.Nat,

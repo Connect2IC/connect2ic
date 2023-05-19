@@ -41,9 +41,12 @@ export interface TokenWrapper {
   capRoot?: CapRoot
   capRouter?: CapRouter
 
-  // new(actor: ActorSubclass<any>, canisterId: string): TokenWrapper
-
-  init({ capRouterId }: { capRouterId?: string }): Promise<void>
+  // new(args: {
+  //   actor: ActorSubclass<any>,
+  //   canisterId: string
+  //   capRoot?: CapRoot
+  //   capRouter?: CapRouter
+  // }): TokenWrapper
 
   mint(receiver: Account, amount: number): Promise<any>
 

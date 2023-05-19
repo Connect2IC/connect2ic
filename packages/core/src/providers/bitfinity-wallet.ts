@@ -6,7 +6,6 @@ import bitfinityLogoLight from "../assets/bitfinity.png"
 // @ts-ignore
 import bitfinityLogoDark from "../assets/bitfinity.png"
 import type { Principal } from "@dfinity/principal"
-import { err, ok } from "neverthrow"
 import { ConnectError, CreateActorError, DisconnectError, InitError, PROVIDER_STATUS } from "./connectors"
 import { Methods } from "./connectors"
 
@@ -16,7 +15,11 @@ type Config = {
 }
 
 type InjectedProvider = {
-  createActor: <T>(args: { canisterId: string, interfaceFactory: IDL.InterfaceFactory, host: string }) => Promise<ActorSubclass<T>>
+  createActor: <T>(args: {
+    canisterId: string,
+    interfaceFactory: IDL.InterfaceFactory,
+    host: string
+  }) => Promise<ActorSubclass<T>>
   agent: Agent
   getPrincipal: () => Promise<Principal>
   isConnected: () => Promise<boolean>
@@ -160,10 +163,10 @@ class BitfinityWallet implements IConnector {
   // TODO: doesn't work if wallet is locked
   // test more & tell infinityswap
   async init() {
+    if (!this.#ic) {
+      throw new Error({ kind: InitError.NotInstalled })
+    }
     try {
-      if (!this.#ic) {
-        return err({ kind: InitError.NotInstalled })
-      }
       const isConnected = await this.isConnected()
       if (isConnected) {
         // Otherwise agent doesn't become available. Infinity wallet should fix
@@ -172,10 +175,9 @@ class BitfinityWallet implements IConnector {
         // TODO: never finishes if user doesnt login back?
         this.#principal = (await this.#ic.getPrincipal()).toString()
       }
-      return ok({ isConnected })
+      return { isConnected }
     } catch (e) {
-      console.error(e)
-      return err({ kind: InitError.InitFailed })
+      throw new Error({ kind: InitError.InitFailed, error: e })
     }
   }
 
@@ -200,6 +202,7 @@ class BitfinityWallet implements IConnector {
       return await this.#ic.isConnected() ? PROVIDER_STATUS.CONNECTED : PROVIDER_STATUS.IDLE
     } catch (e) {
       console.error(e)
+      // TODO: ???
       return PROVIDER_STATUS.IDLE
     }
   }
@@ -207,7 +210,7 @@ class BitfinityWallet implements IConnector {
   async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory, userConfig?: { host: string }) {
     const config = { host: this.#config.host, ...userConfig }
     if (!this.#ic) {
-      return err({ kind: CreateActorError.NotInitialized })
+      throw new Error({ kind: CreateActorError.NotInitialized })
     }
     try {
       // if (this.#config.defaultNetwork === "local") {
@@ -221,35 +224,33 @@ class BitfinityWallet implements IConnector {
         interfaceFactory: idlFactory,
         host: this.#config.host,
       })
-      return ok(actor)
+      return actor
     } catch (e) {
-      console.error(e)
-      return err({ kind: CreateActorError.CreateActorFailed })
+      throw new Error({ kind: CreateActorError.CreateActorFailed, error: e })
     }
   }
 
 
   async connect() {
+    if (!this.#ic) {
+      // TODO: customizable behaviour?
+      window.open("https://chrome.google.com/webstore/detail/infinity-wallet/jnldfbidonfeldmalbflbmlebbipcnle", "_blank")
+      throw new Error({ kind: ConnectError.NotInstalled })
+    }
     try {
-      if (!this.#ic) {
-        // TODO: customizable behaviour?
-        window.open("https://chrome.google.com/webstore/detail/infinity-wallet/jnldfbidonfeldmalbflbmlebbipcnle", "_blank")
-        return err({ kind: ConnectError.NotInstalled })
-      }
       await this.#ic.requestConnect(this.#config)
       this.#principal = (await this.#ic.getPrincipal()).toString()
-      return ok(true)
+      return true
     } catch (e) {
-      console.error(e)
-      return err({ kind: ConnectError.ConnectFailed })
+      throw new Error({ kind: ConnectError.ConnectFailed, error: e })
     }
   }
 
   async disconnect() {
+    if (!this.#ic) {
+      throw new Error({ kind: DisconnectError.NotInitialized })
+    }
     try {
-      if (!this.#ic) {
-        return err({ kind: DisconnectError.NotInitialized })
-      }
       const ic = this.#ic
       await Promise.race([
         new Promise((resolve, reject) => {
@@ -267,10 +268,9 @@ class BitfinityWallet implements IConnector {
         }),
         ic.disconnect(),
       ])
-      return ok(true)
+      return true
     } catch (e) {
-      console.error(e)
-      return err({ kind: DisconnectError.DisconnectFailed })
+      throw new Error({ kind: DisconnectError.DisconnectFailed, error: e })
     }
   }
 

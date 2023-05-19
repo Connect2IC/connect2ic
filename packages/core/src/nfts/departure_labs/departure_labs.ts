@@ -1,8 +1,7 @@
 import { Actor, ActorSubclass, HttpAgent } from "@dfinity/agent"
-import { Principal } from "@dfinity/principal"
+// import { Principal } from "@dfinity/principal"
 
 import NFT_DEPARTURE_LABS, { Metadata } from "./interfaces"
-import IDL from "./departure_labs.did"
 import { NFTDetails } from "../interfaces/nft"
 import { NFT as NFTStandard } from "../../tokens/constants/standards"
 import { Account, NFTWrapper } from "../nft-interfaces"
@@ -13,14 +12,14 @@ export default class DepartureLabs implements NFTWrapper {
   actor: ActorSubclass<NFT_DEPARTURE_LABS>
   canisterId: string
 
-  constructor(actor: ActorSubclass<NFT_DEPARTURE_LABS>, canisterId: string) {
+  constructor({ actor, canisterId }: { actor: ActorSubclass<NFT_DEPARTURE_LABS>, canisterId: string }) {
     // super()
     this.actor = actor
     this.canisterId = canisterId
   }
 
-  async getUserTokens(principal: Principal): Promise<NFTDetails[]> {
-    const tokensIndexes = await this.actor.balanceOf(principal)
+  async getUserTokens(user: Account): Promise<NFTDetails[]> {
+    const tokensIndexes = await this.actor.balanceOf(user.owner)
     const tokensData = await Promise.all(
       tokensIndexes.map(async tokenIndex => {
         const userTokensResult = await this.actor.tokenMetadataByIndex(tokenIndex)
@@ -45,12 +44,21 @@ export default class DepartureLabs implements NFTWrapper {
     // }
   }
 
-  async transfer(args: { from: Principal, to: Principal, tokenIndex: number }): Promise<void> {
-    const transferResult = await this.actor.transfer(args.to, args.tokenIndex.toString(10))
+  async transfer(args: { from: Account, to: Account, tokenIndex: number }): Promise<void> {
+    const transferResult = await this.actor.transfer(args.to.owner, args.tokenIndex.toString(10))
     if ("err" in transferResult) throw new Error(Object.keys(transferResult.err)[0])
   }
 
-  async details(tokenIndex: number): Promise<NFTDetails> {
+  async getMetadata(tokenIndex: number): Promise<NFTDetails> {
+    const tokenData = await this.actor.tokenMetadataByIndex(tokenIndex.toString(10))
+
+    if ("err" in tokenData) throw new Error(Object.keys(tokenData.err)[0])
+
+    return this.serializeTokenData(tokenData.ok)
+  }
+
+  async collectionDetails(tokenIndex: number): Promise<NFTDetails> {
+    // TODO: implement
     const tokenData = await this.actor.tokenMetadataByIndex(tokenIndex.toString(10))
 
     if ("err" in tokenData) throw new Error(Object.keys(tokenData.err)[0])

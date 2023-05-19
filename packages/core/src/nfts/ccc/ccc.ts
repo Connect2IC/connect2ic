@@ -2,7 +2,6 @@ import { ActorSubclass } from "@dfinity/agent"
 import { Principal } from "@dfinity/principal"
 
 import NFT_C3, { TokenDetails, TransferResponse } from "./interfaces"
-import IDL from "./ccc.did"
 import { NFTDetails } from "../interfaces/nft"
 import { NFT as NFTStandard } from "../../tokens/constants/standards"
 import { Account, NFTWrapper } from "../nft-interfaces"
@@ -13,7 +12,7 @@ export default class CCC implements NFTWrapper {
   actor: ActorSubclass<NFT_C3>
   canisterId: string
 
-  constructor(actor: ActorSubclass<NFT_C3>, canisterId: string) {
+  constructor({ actor, canisterId }: { actor: ActorSubclass<NFT_C3>, canisterId: string }) {
     // super()
     this.actor = actor
     this.canisterId = canisterId
@@ -31,8 +30,8 @@ export default class CCC implements NFTWrapper {
     // }
   }
 
-  async getUserTokens(principal: Principal): Promise<NFTDetails[]> {
-    const tokensIndexes = await this.actor.getAllNFT(principal)
+  async getUserTokens(user: Account): Promise<NFTDetails[]> {
+    const tokensIndexes = await this.actor.getAllNFT(user.owner)
     const tokensData = await Promise.all(
       tokensIndexes.map(async item => {
         const tokenIndex = item[0]
@@ -45,12 +44,12 @@ export default class CCC implements NFTWrapper {
     return tokensData.map(token => this.serializeTokenData(token.detail, token.principal))
   }
 
-  async transfer({ to, from, tokenIndex }) {
-    const transferResult: TransferResponse = await this.actor.transferFrom(from, to, BigInt(tokenIndex))
+  async transfer({ to, from, tokenIndex }: { from: Account, to: Account, tokenIndex: bigint }) {
+    const transferResult: TransferResponse = await this.actor.transferFrom(from.owner, to.owner, BigInt(tokenIndex))
     if ("err" in transferResult) throw new Error(Object.keys(transferResult.err)[0])
   }
 
-  async details(tokenIndex: number): Promise<NFTDetails> {
+  async getMetadata(tokenIndex: number): Promise<NFTDetails> {
     const tokenData = await this.actor.getTokenById(BigInt(tokenIndex))
     if ("err" in tokenData) throw new Error(Object.keys(tokenData.err)[0])
     const prinId = await this.actor.getNftStoreCIDByIndex(BigInt(tokenIndex))
@@ -58,11 +57,15 @@ export default class CCC implements NFTWrapper {
     return this.serializeTokenData(tokenData.ok, prinId)
   }
 
-  private serializeTokenData = (tokenData: TokenDetails, prinId: Principal): NFTDetails => {
+  async collectionDetails() {
+    // TODO: implement?
+  }
+
+  private serializeTokenData = (tokenData: TokenDetails, principalId: Principal): NFTDetails => {
     return {
       index: BigInt(tokenData.id),
       canister: this.canisterId,
-      url: `https://${prinId.toText()}.raw.ic0.app/token/${tokenData.id}`,
+      url: `https://${principalId.toText()}.raw.ic0.app/token/${tokenData.id}`,
       name: `${tokenData.id}`,
       metadata: tokenData,
       standard: this.standard,

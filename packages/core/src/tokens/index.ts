@@ -432,7 +432,6 @@ export const getAllUserNFTsICScan = async (accountId: string): Promise<Result<Ar
     const {
       nftList: { simpalNftInstanceList: fetchedUserNFTs },
     } = response as UserNFTsResponse
-    // console.log({ userNFTs });
     const userCollections = await Promise.all(
       fetchedCollections.map(async collection => {
         try {

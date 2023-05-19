@@ -7,14 +7,11 @@ import { NFID } from "./nfid"
 import { Anonymous } from "./anonymous"
 import { Ego } from "./ego"
 import { ICX } from "./icx"
-// import { EarthWallet } from "./earth-wallet"
-import type { IConnector } from "./connectors"
 
+export type { IConnector } from "./connectors"
 export * from "./connectors"
 
-// type Network = "ic" | "local"
 type Config = {
-  // [N in Network]: {
   whitelist?: Array<string>
   host?: string
   autoConnect?: boolean
@@ -23,16 +20,14 @@ type Config = {
   ledgerHost?: string
   appName?: string
   walletCanisterId?: string
-  // }
 }
 
 let isICX = !!window.icx
 
-export const defaultProviders: (config: Config) => Array<IConnector> = (config) => {
+export const defaultProviders = (config: Config) => {
   return isICX ? [new ICX(config)] : [
     new AstroX(config),
     new Ego(config),
-    // EarthWallet,
     new BitfinityWallet(config),
     new InternetIdentity(config),
     new NFID(config),
@@ -41,7 +36,7 @@ export const defaultProviders: (config: Config) => Array<IConnector> = (config) 
   ]
 }
 
-export const walletProviders: (Config) => Array<IConnector> = (config) => {
+export const walletProviders = (config: Config) => {
   return isICX ? [new ICX(config)] : [
     new AstroX(config),
     new PlugWallet(config),
@@ -52,7 +47,6 @@ export {
   Anonymous,
   AstroX,
   Ego,
-  // EarthWallet,
   BitfinityWallet,
   InternetIdentity,
   NFID,

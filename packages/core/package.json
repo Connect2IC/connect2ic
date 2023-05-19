@@ -29,10 +29,6 @@
       "module": "./providers/ego/dist/connect2ic-core-providers-ego.esm.js",
       "default": "./providers/ego/dist/connect2ic-core-providers-ego.cjs.js"
     },
-    "./providers/earth-wallet": {
-      "module": "./providers/earth-wallet/dist/connect2ic-core-providers-earth-wallet.esm.js",
-      "default": "./providers/earth-wallet/dist/connect2ic-core-providers-earth-wallet.cjs.js"
-    },
     "./providers/bitfinity-wallet": {
       "module": "./providers/bitfinity-wallet/dist/connect2ic-core-providers-bitfinity-wallet.esm.js",
       "default": "./providers/bitfinity-wallet/dist/connect2ic-core-providers-bitfinity-wallet.cjs.js"
@@ -59,7 +55,6 @@
       "index.ts",
       "providers/index.ts",
       "providers/astrox.ts",
-      "providers/earth-wallet.ts",
       "providers/ego.ts",
       "providers/icx.ts",
       "providers/bitfinity-wallet.ts",
@@ -83,6 +78,7 @@
     "@dfinity/principal": "^0.13.3",
     "@fontsource/pt-sans": "^4.5.11",
     "@nfid/wallet": "^1.1.0",
+    "@tanstack/query-core": "^4.29.1",
     "@vanilla-extract/css": "^1.9.2",
     "@walletconnect/auth-client": "^1.0.1",
     "@xstate/immer": "^0.3.1",

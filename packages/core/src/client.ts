@@ -1,9 +1,7 @@
 import Emitter from "event-e3"
-import type { IConnector } from "./providers/connectors"
-import { PROVIDER_STATUS } from "./providers/connectors"
-import { Anonymous } from "./providers"
-
-type Provider = IConnector
+import type { IConnector } from "./providers"
+import { PROVIDER_STATUS, Anonymous } from "./providers"
+import { QueryClient } from "@tanstack/query-core"
 
 type Config = {
   providers: Array<IConnector>
@@ -14,6 +12,7 @@ type Config = {
   ledgerCanisterId?: string
   ledgerHost?: string
   appName?: string
+  queryClient?: QueryClient
 }
 
 enum CLIENT_STATUS {
@@ -72,6 +71,20 @@ const createClient = (config: Config) => {
   const {
     providers = [],
     host = window.location.origin,
+    queryClient = new QueryClient({
+      // TODO: check
+      defaultOptions: {
+        queries: {
+          cacheTime: 1_000 * 60 * 60 * 24, // 24 hours
+          networkMode: "offlineFirst",
+          refetchOnWindowFocus: false,
+          retry: 0,
+        },
+        mutations: {
+          networkMode: "offlineFirst",
+        },
+      },
+    }),
   } = config
   let _store = new Store<State>({
     providers,
@@ -129,7 +142,7 @@ const createClient = (config: Config) => {
 
     on(evt, fn) {
       _emitter.on(evt, fn)
-      return () => _emitter.off(evt, fn) as void
+      return () => _emitter.off(evt, fn)
     },
 
     async connect(providerId) {
@@ -193,11 +206,10 @@ const createClient = (config: Config) => {
     },
 
     async createAnonymousActor(canisterId, interfaceFactory) {
-      const result = await _store.getValue().anonymousProvider.createActor(
+      return await _store.getValue().anonymousProvider.createActor(
         canisterId,
         interfaceFactory,
       )
-      return result
     },
 
     get providers() {
@@ -218,6 +230,10 @@ const createClient = (config: Config) => {
 
     get status() {
       return _store.getValue().status
+    },
+
+    get queryClient() {
+      return queryClient
     },
 
     subscribe(listener) {

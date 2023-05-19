@@ -4,7 +4,6 @@ import { ActorSubclass } from "@dfinity/agent"
 import fetch from "cross-fetch"
 
 import LedgerService from "./interfaces"
-import { Metadata } from "../ext/interfaces"
 import {
   BalanceResponse,
   BurnParams,
@@ -15,8 +14,7 @@ import {
 } from "../methods"
 import { getAccountId } from "../../dab_utils/account"
 import { validatePrincipalId } from "../../dab_utils/validations"
-
-type BaseLedgerService = LedgerService;
+import { Account, TokenWrapper } from "../token-interfaces"
 
 const DECIMALS = 8
 
@@ -26,71 +24,77 @@ const NET_ID = {
 }
 const ROSETTA_URL = "https://rosetta-api.internetcomputer.org"
 
-const getMetadata = async (_actor: ActorSubclass<BaseLedgerService>): Promise<Metadata> => {
-  return {
-    fungible: {
+class Ledger implements TokenWrapper {
+  standard = "ICP"
+  actor: ActorSubclass<LedgerService>
+  canisterId: string
+
+  constructor({ actor, canisterId }: { actor: ActorSubclass<LedgerService>, canisterId: string }) {
+    this.actor = actor
+    this.canisterId = canisterId
+  }
+
+  async getMetadata() {
+    return {
       symbol: "ICP",
       decimals: DECIMALS,
       name: "ICP",
-    },
+    }
   }
-}
 
-const send = async (actor: ActorSubclass<BaseLedgerService>, {
-  to,
-  amount,
-  opts,
-}: SendParams): Promise<SendResponse> => {
-  const defaultArgs = {
-    fee: BigInt(10000),
-    memo: BigInt(0),
+  async send({
+               to,
+               amount,
+               opts,
+             }: SendParams) {
+    const defaultArgs = {
+      fee: BigInt(10000),
+      memo: BigInt(0),
+    }
+    const response = await this.actor.send_dfx({
+      to: validatePrincipalId(to) ? getAccountId(Principal.fromText(to)) : to,
+      fee: { e8s: opts?.fee || defaultArgs.fee },
+      amount: { e8s: amount },
+      memo: opts?.memo ? BigInt(opts.memo) : defaultArgs.memo,
+      from_subaccount: [], // For now, using default subaccount to handle ICP
+      created_at_time: [],
+    })
+
+    return { height: await response.toString() }
   }
-  const response = await actor.send_dfx({
-    to: validatePrincipalId(to) ? getAccountId(Principal.fromText(to)) : to,
-    fee: { e8s: opts?.fee || defaultArgs.fee },
-    amount: { e8s: amount },
-    memo: opts?.memo ? BigInt(opts.memo) : defaultArgs.memo,
-    from_subaccount: [], // For now, using default subaccount to handle ICP
-    created_at_time: [],
-  })
 
-  return { height: await response.toString() }
-}
+  async mint(receiver: Account, amount: number) {
+    // TODO:
+  }
 
-const getBalance = async (actor: ActorSubclass<BaseLedgerService>, user: Principal): Promise<BalanceResponse> => {
-  const accountId = getAccountId(user)
-  const decimals = await getDecimals(actor)
-  const response = await fetch(`${ROSETTA_URL}/account/balance`, {
-    method: "POST",
-    body: JSON.stringify({
-      network_identifier: NET_ID,
-      account_identifier: {
-        address: accountId,
+  async getBalance(user: Account) {
+    const accountId = getAccountId(user.owner)
+    const decimals = await this.getDecimals()
+    const response = await fetch(`${ROSETTA_URL}/account/balance`, {
+      method: "POST",
+      body: JSON.stringify({
+        network_identifier: NET_ID,
+        account_identifier: {
+          address: accountId,
+        },
+      }),
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "*/*",
       },
-    }),
-    headers: {
-      "Content-Type": "application/json",
-      Accept: "*/*",
-    },
-  })
-  if (!response.ok) {
-    return { value: "Error", decimals, error: response.statusText }
+    })
+    if (!response.ok) {
+      // TODO: ??
+      return { value: "Error", decimals, error: response.statusText }
+    }
+    const { balances } = await response.json()
+    const [{ value, currency }] = balances
+    return { value, decimals: currency.decimals }
   }
-  const { balances } = await response.json()
-  const [{ value, currency }] = balances
-  return { value, decimals: currency.decimals }
+
+  async getDecimals() {
+    return getDecimalsFromMetadata(await this.getMetadata())
+  }
 }
 
-const burnXTC = async (_actor: ActorSubclass<BaseLedgerService>, _params: BurnParams) => {
-  throw new Error("BURN NOT SUPPORTED")
-}
-
-const getDecimals = async (actor: ActorSubclass<BaseLedgerService>) => getDecimalsFromMetadata(await getMetadata(actor))
-
-export default {
-  send,
-  getMetadata,
-  getBalance,
-  burnXTC,
-  getDecimals,
-} as InternalTokenMethods
+export default Ledger

@@ -1,0 +1,227 @@
+type AllowanceActorResponse = variant { Ok : nat; Err : CommonError };
+type AllowanceRequest = record {
+    token : text;
+    owner : User;
+    spender : principal;
+};
+type ApproveRequest = record {
+    token : text;
+    subaccount : opt vec nat8;
+    allowance : nat;
+    spender : principal;
+};
+type BatchAddQuotaRequest = record { items : vec ImportQuotaItem };
+type BatchTransferRequest = record { items : vec TransferQuotaDetails };
+type BearerActorResponse = variant { Ok : text; Err : CommonError };
+type BooleanActorResponse = variant { Ok : bool; Err : ErrorInfo };
+type CallbackStrategy = record { token : Token; callback : func () -> () };
+type CommonError = variant { InvalidToken : text; Other : text };
+type EXTBatchTokensOfResponse = variant {
+    Ok : vec record { principal; vec nat32 };
+    Err : CommonError;
+};
+type EXTTokensOfResponse = variant { Ok : vec nat32; Err : CommonError };
+type EXTTransferResponse = variant { Ok : nat; Err : TransferError };
+type ErrorInfo = record { code : nat32; message : text };
+type Fungible = record {
+    decimals : text;
+    metadata : opt vec nat8;
+    name : User;
+    symbol : principal;
+};
+type GetAllDetailsActorResponse = variant {
+    Ok : vec Registration;
+    Err : ErrorInfo;
+};
+type GetDetailsActorResponse = variant { Ok : Registration; Err : ErrorInfo };
+type GetNameExpiresActorResponse = variant { Ok : nat64; Err : ErrorInfo };
+type GetNameStatueActorResponse = variant { Ok : NameStatus; Err : ErrorInfo };
+type GetNamesActorResponse = variant { Ok : GetPageOutput; Err : ErrorInfo };
+type GetNamesCountActorResponse = variant { Ok : nat32; Err : ErrorInfo };
+type GetOwnerActorResponse = variant { Ok : principal; Err : ErrorInfo };
+type GetPageInput = record { offset : nat64; limit : nat64 };
+type GetPageOutput = record { items : vec RegistrationDto };
+type GetPriceTableResponse = variant { Ok : PriceTable; Err : ErrorInfo };
+type GetPublicResolverActorResponse = variant { Ok : text; Err : ErrorInfo };
+type GetQuotaActorResponse = variant { Ok : nat32; Err : ErrorInfo };
+type GetStatsResponse = variant { Ok : Stats; Err : ErrorInfo };
+type HttpRequest = record {
+    url : text;
+    method : text;
+    body : vec nat8;
+    headers : vec record { text; text };
+};
+type HttpResponse = record {
+    body : vec nat8;
+    headers : vec record { text; text };
+    streaming_strategy : opt StreamingStrategy;
+    status_code : nat16;
+};
+type ImportNameRegistrationItem = record {
+    owner : principal;
+    name : text;
+    years : nat32;
+};
+type ImportNameRegistrationRequest = record {
+    items : vec ImportNameRegistrationItem;
+};
+type ImportQuotaItem = record {
+    owner : principal;
+    diff : nat32;
+    quota_type : text;
+};
+type ImportQuotaRequest = record {
+    hash : vec nat8;
+    items : vec ImportQuotaItem;
+};
+type ImportQuotaResponse = variant { Ok : ImportQuotaStatus; Err : ErrorInfo };
+type ImportQuotaStatus = variant { Ok; AlreadyExists };
+type ImportTokenIdResponse = variant { Ok : nat64; Err : ErrorInfo };
+type Metadata = variant { fungible : Fungible; nonfungible : NonFungible };
+type MetadataActorResponse = variant { Ok : Metadata; Err : CommonError };
+type NameStatus = record {
+    kept : bool;
+    available : bool;
+    details : opt Registration;
+    registered : bool;
+};
+type NonFungible = record { metadata : opt vec nat8 };
+type PriceTable = record {
+    icp_xdr_conversion_rate : nat64;
+    items : vec PriceTableItem;
+};
+type PriceTableItem = record {
+    len : nat8;
+    price_in_icp_e8s : nat64;
+    price_in_xdr_permyriad : nat64;
+};
+type QuotaType = variant { LenEq : nat8; LenGte : nat8 };
+type RegisterNameWithPaymentRequest = record {
+    name : text;
+    approve_amount : nat;
+    years : nat32;
+};
+type Registration = record {
+    owner : principal;
+    name : text;
+    created_at : nat64;
+    expired_at : nat64;
+};
+type RegistrationDto = record {
+    name : text;
+    created_at : nat64;
+    expired_at : nat64;
+};
+type RenewNameRequest = record {
+    name : text;
+    approve_amount : nat64;
+    years : nat32;
+};
+type StateExportData = record { state_data : vec nat8 };
+type StateExportResponse = variant { Ok : StateExportData; Err : ErrorInfo };
+type Stats = record {
+    user_count : nat64;
+    new_registered_name_count : nat64;
+    cycles_balance : nat64;
+    last_xdr_permyriad_per_icp : nat64;
+    user_quota_count : vec record { text; nat64 };
+    name_order_paid_count : nat64;
+    last_timestamp_seconds_xdr_permyriad_per_icp : nat64;
+    name_lock_count : nat64;
+    registration_count : nat64;
+};
+type StreamingStrategy = variant { Callback : CallbackStrategy };
+type SupplyActorResponse = variant { Ok : nat; Err : CommonError };
+type Token = record {
+    key : text;
+    sha256 : opt vec nat8;
+    index : nat;
+    content_encoding : text;
+};
+type TransferError = variant {
+    CannotNotify : text;
+    InsufficientBalance;
+    InvalidToken : text;
+    Rejected;
+    Unauthorized : text;
+    Other : text;
+};
+type TransferFromQuotaRequest = record {
+    to : principal;
+    diff : nat32;
+    from : principal;
+    quota_type : QuotaType;
+};
+type TransferQuotaDetails = record {
+    to : principal;
+    diff : nat32;
+    quota_type : QuotaType;
+};
+type TransferRequest = record {
+    to : User;
+    token : text;
+    notify : bool;
+    from : User;
+    memo : vec nat8;
+    subaccount : opt vec nat8;
+    amount : nat;
+};
+type User = variant { "principal" : principal; address : text };
+service : () -> {
+    add_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
+    allowance : (AllowanceRequest) -> (AllowanceActorResponse) query;
+    approve : (text, principal) -> (BooleanActorResponse);
+    available : (text) -> (BooleanActorResponse) query;
+    batch_add_quota : (BatchAddQuotaRequest) -> (BooleanActorResponse);
+    batch_transfer_quota : (BatchTransferRequest) -> (BooleanActorResponse);
+    bearer : (text) -> (BearerActorResponse) query;
+    export_state : () -> (StateExportResponse);
+    ext_approve : (ApproveRequest) -> (bool);
+    ext_batch_tokens_of : (vec principal) -> (EXTBatchTokensOfResponse) query;
+    ext_tokens_of : (principal) -> (EXTTokensOfResponse) query;
+    ext_transfer : (TransferRequest) -> (EXTTransferResponse);
+    getMinter : () -> (principal) query;
+    getRegistry : () -> (vec record { nat32; text }) query;
+    getTokens : () -> (vec record { nat32; Metadata }) query;
+    get_all_details : (GetPageInput) -> (GetAllDetailsActorResponse) query;
+    get_details : (text) -> (GetDetailsActorResponse) query;
+    get_last_registrations : () -> (GetAllDetailsActorResponse) query;
+    get_name_expires : (text) -> (GetNameExpiresActorResponse) query;
+    get_name_status : (text) -> (GetNameStatueActorResponse) query;
+    get_names : (principal, GetPageInput) -> (GetNamesActorResponse) query;
+    get_names_count : (principal) -> (GetNamesCountActorResponse) query;
+    get_owner : (text) -> (GetOwnerActorResponse) query;
+    get_price_table : () -> (GetPriceTableResponse);
+    get_public_resolver : () -> (GetPublicResolverActorResponse) query;
+    get_quota : (principal, QuotaType) -> (GetQuotaActorResponse) query;
+    get_stats : () -> (GetStatsResponse) query;
+    get_token_details_by_names : (vec text) -> (
+    vec record { text; opt record { nat32; text } },
+    ) query;
+    get_wasm_info : () -> (vec record { text; text }) query;
+    http_request : (HttpRequest) -> (HttpResponse) query;
+    import_quota : (ImportQuotaRequest) -> (ImportQuotaResponse);
+    import_registrations : (ImportNameRegistrationRequest) -> (
+    BooleanActorResponse,
+    );
+    import_token_id_from_registration : () -> (ImportTokenIdResponse);
+    load_state : (StateExportData) -> (BooleanActorResponse);
+    metadata : (text) -> (MetadataActorResponse) query;
+    reclaim_name : (text) -> (BooleanActorResponse);
+    register_for : (text, principal, nat64) -> (BooleanActorResponse);
+    register_from_gateway : (text, principal) -> (BooleanActorResponse);
+    register_with_payment : (RegisterNameWithPaymentRequest) -> (
+    GetDetailsActorResponse,
+    );
+    register_with_quota : (text, QuotaType) -> (BooleanActorResponse);
+    renew_name : (RenewNameRequest) -> (BooleanActorResponse);
+    run_tasks : () -> (BooleanActorResponse);
+    sub_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
+    supply : () -> (SupplyActorResponse) query;
+    transfer : (text, principal) -> (BooleanActorResponse);
+    transfer_by_admin : (text, principal) -> (BooleanActorResponse);
+    transfer_from : (text) -> (BooleanActorResponse);
+    transfer_from_quota : (TransferFromQuotaRequest) -> (BooleanActorResponse);
+    transfer_quota : (principal, QuotaType, nat32) -> (BooleanActorResponse);
+    unlock_names : (vec text) -> (BooleanActorResponse);
+}

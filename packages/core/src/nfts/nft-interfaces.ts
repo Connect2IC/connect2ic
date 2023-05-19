@@ -7,6 +7,8 @@ import DIP721 from "./dip_721/dip_721"
 import DIP721v2 from "./dip_721_v2/dip_721_v2"
 import CCC from "./ccc/ccc"
 import ICPunks from "./ic_punks/ic_punks"
+import ERC721 from "./erc721/erc721"
+import Origyn from "./origyn/origyn"
 
 type SubAccount = [] | [Uint8Array];
 
@@ -54,16 +56,17 @@ export interface NFTWrapper {
 
   // new(actor: ActorSubclass<any>, canisterId: string): TokenWrapper
 
-  init({ capRouterId }: { capRouterId?: string }): Promise<void>
-
   getUserTokens(user: Account): Promise<NFTDetails[]>
 
-  mint(receiver: Account, metadata: any, tokenIndex?: bigint): Promise<any>
+  mint(receiver: Account, metadata: any, tokenIndex?: any): Promise<any>
 
-  transfer(args: { from: Account, to: Account, tokenIndex: bigint }): Promise<void>
+  transfer(args: { from: Account, to: Account, tokenIndex: any }): Promise<void>
 
-  getMetadata(tokenIndex: bigint): Promise<NFTDetails>
+  getMetadata(tokenIndex: any): Promise<NFTDetails>
 
+  collectionDetails(): Promise<NFTMetadata>
+
+  // TODO: ??
   getHistory?(): Promise<{
     caller: string;
     // operation: tx.operation,
@@ -83,4 +86,6 @@ export type NFTStandards =
   | typeof DepartureLabs
   | typeof DIP721
   | typeof DIP721v2
-  | typeof CCC;
+  | typeof CCC
+  | typeof ERC721
+  | typeof Origyn

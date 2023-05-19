@@ -7,10 +7,6 @@ import nfidLogoLight from "../assets/nfid.png"
 import nfidLogoDark from "../assets/nfid.png"
 import { IDL } from "@dfinity/candid"
 import {
-  ok,
-  err, Result,
-} from "neverthrow"
-import {
   ConnectError,
   CreateActorError,
   DisconnectError,
@@ -42,13 +38,13 @@ class Wallet implements IWalletConnector {
       { provider: PROVIDER_URL },
     )
     if (result.status === "SUCCESS") {
-      return ok({ height: result.height })
+      return { height: result.height }
     }
     if (result.status === "REJECTED") {
-      return err({ kind: TransferError.TransferRejected })
+      throw new Error({ kind: TransferError.TransferRejected })
     }
     // if (result.status === 'ERROR') {
-    return err({ kind: TransferError.TransferFailed })
+    throw new Error({ kind: TransferError.TransferFailed })
     // }
   }
 
@@ -62,7 +58,7 @@ class Wallet implements IWalletConnector {
       //   balance: account.balance,
       // })))
       // TODO: !!!!!!!!
-      return ok(result.accounts)
+      return result.accounts
       // export type BalanceResult = Result<Array<{
       //   amount: number
       //   canisterId: string
@@ -73,10 +69,10 @@ class Wallet implements IWalletConnector {
       // }>, CustomError<BalanceError>>
     }
     if (result.status === "REJECTED") {
-      return err({ kind: BalanceError.QueryBalanceRejected })
+      throw new Error({ kind: BalanceError.QueryBalanceRejected })
     }
     // if (result.status === "ERROR") {
-    return err({ kind: BalanceError.QueryBalanceFailed })
+    throw new Error({ kind: BalanceError.QueryBalanceFailed })
     // }
   }
 }
@@ -156,10 +152,9 @@ class NFID implements IConnector {
         this.#identity = this.#client.getIdentity()
         this.#principal = this.#identity.getPrincipal().toString()
       }
-      return ok({ isConnected })
+      return { isConnected }
     } catch (e) {
-      console.error(e)
-      return err({ kind: InitError.InitFailed })
+      throw new Error({ kind: InitError.InitFailed, error: e })
     }
   }
 
@@ -188,34 +183,34 @@ class NFID implements IConnector {
   }
 
   async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory) {
+    // TODO: allow passing identity?
+    const agent = new HttpAgent({
+      ...this.#config,
+      identity: this.#identity,
+    })
     try {
-      // TODO: allow passing identity?
-      const agent = new HttpAgent({
-        ...this.#config,
-        identity: this.#identity,
-      })
-
       if (this.#config.dev) {
         // Fetch root key for certificate validation during development
-        const res = await agent.fetchRootKey().then(() => ok(true)).catch(e => err({ kind: CreateActorError.FetchRootKeyFailed }))
-        if (res.isErr()) {
-          return res
-        }
+        await agent.fetchRootKey()
       }
-      // TODO: add actorOptions?
+    } catch (e) {
+      throw new Error({ kind: CreateActorError.FetchRootKeyFailed, error: e })
+    }
+    // TODO: add actorOptions?
+    try {
       const actor = Actor.createActor<Service>(idlFactory, {
         agent,
         canisterId,
       })
-      return ok(actor)
+      return actor
     } catch (e) {
-      console.error(e)
-      return err({ kind: CreateActorError.CreateActorFailed })
+      throw new Error({ kind: CreateActorError.CreateActorFailed, error: e })
     }
   }
 
   async connect() {
     try {
+      // TODO: on reject?
       await new Promise((resolve, reject) => {
         this.#client.login({
           // TODO: local
@@ -230,22 +225,20 @@ class NFID implements IConnector {
       if (identity) {
         this.#identity = identity
         this.#principal = principal
-        return ok(true)
+        return true
       }
-      return ok(true)
+      return true
     } catch (e) {
-      console.error(e)
-      return err({ kind: ConnectError.ConnectFailed })
+      throw new Error({ kind: ConnectError.ConnectFailed, error: e })
     }
   }
 
   async disconnect() {
     try {
       await this.#client.logout()
-      return ok(true)
+      return true
     } catch (e) {
-      console.error(e)
-      return err({ kind: DisconnectError.DisconnectFailed })
+      throw new Error({ kind: DisconnectError.DisconnectFailed, error: e })
     }
   }
 }

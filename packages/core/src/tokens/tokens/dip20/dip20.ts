@@ -27,26 +27,41 @@ export default class Dip20 implements TokenWrapper {
   capRoot?: CapRoot
   capRouter?: CapRouter
 
-  constructor(actor: ActorSubclass<Dip20Service>, canisterId: string) {
+  constructor({
+                actor,
+                canisterId,
+                capRouter,
+                capRoot,
+              }: {
+    actor: ActorSubclass<Dip20Service>,
+    canisterId: string,
+    capRouter?: CapRouter,
+    capRoot?: CapRoot,
+  }) {
     // super()
     this.actor = actor
     this.canisterId = canisterId
+    this.capRouter = capRouter
+    this.capRoot = capRoot
   }
 
-  public async init({ capRouterId }) {
-    if (capRouterId) {
-      this.capRouter = await CapRouter.init({
-        // TODO: get settings
-        host: window.location.origin,
-        canisterId: capRouterId,
-      })
-      this.capRoot = await CapRoot.init({
-        tokenId: this.canisterId,
-        router: this.capRouter,
-        host: window.location.origin,
-      })
-    }
-  }
+  // TODO: !!!
+
+  // public async init({ capRouterId }) {
+  //   if (capRouterId) {
+  //     this.capRouter = await CapRouter.init({
+  //       // TODO: get settings
+  //       // host: window.location.origin,
+  //       canisterId: capRouterId,
+  //     })
+  //     // @ts-ignore
+  //     this.capRoot = await CapRoot.init({
+  //       tokenId: this.canisterId,
+  //       router: this.capRouter,
+  //       // host: window.location.origin,
+  //     })
+  //   }
+  // }
 
   public async getMetadata(): Promise<TokenMetadata> {
     const details = await this.actor.getTokenInfo()
@@ -112,7 +127,9 @@ export default class Dip20 implements TokenWrapper {
 
   public async getBalance(user: Account) {
     const decimals = await this.getDecimals()
-    const value = (await this.actor.balanceOf(user.owner))
+    // const decimals = 0
+    const value = await this.actor.balanceOf(user.owner)
+    // const value = 0n
     return { value, decimals }
   }
 

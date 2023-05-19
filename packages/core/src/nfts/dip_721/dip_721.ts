@@ -3,8 +3,6 @@ import { Principal } from "@dfinity/principal"
 
 import { NFTDetails } from "../interfaces/nft"
 import Interface, { MetadataPart, MetadataVal } from "./interfaces"
-import IDL from "./dip_721.did"
-import NFT from "../default"
 import { NFT as NFTStandard } from "../../tokens/constants/standards"
 import { Account, NFTWrapper } from "../nft-interfaces"
 
@@ -31,7 +29,7 @@ export default class DIP721 implements NFTWrapper {
   actor: ActorSubclass<Interface>
   canisterId: string
 
-  constructor(actor: ActorSubclass<Interface>, canisterId: string) {
+  constructor({ actor, canisterId }: { actor: ActorSubclass<Interface>, canisterId: string }) {
     // super()
     this.actor = actor
     this.canisterId = canisterId
@@ -75,6 +73,32 @@ export default class DIP721 implements NFTWrapper {
     const formatedMetadata = this.formatMetadata(metadata)
 
     return this.serializeTokenData(formatedMetadata, tokenIndex)
+  }
+
+  async collectionDetails() {
+    // TODO: implement
+    const [
+      result,
+      stats,
+      // supportedInterfaces,
+    ] = await Promise.all([
+      this.actor.metadata(),
+      this.actor.stats(),
+      // this.actor.supportedInterfaces(),
+    ])
+    return {
+      logo: result.logo[0],
+      symbol: result.symbol[0],
+      name: result.name[0],
+      custodians: result.custodians,
+      createdAt: Number(result.created_at),
+      upgradedAt: result.upgraded_at ? Number(result.upgraded_at) : undefined,
+      cycles: Number(stats.cycles),
+      totalTransactions: Number(stats.total_transactions),
+      totalUniqueHolders: Number(stats.total_unique_holders),
+      totalSupply: Number(stats.total_supply),
+      // supportedInterfaces,
+    }
   }
 
   private serializeTokenData(metadata: any, tokenIndex: number | bigint): NFTDetails {

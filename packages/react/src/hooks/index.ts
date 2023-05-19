@@ -1,5 +1,6 @@
 export { useConnect } from "./useConnect"
 export { useCanister, useCanisterById, useCanisters } from "./useCanister"
+export { useCapRoot, useCapRouter } from "./useCap"
 export { useBalance } from "./useBalance"
 export { useDialog } from "./useDialog"
 export { useProviders } from "./useProviders"

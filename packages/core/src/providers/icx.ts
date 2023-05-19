@@ -7,10 +7,6 @@ import astroXLogoLight from "../assets/astrox_light.svg"
 // @ts-ignore
 import astroXLogoDark from "../assets/astrox.png"
 import {
-  ok,
-  err, Result,
-} from "neverthrow"
-import {
   SignError,
   BalanceError,
   ConnectError,
@@ -64,6 +60,10 @@ class Wallet implements IWalletConnector {
     to: string;
     standard: string;
   }) {
+    if (!this.#ic) {
+      throw new Error({ kind: TransferError.NotInitialized })
+    }
+    let response
     try {
       const {
         tokenIdentifier,
@@ -72,31 +72,27 @@ class Wallet implements IWalletConnector {
         standard,
         to,
       } = args
-      if (!this.#ic) {
-        return err({ kind: TransferError.NotInitialized })
-      }
-      const response = await this.#ic.requestTransfer({
+      response = await this.#ic.requestTransfer({
         tokenIdentifier,
         tokenIndex,
         canisterId,
         standard,
         to,
       })
-      if (response.kind === TransactionMessageKind.fail) {
-        return err({ kind: TransferError.TransferFailed })
-      }
-      if (response.kind === TransactionMessageKind.success) {
-        return ok({
-          // TODO: transactionId?
-          // transactionId: response.kind
-          // ...response.payload,
-        })
-      }
-      return err({ kind: TransferError.TransferFailed })
     } catch (e) {
-      console.error(e)
-      return err({ kind: TransferError.TransferFailed })
+      throw new Error({ kind: TransferError.TransferFailed, error: e })
     }
+    if (response.kind === TransactionMessageKind.fail) {
+      throw new Error({ kind: TransferError.TransferFailed })
+    }
+    if (response.kind === TransactionMessageKind.success) {
+      return {
+        // TODO: transactionId?
+        // transactionId: response.kind
+        // ...response.payload,
+      }
+    }
+    throw new Error({ kind: TransferError.TransferFailed })
   }
 
   async requestTransfer(args) {
@@ -106,53 +102,49 @@ class Wallet implements IWalletConnector {
       symbol = "ICP",
       standard = "ICP",
     } = args
+    // TODO: some better way to do this?
+    const tokenInfo = this.#supportedTokenList.find(({
+                                                       symbol: tokenSymbol,
+                                                     }) => symbol === tokenSymbol)
+    if (!tokenInfo) {
+      throw new Error({ kind: TransferError.TokenNotSupported })
+    }
+    let response
     try {
-      // TODO: some better way to do this?
-      const tokenInfo = this.#supportedTokenList.find(({
-                                                         symbol: tokenSymbol,
-                                                       }) => symbol === tokenSymbol)
-      if (!tokenInfo) {
-        return err({ kind: TransferError.TokenNotSupported })
-      }
-      // @ts-ignore
-      const response = await this.#ic?.requestTransfer({
-        //@ts-ignore
+      response = await this.#ic?.requestTransfer({
         amount: BigInt(amount * (10 ** tokenInfo.decimals)),
         to,
         symbol,
         standard,
       })
-      if (!response || response.kind === TransactionMessageKind.fail) {
-        // message?
-        return err({ kind: TransferError.TransferFailed })
-      }
-
-      if (response.kind === TransactionMessageKind.success) {
-        return ok({
-          // TODO: transactionId ??? see astrox-js-sdk
-          // @ts-ignore
-          ...response.payload,
-          // height: (response as TransactionResponseSuccess).payload ?? Number(response.payload.blockHeight),
-        })
-      }
-      return err({ kind: TransferError.TransferFailed })
     } catch (e) {
-      console.error(e)
-      return err({ kind: TransferError.TransferFailed })
+      throw new Error({ kind: TransferError.TransferFailed, error: e })
     }
+    if (!response || response.kind === TransactionMessageKind.fail) {
+      // message?
+      throw new Error({ kind: TransferError.TransferFailed })
+    }
+
+    if (response.kind === TransactionMessageKind.success) {
+      return {
+        // TODO: transactionId ??? see astrox-js-sdk
+        ...response.payload,
+        // height: (response as TransactionResponseSuccess).payload ?? Number(response.payload.blockHeight),
+      }
+    }
+    throw new Error({ kind: TransferError.TransferFailed })
   }
 
   async queryBalance() {
+    if (!this.#ic) {
+      throw new Error({ kind: BalanceError.NotInitialized })
+    }
     try {
-      if (!this.#ic) {
-        return err({ kind: BalanceError.NotInitialized })
-      }
       const response = await this.#ic.queryBalance()
       response.forEach(token => token.amount = token.amount / (10 ** token.decimals))
-      return ok(response)
+      return response
     } catch (e) {
-      console.error(e)
-      return err({ kind: BalanceError.QueryBalanceFailed })
+      throw new Error({ kind: BalanceError.QueryBalanceFailed, error: e })
     }
   }
 
@@ -255,10 +247,9 @@ class ICX implements IConnector {
           await this.#ic.agent.fetchRootKey()
         }
       }
-      return ok({ isConnected })
+      return { isConnected }
     } catch (e) {
-      console.error(e)
-      return err({ kind: InitError.InitFailed })
+      throw new Error({ kind: InitError.InitFailed, error: e })
     }
   }
 
@@ -289,29 +280,26 @@ class ICX implements IConnector {
   }
 
   // TODO: export & use types from astrox/connection instead of dfinity/agent
-  async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory, config = {}): Promise<Result<ActorSubclass<Service>, { kind: CreateActorError; }>> {
+  async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory, config = {}): Promise<ActorSubclass<Service>> {
+    if (!this.#ic) {
+      throw new Error({ kind: CreateActorError.NotInitialized })
+    }
     try {
-      if (!this.#ic) {
-        return err({ kind: CreateActorError.NotInitialized })
-      }
-      // @ts-ignore
       const actor = await this.#ic.createActor<Service>(canisterId, idlFactory)
       if (!actor) {
-        return err({ kind: CreateActorError.CreateActorFailed })
+        throw new Error({ kind: CreateActorError.CreateActorFailed })
       }
-      // @ts-ignore
-      return ok(actor)
+      return actor
     } catch (e) {
-      console.error(e)
-      return err({ kind: CreateActorError.CreateActorFailed })
+      throw new Error({ kind: CreateActorError.CreateActorFailed })
     }
   }
 
   async connect() {
+    if (!this.#ic) {
+      throw new Error({ kind: ConnectError.NotInitialized })
+    }
     try {
-      if (!this.#ic) {
-        return err({ kind: ConnectError.NotInitialized })
-      }
       await this.#ic.connect({
         delegationTargets: this.#config.whitelist,
         host: this.#config.host,
@@ -319,22 +307,21 @@ class ICX implements IConnector {
       })
       this.#principal = this.#ic.getPrincipal().toText()
       if (this.#config.dev) {
+        // TODO: fetch root key failed error?
         await this.#ic.agent.fetchRootKey()
       }
-      return ok(true)
+      return true
     } catch (e) {
-      console.error(e)
-      return err({ kind: ConnectError.ConnectFailed })
+      throw new Error({ kind: ConnectError.ConnectFailed })
     }
   }
 
   async disconnect() {
     try {
       await this.#ic?.disconnect()
-      return ok(true)
+      return true
     } catch (e) {
-      console.error(e)
-      return err({ kind: DisconnectError.DisconnectFailed })
+      throw new Error({ kind: DisconnectError.DisconnectFailed, error: e })
     }
   }
 

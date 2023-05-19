@@ -17,7 +17,6 @@ import {
 import astroXLogoLight from "../assets/astrox_light.svg"
 // @ts-ignore
 import astroXLogoDark from "../assets/astrox.png"
-import { err, ok, Result } from "neverthrow"
 import { TransactionMessageKind } from "@astrox/sdk-web/build/types"
 
 const balanceFromString = (balance: string, decimal = 8): bigint => {
@@ -56,8 +55,9 @@ class Wallet implements IWalletConnector {
 
   async requestTransfer(opts: { amount: number, to: string, standard?: string, symbol?: string, decimals?: number }) {
     const { to, amount, standard = "ICP", symbol = "ICP", decimals = 8 } = opts
+    let result
     try {
-      const result = await this.#ic?.requestTransfer({
+      result = await this.#ic?.requestTransfer({
         amount: BigInt(amount * (10 ** decimals)),
         to,
         standard,
@@ -65,26 +65,26 @@ class Wallet implements IWalletConnector {
         // TODO: ?
         sendOpts: {},
       })
-      // TODO: why string? check astrox-js
-      if (typeof result === "string") {
-        return err({ kind: TransferError.FaultyAddress })
-      }
-      // check astrox-js
-      if (!result) {
-        return err({ kind: TransferError.TransferFailed })
-      }
-      switch (result?.kind) {
-        case "transaction-client-success":
-          return ok({
-            // TODO: why is payload optional? check astrox-js
-            height: Number(result.payload?.blockHeight),
-          })
-        default:
-          return err({ kind: TransferError.TransferFailed })
-      }
     } catch (e) {
       console.error(e)
-      return err({ kind: TransferError.TransferFailed })
+      throw new Error({ kind: TransferError.TransferFailed, error: e })
+    }
+    // TODO: why string? check astrox-js
+    if (typeof result === "string") {
+      throw new Error({ kind: TransferError.FaultyAddress })
+    }
+    // check astrox-js
+    if (!result) {
+      throw new Error({ kind: TransferError.TransferFailed })
+    }
+    switch (result?.kind) {
+      case "transaction-client-success":
+        return {
+          // TODO: why is payload optional? check astrox-js
+          height: Number(result.payload?.blockHeight),
+        }
+      default:
+        throw new Error({ kind: TransferError.TransferFailed })
     }
   }
 
@@ -95,18 +95,19 @@ class Wallet implements IWalletConnector {
     to: string;
     standard: string;
   }) {
+    const {
+      tokenIdentifier,
+      tokenIndex,
+      canisterId,
+      standard,
+      to,
+    } = args
+    if (!this.#ic) {
+      throw new Error({ kind: TransferError.NotInitialized })
+    }
+    let response
     try {
-      const {
-        tokenIdentifier,
-        tokenIndex,
-        canisterId,
-        standard,
-        to,
-      } = args
-      if (!this.#ic) {
-        return err({ kind: TransferError.NotInitialized })
-      }
-      const response = await this.#ic.requestTransfer({
+      response = await this.#ic.requestTransfer({
         tokenIdentifier,
         tokenIndex,
         canisterId,
@@ -115,40 +116,40 @@ class Wallet implements IWalletConnector {
         sendOpts: {},
         symbol: "",
       })
-      if (!response || typeof response === "string" /* || response.kind === TransactionMessageKind.fail*/) {
-        return err({ kind: TransferError.TransferFailed })
-      }
-      if (response.kind === TransactionMessageKind.success) {
-        return ok({
-          // ...response.payload,
-          // TODO: fixxxxxxxx
-          transactionId: String(response.payload?.blockHeight),
-          // height: Number(response.payload?.blockHeight),
-        })
-      }
-      return err({ kind: TransferError.TransferFailed })
     } catch (e) {
-      console.error(e)
-      return err({ kind: TransferError.TransferFailed })
+      throw new Error({ kind: TransferError.TransferFailed, error: e })
     }
+    if (!response || typeof response === "string" /* || response.kind === TransactionMessageKind.fail*/) {
+      throw new Error({ kind: TransferError.TransferFailed })
+    }
+    if (response.kind === TransactionMessageKind.success) {
+      return {
+        // ...response.payload,
+        // TODO: fixxxxxxxx
+        transactionId: String(response.payload?.blockHeight),
+        // height: Number(response.payload?.blockHeight),
+      }
+    }
+
+    throw new Error({ kind: TransferError.TransferFailed })
   }
 
   async queryBalance() {
+    let ICPBalance
     try {
-      const ICPBalance = Number(await this.#ic?.queryBalance()) ?? 0
-      return ok([{
-        amount: ICPBalance / 100000000,
-        canisterId: this.#config.ledgerCanisterId,
-        decimals: 8,
-        // TODO: plug returns image?
-        // image: "Dfinity.svg",
-        name: "ICP",
-        symbol: "ICP",
-      }])
+      ICPBalance = Number(await this.#ic?.queryBalance()) ?? 0
     } catch (e) {
-      console.error(e)
-      return err({ kind: BalanceError.QueryBalanceFailed })
+      throw new Error({ kind: BalanceError.QueryBalanceFailed, error: e })
     }
+    return [{
+      amount: ICPBalance / 100000000,
+      canisterId: this.#config.ledgerCanisterId,
+      decimals: 8,
+      // TODO: plug returns image?
+      // image: "Dfinity.svg",
+      name: "ICP",
+      symbol: "ICP",
+    }]
   }
 
 }
@@ -233,10 +234,9 @@ class AstroX implements IConnector {
         this.#identity = this.#ic.identity
         this.#principal = this.#ic.principal.toText()
       }
-      return ok({ isConnected })
+      return { isConnected }
     } catch (e) {
-      console.error(e)
-      return err({ kind: InitError.InitFailed })
+      throw new Error({ kind: InitError.InitFailed, error: e })
     }
   }
 
@@ -265,28 +265,23 @@ class AstroX implements IConnector {
   }
 
   // TODO: export & use types from astrox/connection instead of dfinity/agent
-  async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory): Promise<Result<ActorSubclass<Service>, { kind: CreateActorError; }>> {
+  async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory): Promise<ActorSubclass<Service>> {
     try {
       if (!this.#ic) {
-        return err({ kind: CreateActorError.NotInitialized })
+        throw new Error({ kind: CreateActorError.NotInitialized })
       }
-      // @ts-ignore
       const actor = await this.#ic.createActor<Service>(idlFactory, canisterId)
-      // @ts-ignore
-      return ok(actor)
+      return actor
     } catch (e) {
-      console.error(e)
-      return err({ kind: CreateActorError.CreateActorFailed })
+      throw new Error({ kind: CreateActorError.CreateActorFailed, error: e })
     }
   }
 
   async connect() {
+    if (!this.#ic) {
+      throw new Error({ kind: ConnectError.NotInitialized })
+    }
     try {
-      console.log("connect!", this.#ic)
-      if (!this.#ic) {
-        return err({ kind: ConnectError.NotInitialized })
-      }
-      console.log("this.#ic post")
       await this.#ic.connect({
         useFrame: !(window.innerWidth < 768),
         signerProviderUrl: `${this.#config.providerUrl}/#signer`,
@@ -299,26 +294,23 @@ class AstroX implements IConnector {
         delegationTargets: this.#config.whitelist,
         noUnify: this.#config.noUnify,
       })
-      console.log("#ic.connect post")
       this.#principal = this.#ic.principal.toText()
       // @ts-ignore
       this.#identity = this.#ic.identity
       // TODO: move out or not? how to pass this.#ic if yes
       this.#wallets = [new Wallet(this.#config, this.#ic)]
-      return ok(true)
+      return true
     } catch (e) {
-      console.error(e)
-      return err({ kind: ConnectError.ConnectFailed })
+      throw new Error({ kind: ConnectError.ConnectFailed, error: e })
     }
   }
 
   async disconnect() {
     try {
       await this.#ic?.disconnect()
-      return ok(true)
+      return true
     } catch (e) {
-      console.error(e)
-      return err({ kind: DisconnectError.DisconnectFailed })
+      throw new Error({ kind: DisconnectError.DisconnectFailed, error: e })
     }
   }
 

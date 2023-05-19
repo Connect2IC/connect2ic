@@ -1,4 +1,0 @@
-{
-  "main": "dist/connect2ic-core-providers-earth-wallet.cjs.js",
-  "module": "dist/connect2ic-core-providers-earth-wallet.esm.js"
-}

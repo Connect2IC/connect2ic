@@ -1,7 +1,7 @@
 import { Actor, ActorSubclass } from "@dfinity/agent"
 import { Principal } from "@dfinity/principal"
 
-import ExtService, { Metadata } from "./interfaces"
+import ExtService, { Metadata, TokenMetaData } from "./interfaces"
 import {
   BalanceResponse,
   BurnParams,
@@ -10,68 +10,103 @@ import {
   SendParams,
   SendResponse,
 } from "../methods"
+import { Account, TokenWrapper } from "../token-interfaces"
 
-type BaseExtService = ExtService;
+class EXT implements TokenWrapper {
 
-const getMetadata = async (actor: ActorSubclass<BaseExtService>): Promise<Metadata> => {
-  actor.balance
-  const token = Actor.canisterIdOf(actor).toText()
+  actor: ActorSubclass<ExtService>
+  canisterId: string
+  standard = "EXT"
 
-  const extensions = await actor.extensions()
-  if (!extensions.includes("@ext/common")) throw new Error("The provided canister does not implement commont extension")
-  const metadataResult = await actor.metadata(token)
-
-  if ("ok" in metadataResult) return metadataResult.ok
-
-  throw new Error(Object.keys(metadataResult.err)[0])
-}
-
-const send = async (actor: ActorSubclass<BaseExtService>, { to, from, amount }: SendParams): Promise<SendResponse> => {
-  const dummyMemmo = new Array(32).fill(0)
-  const token = Actor.canisterIdOf(actor).toText()
-  const data = {
-    to: { principal: Principal.fromText(to) },
-    from: { principal: Principal.from(from) },
-    amount,
-    token,
-    memo: dummyMemmo,
-    notify: false,
-    subaccount: [],
-    fee: BigInt(0),
+  constructor({
+                actor,
+                canisterId,
+              }: {
+    actor: ActorSubclass<ExtService>,
+    canisterId: string
+  }) {
+    // super()
+    this.actor = actor
+    this.canisterId = canisterId
   }
 
-  const transferResult = await actor.transfer(data)
+  async getMetadata() {
+    // actor.balance
+    const token = Actor.canisterIdOf(this.actor).toText()
 
-  if ("ok" in transferResult) return { amount: transferResult.ok.toString() }
+    const extensions = await this.actor.extensions()
+    if (!extensions.includes("@ext/common")) {
+      throw new Error("The provided canister does not implement commont extension")
+    }
+    const metadataResult = await this.actor.metadata(token)
 
-  throw new Error(Object.keys(transferResult.err)[0])
+    if ("ok" in metadataResult) {
+      // return metadataResult.ok
+      const details = metadataResult.ok.fungible
+      // decimals, metadata: [], name, symbol
+      return details
+      // return {
+      //   cycles: Number(details.cycles),
+      //   deployTime: Number(details.deployTime),
+      //   feeTo: { owner: details.feeTo, subaccount: [] },
+      //   historySize: Number(details.historySize),
+      //   holderNumber: Number(details.holderNumber),
+      //   standard: this.standard,
+      //   ...details.metadata,
+      //   fee: Number(details.metadata.fee),
+      //   totalSupply: Number(details.metadata.totalSupply),
+      //   owner: { owner: details.metadata.owner, subaccount: [] },
+      // }
+    }
+
+    throw new Error(Object.keys(metadataResult.err)[0])
+  }
+
+  async send({ to, from, amount }) {
+    const dummyMemmo = new Array(32).fill(0)
+    const token = Actor.canisterIdOf(this.actor).toText()
+    const data = {
+      to: { principal: Principal.fromText(to) },
+      from: { principal: Principal.from(from) },
+      amount,
+      token,
+      memo: dummyMemmo,
+      notify: false,
+      subaccount: [],
+      fee: BigInt(0),
+    }
+
+    const transferResult = await this.actor.transfer(data)
+
+    if ("ok" in transferResult) return { amount: transferResult.ok.toString() }
+
+    throw new Error(Object.keys(transferResult.err)[0])
+  }
+
+  async mint(receiver: Account, amount: number): Promise<any> {
+    // TODO:
+  }
+
+  async getBalance(user: Account) {
+    const token = Actor.canisterIdOf(this.actor).toText()
+
+    const balanceResult = await this.actor.balance({
+      token,
+      user: { principal: user.owner },
+    })
+
+    const decimals = await this.getDecimals()
+
+    if ("ok" in balanceResult) {
+      return { value: balanceResult.ok, decimals }
+    }
+
+    throw new Error(Object.keys(balanceResult.err)[0])
+  }
+
+  async getDecimals() {
+    return getDecimalsFromMetadata(await this.getMetadata())
+  }
 }
 
-const getBalance = async (actor: ActorSubclass<BaseExtService>, user: Principal): Promise<BalanceResponse> => {
-  const token = Actor.canisterIdOf(actor).toText()
-
-  const balanceResult = await actor.balance({
-    token,
-    user: { principal: user },
-  })
-
-  const decimals = await getDecimals(actor)
-
-  if ("ok" in balanceResult) return { value: balanceResult.ok.toString(), decimals }
-
-  throw new Error(Object.keys(balanceResult.err)[0])
-}
-
-const burnXTC = async (_actor: ActorSubclass<BaseExtService>, _params: BurnParams) => {
-  throw new Error("BURN NOT SUPPORTED")
-}
-
-const getDecimals = async (actor: ActorSubclass<BaseExtService>) => getDecimalsFromMetadata(await getMetadata(actor))
-
-export default {
-  send,
-  getMetadata,
-  getBalance,
-  burnXTC,
-  getDecimals,
-} as InternalTokenMethods
+export default EXT

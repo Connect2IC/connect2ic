@@ -11,11 +11,8 @@ import {
   PROVIDER_STATUS,
 } from "./connectors"
 // @ts-ignore
-// @ts-ignore
 import stoicLogoLight from "../assets/stoic.png"
-import stoicLogoDark from "../assets/stoic.png"
 import { IDL } from "@dfinity/candid"
-import { err, ok } from "neverthrow"
 
 // class Wallet implements IWalletConnector {
 //   constructor() {
@@ -29,7 +26,7 @@ class StoicWallet implements IConnector {
     features: [],
     icon: {
       light: stoicLogoLight,
-      dark: stoicLogoDark,
+      dark: stoicLogoLight,
     },
     id: "stoic",
     name: "Stoic Wallet",
@@ -89,37 +86,35 @@ class StoicWallet implements IConnector {
         this.#identity = identity
         this.#principal = identity.getPrincipal().toText()
       }
-      return ok({ isConnected })
+      return { isConnected }
     } catch (e) {
-      console.error(e)
-      return err({ kind: InitError.InitFailed })
+      throw new Error({ kind: InitError.InitFailed, error: e })
     }
   }
 
   async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory) {
+    // TODO: allow passing identity?
+    const agent = new HttpAgent({
+      ...this.#config,
+      identity: this.#identity,
+    })
     try {
-      // TODO: allow passing identity?
-      const agent = new HttpAgent({
-        ...this.#config,
-        identity: this.#identity,
-      })
-
       if (this.#config.dev) {
         // Fetch root key for certificate validation during development
-        const res = await agent.fetchRootKey().then(() => ok(true)).catch(e => err({ kind: CreateActorError.FetchRootKeyFailed }))
-        if (res.isErr()) {
-          return res
-        }
+        await agent.fetchRootKey()
       }
+    } catch (e) {
+      throw new Error({ kind: CreateActorError.FetchRootKeyFailed, error: e })
+    }
+    try {
       // TODO: add actorOptions?
       const actor = Actor.createActor<Service>(idlFactory, {
         agent,
         canisterId,
       })
-      return ok(actor)
+      return actor
     } catch (e) {
-      console.error(e)
-      return err({ kind: CreateActorError.CreateActorFailed })
+      throw new Error({ kind: CreateActorError.CreateActorFailed, error: e })
     }
   }
 
@@ -147,20 +142,18 @@ class StoicWallet implements IConnector {
     try {
       this.#identity = await StoicIdentity.connect()
       this.#principal = this.#identity.getPrincipal().toText()
-      return ok(true)
+      return true
     } catch (e) {
-      console.error(e)
-      return err({ kind: ConnectError.ConnectFailed })
+      throw new Error({ kind: ConnectError.ConnectFailed, error: e })
     }
   }
 
   async disconnect() {
     try {
       await StoicIdentity.disconnect()
-      return ok(true)
+      return true
     } catch (e) {
-      console.error(e)
-      return err({ kind: DisconnectError.DisconnectFailed })
+      throw new Error({ kind: DisconnectError.DisconnectFailed, error: e })
     }
   }
 }

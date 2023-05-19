@@ -16,7 +16,6 @@ import plugLogoDark from "../assets/plugDark.svg"
 import { IDL } from "@dfinity/candid"
 import { ActorSubclass, Agent } from "@dfinity/agent"
 import { Principal } from "@dfinity/principal"
-import { err, ok } from "neverthrow"
 
 export { Methods } from "./connectors"
 
@@ -67,22 +66,22 @@ class Wallet implements IWalletConnector {
                           to,
                           // TODO: why is type annotation needed??
                         }: { amount: number, to: string }) {
+    let result
     try {
-      const result = await this.#injectedProvider.requestTransfer({
+      result = await this.#injectedProvider.requestTransfer({
         to,
         amount: amount * 100000000,
       })
-
-      switch (!!result) {
-        case true:
-          return ok({ height: result!.height })
-        default:
-          // TODO: ?
-          return err({ kind: TransferError.TransferFailed })
-      }
     } catch (e) {
-      console.error(e)
-      return err({ kind: TransferError.TransferFailed })
+      throw new Error({ kind: TransferError.TransferFailed, error: e })
+    }
+
+    switch (!!result) {
+      case true:
+        return { height: result!.height }
+      default:
+        // TODO: ?
+        throw new Error({ kind: TransferError.TransferFailed })
     }
   }
 
@@ -113,15 +112,14 @@ class Wallet implements IWalletConnector {
   // }
 
   async queryBalance() {
+    if (!this.#injectedProvider) {
+      throw new Error({ kind: BalanceError.NotInitialized })
+    }
     try {
-      if (!this.#injectedProvider) {
-        return err({ kind: BalanceError.NotInitialized })
-      }
       const assets = await this.#injectedProvider.requestBalance()
-      return ok(assets)
+      return assets
     } catch (e) {
-      console.error(e)
-      return err({ kind: BalanceError.QueryBalanceFailed })
+      throw new Error({ kind: BalanceError.QueryBalanceFailed, error: e })
     }
   }
 }
@@ -200,16 +198,15 @@ class PlugWallet implements IConnector {
 
   async init() {
     // TODO: handle account switching
+    if (!this.#injectedProvider) {
+      throw new Error({ kind: InitError.NotInstalled })
+    }
+    const status = await this.status()
+
+    if (status === PROVIDER_STATUS.LOCKED) {
+      throw new Error({ kind: InitError.Locked })
+    }
     try {
-      if (!this.#injectedProvider) {
-        return err({ kind: InitError.NotInstalled })
-      }
-      const status = await this.status()
-
-      if (status === PROVIDER_STATUS.LOCKED) {
-        return err({ kind: InitError.Locked })
-      }
-
       if (status !== PROVIDER_STATUS.IDLE) {
         await this.#injectedProvider.createAgent({
           host: this.#config.host,
@@ -220,10 +217,9 @@ class PlugWallet implements IConnector {
         this.#principal = (await this.#injectedProvider.getPrincipal()).toString() // Never finishes if locked
         this.#wallets = [new Wallet(this.#injectedProvider)]
       }
-      return ok({ isConnected: false })
+      return { isConnected: false }
     } catch (e) {
-      console.error(e)
-      return err({ kind: InitError.InitFailed })
+      throw new Error({ kind: InitError.InitFailed, error: e })
     }
   }
 
@@ -258,54 +254,51 @@ class PlugWallet implements IConnector {
 
   async createActor<Service>(canisterId: string, idlFactory: IDL.InterfaceFactory) {
     if (!this.#injectedProvider) {
-      return err({ kind: CreateActorError.NotInitialized })
+      throw new Error({ kind: CreateActorError.NotInitialized })
     }
     try {
       // Fetch root key for certificate validation during development
       if (this.#config.dev) {
-        const res = await this.#injectedProvider.agent.fetchRootKey().then(() => ok(true)).catch(e => err({ kind: CreateActorError.FetchRootKeyFailed }))
-        if (res.isErr()) {
-          return res
-        }
+        await this.#injectedProvider.agent.fetchRootKey()
       }
-      const actor = await this.#injectedProvider.createActor<Service>({ canisterId, interfaceFactory: idlFactory })
-      return ok(actor)
     } catch (e) {
-      console.error(e)
-      return err({ kind: CreateActorError.CreateActorFailed })
+      throw new Error({ kind: CreateActorError.FetchRootKeyFailed, error: e })
+    }
+    try {
+      const actor = await this.#injectedProvider.createActor<Service>({ canisterId, interfaceFactory: idlFactory })
+      return actor
+    } catch (e) {
+      throw new Error({ kind: CreateActorError.CreateActorFailed, error: e })
     }
   }
 
   async connect() {
+    if (!this.#injectedProvider) {
+      window.open("https://plugwallet.ooo/", "_blank")
+      throw new Error({ kind: ConnectError.NotInstalled })
+    }
     try {
-      if (!this.#injectedProvider) {
-        window.open("https://plugwallet.ooo/", "_blank")
-        return err({ kind: ConnectError.NotInstalled })
-      }
       await this.#injectedProvider.requestConnect(this.#config)
       this.#principal = (await this.#injectedProvider.getPrincipal()).toString()
       if (this.#principal) {
         this.#wallets = [new Wallet(this.#injectedProvider)]
-        return ok(true)
       }
-      return ok(true)
+      return true
     } catch (e) {
-      console.error(e)
-      return err({ kind: ConnectError.ConnectFailed })
+      throw new Error({ kind: ConnectError.ConnectFailed, error: e })
     }
   }
 
   async disconnect() {
+    if (!this.#injectedProvider) {
+      throw new Error({ kind: DisconnectError.NotInitialized })
+    }
     try {
-      if (!this.#injectedProvider) {
-        return err({ kind: DisconnectError.NotInitialized })
-      }
       // TODO: should be awaited but never finishes, tell Plug to fix
       this.#injectedProvider.disconnect()
-      return ok(true)
+      return true
     } catch (e) {
-      console.error(e)
-      return err({ kind: DisconnectError.DisconnectFailed })
+      throw new Error({ kind: DisconnectError.DisconnectFailed, error: e })
     }
   }
 

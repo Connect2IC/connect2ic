@@ -33,15 +33,10 @@ export default class Icrc1 implements TokenWrapper {
   actor: ActorSubclass<Icrc1Service>
   canisterId: string
 
-  constructor(actor: ActorSubclass<Icrc1Service>, canisterId: string) {
+  constructor({ actor, canisterId }: { actor: ActorSubclass<Icrc1Service>, canisterId: string }) {
     // super()
-
     this.actor = actor
     this.canisterId = canisterId
-  }
-
-  public async init() {
-
   }
 
   public async getMetadata() {
@@ -131,7 +126,8 @@ export default class Icrc1 implements TokenWrapper {
   public async getBalance(user: Account) {
     // TODO: subaccount
     // TODO: remove decimals call?
-    const decimals = await this.getDecimals()
+    // const decimals = await this.getDecimals()
+    const { decimals } = await this.getMetadata()
     const value = await this.actor.icrc1_balance_of(user)
     return { value, decimals }
   }

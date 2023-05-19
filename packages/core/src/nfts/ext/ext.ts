@@ -3,8 +3,6 @@ import { Principal } from "@dfinity/principal"
 
 import { NFTDetails } from "../interfaces/nft"
 import NTF_EXT from "./interfaces"
-import IDL from "./ext.did"
-import NFT from "../default"
 import { getAccountId } from "../../tokens/dab_utils/account"
 import { to32bits } from "../../tokens/dab_utils/number"
 import { NFT_CANISTERS } from "../../tokens/constants/canisters"
@@ -29,7 +27,7 @@ export default class EXT implements NFTWrapper {
   actor: ActorSubclass<NTF_EXT>
   canisterId: string
 
-  constructor(actor: ActorSubclass<NTF_EXT>, canisterId: string) {
+  constructor({ actor, canisterId }: { actor: ActorSubclass<NTF_EXT>, canisterId: string }) {
     // super()
     this.actor = actor
     this.canisterId = canisterId
@@ -47,10 +45,13 @@ export default class EXT implements NFTWrapper {
     // }
   }
 
-  async getUserTokens(principal: Principal): Promise<NFTDetails[]> {
-    const accountId = getAccountId(principal)
+  async getUserTokens(user): Promise<NFTDetails[]> {
+    const accountId = getAccountId(user.owner)
     const userTokensResult = await this.actor.tokens_ext(accountId)
-    if ("err" in userTokensResult) throw new Error(`${Object.keys(userTokensResult.err)[0]}: ${Object.values(userTokensResult.err)[0]}`)
+    if ("err" in userTokensResult) {
+      // throw new Error(`${Object.keys(userTokensResult.err)[0]}: ${Object.values(userTokensResult.err)[0]}`)
+      return []
+    }
 
     const tokens = userTokensResult.ok || []
 
@@ -62,13 +63,13 @@ export default class EXT implements NFTWrapper {
     })
   }
 
-  async transfer(args: { from: Principal, to: Principal, tokenIndex: number }): Promise<void> {
-    const tokenIdentifier = getTokenIdentifier(this.canisterId, args.tokenIndex)
+  async transfer(args: { from: Account, to: Account, tokenIndex: bigint }) {
+    const tokenIdentifier = getTokenIdentifier(this.canisterId, Number(args.tokenIndex))
     const dummyMemmo = new Array(32).fill(0)
 
     const transferResult = await this.actor.transfer({
-      to: { principal: args.to },
-      from: { principal: args.from },
+      to: { principal: args.to.owner },
+      from: { principal: args.from.owner },
       token: tokenIdentifier,
       amount: BigInt(1),
       memo: dummyMemmo,
@@ -79,8 +80,8 @@ export default class EXT implements NFTWrapper {
     if ("err" in transferResult) throw new Error(`${Object.keys(transferResult.err)[0]}: ${Object.values(transferResult.err)[0]}`)
   }
 
-  async details(tokenIndex: number): Promise<NFTDetails> {
-    const tokenIdentifier = getTokenIdentifier(this.canisterId, tokenIndex)
+  async getMetadata(tokenIndex): Promise<NFTDetails> {
+    const tokenIdentifier = getTokenIdentifier(this.canisterId, Number(tokenIndex))
     const metadataResult = await this.actor.metadata(tokenIdentifier)
 
     if ("err" in metadataResult) throw new Error(`${Object.keys(metadataResult.err)[0]}: ${Object.values(metadataResult.err)[0]}`)
@@ -88,6 +89,10 @@ export default class EXT implements NFTWrapper {
     const { metadata = {} } = "nonfungible" in metadataResult.ok ? metadataResult.ok.nonfungible : {}
 
     return this.serializeTokenData(metadata, tokenIdentifier, tokenIndex)
+  }
+
+  async collectionDetails() {
+    // TODO: implement
   }
 
   private serializeTokenData(metadata: any, tokenIdentifier: string, tokenIndex: number): NFTDetails {

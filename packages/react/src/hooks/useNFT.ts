@@ -36,7 +36,7 @@ export const useNFT = (options: NFTOptions) => {
     if (!actor) {
       return
     }
-    return new Wrapper.default(actor, canisterId)
+    return new Wrapper(actor, canisterId)
   }, [actor, canisterId])
 
   return [

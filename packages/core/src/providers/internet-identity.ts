@@ -8,10 +8,13 @@ import dfinityLogoLight from "../assets/dfinity.svg"
 import dfinityLogoDark from "../assets/dfinity.svg"
 import { IDL } from "@dfinity/candid"
 import {
-  ok,
-  err,
-} from "neverthrow"
-import { ConnectError, CreateActorError, DisconnectError, InitError, IWalletConnector, PROVIDER_STATUS } from "./connectors"
+  ConnectError,
+  CreateActorError,
+  DisconnectError,
+  InitError,
+  IWalletConnector,
+  PROVIDER_STATUS,
+} from "./connectors"
 import { Methods } from "./connectors"
 
 class InternetIdentity implements IConnector {
@@ -27,9 +30,9 @@ class InternetIdentity implements IConnector {
     description: "Internet Identity is the identity provider for the Internet Computer.",
     deepLinks: {
       android: "intent://APP_HOST/#Intent;scheme=APP_NAME;package=APP_PACKAGE;end",
-      ios: "astroxme://"
+      ios: "astroxme://",
     },
-    methods: [Methods.BROWSER]
+    methods: [Methods.BROWSER],
   }
 
   #config: {
@@ -46,6 +49,7 @@ class InternetIdentity implements IConnector {
   get wallets() {
     return this.#wallets
   }
+
   get principal() {
     return this.#principal
   }
@@ -84,10 +88,9 @@ class InternetIdentity implements IConnector {
         this.#identity = this.#client.getIdentity()
         this.#principal = this.#identity?.getPrincipal().toString()
       }
-      return ok({ isConnected })
+      return { isConnected }
     } catch (e) {
-      console.error(e)
-      return err({ kind: InitError.InitFailed })
+      throw new Error({ kind: InitError.InitFailed, error: e })
     }
   }
 
@@ -116,30 +119,29 @@ class InternetIdentity implements IConnector {
   }
 
   async createActor<Service>(canisterId, idlFactory) {
-    try {
-      // TODO: pass identity?
-      const agent = new HttpAgent({
-        ...this.#config,
-        identity: this.#identity,
-      })
+    // TODO: pass identity?
+    const agent = new HttpAgent({
+      ...this.#config,
+      identity: this.#identity,
+    })
 
+    try {
       if (this.#config.dev) {
         // Fetch root key for certificate validation during development
-        // Fetch root key for certificate validation during development
-        const res = await agent.fetchRootKey().then(() => ok(true)).catch(e => err({ kind: CreateActorError.FetchRootKeyFailed }))
-        if (res.isErr()) {
-          return res
-        }
+        await agent.fetchRootKey()
       }
+    } catch (e) {
+      throw new Error({ kind: CreateActorError.FetchRootKeyFailed, error: e })
+    }
+    try {
       // TODO: add actorOptions?
       const actor = Actor.createActor<Service>(idlFactory, {
         agent,
         canisterId,
       })
-      return ok(actor)
+      return actor
     } catch (e) {
-      console.error(e)
-      return err({ kind: CreateActorError.CreateActorFailed })
+      throw new Error({ kind: CreateActorError.CreateActorFailed, error: e })
     }
   }
 
@@ -157,20 +159,18 @@ class InternetIdentity implements IConnector {
       const principal = identity?.getPrincipal().toString()
       this.#identity = identity
       this.#principal = principal
-      return ok(true)
+      return true
     } catch (e) {
-      console.error(e)
-      return err({ kind: ConnectError.ConnectFailed })
+      throw new Error({ kind: ConnectError.ConnectFailed, error: e })
     }
   }
 
   async disconnect() {
     try {
       await this.#client?.logout()
-      return ok(true)
+      return true
     } catch (e) {
-      console.error(e)
-      return err({ kind: DisconnectError.DisconnectFailed })
+      throw new Error({ kind: DisconnectError.DisconnectFailed, error: e })
     }
   }
 }

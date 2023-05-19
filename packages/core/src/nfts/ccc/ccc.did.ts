@@ -1,4 +1,4 @@
-export default ({ IDL }) => {
+export const idlFactory = ({ IDL }) => {
   const TokenIndex__1 = IDL.Nat
   const TokenIndex = IDL.Nat
   const TransferResponse = IDL.Variant({

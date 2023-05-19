@@ -12,9 +12,8 @@ import {
   SendParams,
   SendResponse,
 } from "../methods"
-import { CapRouter } from "cap-js-without-npm-registry"
 import { Opt } from "../../../utils"
-import { TokenWrapper } from "../token-interfaces"
+import { Account, TokenWrapper } from "../token-interfaces"
 
 // TODO: rename
 const toValue = (input) => {
@@ -32,15 +31,10 @@ export default class Drc20 implements TokenWrapper {
   actor: ActorSubclass<Drc20Service>
   canisterId: string
 
-  constructor(actor: ActorSubclass<Drc20Service>, canisterId: string) {
+  constructor({ actor, canisterId }: { actor: ActorSubclass<Drc20Service>, canisterId: string }) {
     // super()
-
     this.actor = actor
     this.canisterId = canisterId
-  }
-
-  async init() {
-
   }
 
   public async getMetadata() {
@@ -92,10 +86,10 @@ export default class Drc20 implements TokenWrapper {
   //   }))
   // }
 
-  async mint(receiver: Principal, amount: number): Promise<any> {
+  async mint(receiver: Account, amount: number): Promise<any> {
     // TODO: sender should be minting account
     const mintResult = await this.actor.icrc1_transfer({
-      to: { owner: receiver, subaccount: [] }, // to : Account,
+      to: receiver, // to : Account,
       fee: Opt(BigInt(0)), // fee : [] | [bigint],
       amount: BigInt(amount), // memo : [] | [Uint8Array],
       memo: [], // from_subaccount : [] | [Subaccount],
@@ -127,15 +121,10 @@ export default class Drc20 implements TokenWrapper {
     throw new Error(Object.keys(transferResult.Err)[0])
   }
 
-  public async getBalance(user: Principal): Promise<BalanceResponse> {
-    // TODO: subaccount
+  public async getBalance(user: Account) {
     // TODO: remove decimals call?
     const decimals = await this.getDecimals()
-    // const value = (await this.actor.balanceOf(user)).toString()
-    const value = (await this.actor.icrc1_balance_of({
-      owner: user,
-      subaccount: [],
-    })).toString()
+    const value = await this.actor.icrc1_balance_of(user)
     return { value, decimals }
   }
 

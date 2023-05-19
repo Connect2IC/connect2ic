@@ -1,4 +1,4 @@
-export default ({ IDL }) => {
+export const idlFactory = ({ IDL }) => {
   const Property = IDL.Rec()
   const Query = IDL.Rec()
   const Update = IDL.Rec()

@@ -1,6 +1,11 @@
+import type { QueryClient } from "@tanstack/react-query"
+import { QueryClientProvider } from "@tanstack/react-query"
 import React, { createContext, useState, PropsWithChildren, useEffect } from "react"
 import { createClient } from "@connect2ic/core"
 import { IDL } from "@dfinity/candid"
+
+// TODO: give to hooks
+const queryClientContext = createContext<QueryClient | undefined>(undefined)
 
 const Connect2ICContext = createContext<{
   client: ReturnType<typeof createClient>
@@ -19,12 +24,14 @@ const Connect2ICContext = createContext<{
     [canisterId: string]: string
   }
   capRouterId?: string
-}>({} as any)
+}>({
+  capRouterId: "rrkah-fqaaa-aaaaa-aaaaq-cai",
+} as any)
 
 type Props = {
   client: ReturnType<typeof createClient>
   capRouterId?: string
-  canisters: {
+  canisters?: {
     [canisterName: string]: {
       canisterId: string
       idlFactory: IDL.InterfaceFactory
@@ -73,7 +80,9 @@ const Connect2ICProvider: React.FC<PropsWithChildren<Props>> = ({
       canisterIds,
       capRouterId,
     }}>
-      {children}
+      <QueryClientProvider client={client.queryClient} context={queryClientContext}>
+        {children}
+      </QueryClientProvider>
     </Connect2ICContext.Provider>
   )
 }

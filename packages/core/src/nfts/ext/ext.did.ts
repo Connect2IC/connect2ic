@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/camelcase */
 /* eslint-disable camelcase */
-export default ({ IDL }) => {
+export const idlFactory = ({ IDL }) => {
   const TokenIndex = IDL.Nat32
   const AccountIdentifier = IDL.Text
   const TokenIdentifier = IDL.Text

@@ -13,46 +13,66 @@ import {
   SendParams,
   SendResponse,
 } from "../methods"
+import { Account, TokenMetadata, TokenWrapper } from "../token-interfaces"
+// import { _SERVICE as Dip20Service } from "../dip20/interfaces"
+// import { CapRoot, CapRouter } from "cap-js-without-npm-registry"
 
-type BaseXtcService = XtcService;
+export default class XTC implements TokenWrapper {
+  standard = "XTC"
 
-const getMetadata = async (actor: ActorSubclass<BaseXtcService>): Promise<Metadata> => {
-  const metadataResult = await actor.getMetadata()
-  return {
-    fungible: {
+  actor: ActorSubclass<XtcService>
+  canisterId: string
+  // capRoot?: CapRoot
+  // capRouter?: CapRouter
+
+  constructor({ actor, canisterId }: { actor: ActorSubclass<XtcService>, canisterId: string }) {
+    // super()
+    this.actor = actor
+    this.canisterId = canisterId
+  }
+
+  async getMetadata() {
+    const metadataResult = await this.actor.getMetadata()
+    return {
       symbol: metadataResult.symbol,
       decimals: metadataResult.decimals,
       name: metadataResult.name,
-    },
+    }
+  }
+
+  async send({ to, amount }: SendParams): Promise<SendResponse> {
+    const transferResult = await this.actor.transferErc20(Principal.fromText(to), amount)
+
+    if ("Ok" in transferResult) return { transactionId: transferResult.Ok.toString() }
+
+    throw new Error(Object.keys(transferResult.Err)[0])
+  }
+
+  async mint(receiver: Account, amount: number) {
+    // TODO:
+  }
+
+  async getBalance(user: Account) {
+    const decimals = await this.getDecimals()
+    const value = await this.actor.balance([user.owner])
+    return { value, decimals }
+  }
+
+  async burnXTC(actor: ActorSubclass<XtcService>, { to, amount }: BurnParams): Promise<BurnResult> {
+    const decimals = await this.getDecimals()
+    const parsedAmount = parseAmountToSend(amount, decimals)
+    return actor.burn({ canister_id: to, amount: parsedAmount })
+  }
+
+  async getDecimals() {
+    return getDecimalsFromMetadata(await this.getMetadata())
   }
 }
 
-const send = async (actor: ActorSubclass<BaseXtcService>, { to, amount }: SendParams): Promise<SendResponse> => {
-  const transferResult = await actor.transferErc20(Principal.fromText(to), amount)
-
-  if ("Ok" in transferResult) return { transactionId: transferResult.Ok.toString() }
-
-  throw new Error(Object.keys(transferResult.Err)[0])
-}
-
-const getBalance = async (actor: ActorSubclass<BaseXtcService>, user: Principal): Promise<BalanceResponse> => {
-  const decimals = await getDecimals(actor)
-  const value = (await actor.balance([user])).toString()
-  return { value, decimals }
-}
-
-const burnXTC = async (actor: ActorSubclass<BaseXtcService>, { to, amount }: BurnParams): Promise<BurnResult> => {
-  const decimals = await getDecimals(actor)
-  const parsedAmount = parseAmountToSend(amount, decimals)
-  return actor.burn({ canister_id: to, amount: parsedAmount })
-}
-
-const getDecimals = async (actor: ActorSubclass<BaseXtcService>) => getDecimalsFromMetadata(await getMetadata(actor))
-
-export default {
-  send,
-  getMetadata,
-  getBalance,
-  burnXTC,
-  getDecimals,
-} as InternalTokenMethods
+// export default {
+//   send,
+//   getMetadata,
+//   getBalance,
+//   burnXTC,
+//   getDecimals,
+// } as InternalTokenMethods

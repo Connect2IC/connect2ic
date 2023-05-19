@@ -1,6 +1,7 @@
 import React, { useCallback, useContext, useEffect, useState, useSyncExternalStore } from "react"
 import { Connect2ICContext } from "../context"
 import { CLIENT_STATUS } from "@connect2ic/core"
+import { useClient } from "./useClient"
 
 type Props = {
   onConnect?: ({ provider }: { provider: string }) => void
@@ -19,9 +20,8 @@ export const useConnect = (props?: Props) => {
       // TODO: pass provider status?
     },
   } = props ?? {}
-  const {
-    client,
-  } = useContext(Connect2ICContext)
+  const client = useClient()
+
   // TODO: selector?
   const {
     activeProvider,

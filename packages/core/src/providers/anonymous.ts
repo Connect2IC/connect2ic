@@ -7,10 +7,6 @@ import dfinityLogoLight from "../assets/dfinity.svg"
 // @ts-ignore
 import dfinityLogoDark from "../assets/dfinity.svg"
 import { IDL } from "@dfinity/candid"
-import {
-  ok,
-  err,
-} from "neverthrow"
 import { ConnectError, CreateActorError, DisconnectError, InitError, PROVIDER_STATUS } from "./connectors"
 import { ECDSAKeyIdentity } from "@dfinity/identity"
 
@@ -72,19 +68,18 @@ class Anonymous implements IConnector {
       this.#identity = await ECDSAKeyIdentity.generate()
       this.#agent = new HttpAgent({ host: this.#config.host, identity: this.#identity })
       this.#principal = this.#identity.getPrincipal().toString()
-      if (this.#config.dev) {
-        // this.#agent.fetchRootKey().catch(e => console.error(e))
-        const res = await this.#agent.fetchRootKey().then(() => ok(true)).catch(e => err({ kind: InitError.FetchRootKeyFailed }))
-        if (res.isErr()) {
-          return res
-        }
-      }
-      const isConnected = true
-      return ok({ isConnected })
     } catch (e) {
-      console.error(e)
-      return err({ kind: InitError.InitFailed })
+      throw new Error({ kind: InitError.InitFailed, error: e })
     }
+    if (this.#config.dev) {
+      try {
+        await this.#agent.fetchRootKey()
+      } catch (e) {
+        throw new Error({ kind: InitError.FetchRootKeyFailed, error: e })
+      }
+    }
+    const isConnected = true
+    return { isConnected }
   }
 
   async isConnected(): Promise<boolean> {
@@ -94,7 +89,6 @@ class Anonymous implements IConnector {
       }
       return true
     } catch (e) {
-      console.error(e)
       return false
     }
   }
@@ -114,37 +108,34 @@ class Anonymous implements IConnector {
   async createActor<Service>(canisterId, idlFactory, config = {}) {
     try {
       if (!this.#agent) {
-        return err({ kind: CreateActorError.NotInitialized })
+        throw new Error({ kind: CreateActorError.NotInitialized })
       }
       const actor = Actor.createActor<Service>(idlFactory, {
         agent: this.#agent,
         canisterId,
         ...config,
       })
-      return ok(actor)
+      return actor
     } catch (e) {
-      console.error(e)
-      return err({ kind: CreateActorError.CreateActorFailed })
+      throw new Error({ kind: CreateActorError.CreateActorFailed, error: e })
     }
   }
 
   async connect() {
     try {
       // TODO: check client
-      return ok(true)
+      return true
     } catch (e) {
-      console.error(e)
-      return err({ kind: ConnectError.ConnectFailed })
+      throw new Error({ kind: ConnectError.ConnectFailed, error: e })
     }
   }
 
   async disconnect() {
     try {
       await this.#client?.logout()
-      return ok(true)
+      return true
     } catch (e) {
-      console.error(e)
-      return err({ kind: DisconnectError.DisconnectFailed })
+      throw new Error({ kind: DisconnectError.DisconnectFailed, error: e })
     }
   }
 }

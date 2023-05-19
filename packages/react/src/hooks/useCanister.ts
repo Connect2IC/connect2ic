@@ -4,10 +4,12 @@ import { Connect2ICContext } from "../context"
 import type { ActorSubclass, Actor } from "@dfinity/agent"
 import { IDL } from "@dfinity/candid"
 import { CreateActorError, CreateActorResult } from "@connect2ic/core"
+import { useQuery } from "@tanstack/react-query"
 
 export type CanisterOptions<T> = {
   mode?: string
   network?: string
+  // onInit?: (service: T) => void
 }
 
 export const useCanisterById = <T>(canisterId, options: CanisterOptions<T> = {
@@ -32,74 +34,55 @@ type CanisterDeclaration<T> = {
   service?: T,
 }
 
-export const useCanister = <T>(canisterNameOrDeclaration: string | CanisterDeclaration<T>, options: CanisterOptions<T> = {
-  mode: "auto", // "anonymous" | "connected"
-  network: "local",
-}): [T | undefined, { error?: CreateActorError, loading: boolean, idl: IDL.InterfaceFactory, canisterId: string }] => {
+export const useCanister = <T>(canisterNameOrDeclaration: string | CanisterDeclaration<T>, options: CanisterOptions<T> = {}) => {
+  const {
+    mode = "auto", // "anonymous" | "connected"
+    network = "local",
+    // onInit = () => {
+    // },
+  } = options
   const hasCanisterName = typeof canisterNameOrDeclaration === "string"
-  const { mode = "auto" } = options
   const { client, canisters } = useContext(Connect2ICContext)
-  const { activeProvider, isConnected } = useConnect()
+  // TODO: broken
+  // const { activeProvider, isConnected } = useConnect()
   let canisterId = hasCanisterName ? canisters[canisterNameOrDeclaration].canisterId : canisterNameOrDeclaration.canisterId
   let idlFactory = hasCanisterName ? canisters[canisterNameOrDeclaration].idlFactory : canisterNameOrDeclaration.idlFactory
-  const [anonymousCanister, setAnonymousCanister] = useState<ActorSubclass<T>>()
-  const [authCanister, setAuthCanister] = useState<ActorSubclass<T>>()
-  const modes = {
-    "auto": ((mode === "auto") && isConnected) ? authCanister : anonymousCanister,
-    "anonymous": ((mode === "anonymous") && !isConnected) ? anonymousCanister : undefined,
-    "connected": ((mode === "connected") && isConnected) ? authCanister : undefined,
+
+  const anonymousActorQueryKey = ["canister", "anonymous", canisterId]
+  const anonymousActorQuery = useQuery({
+    queryKey: anonymousActorQueryKey,
+    // enabled: mode === "anonymous" || mode === "auto",
+    queryFn: () => client.createAnonymousActor(
+      canisterId,
+      idlFactory,
+    ),
+  })
+
+  // TODO:
+  // const connectedActorQueryKey = ["canister", "connected", canisterId]
+  // const connectedActorQuery = useQuery({
+  //   enabled: isConnected,
+  //   queryKey: connectedActorQueryKey,
+  //   queryFn: () => activeProvider!.createActor(
+  //     canisterId,
+  //     // @ts-ignore
+  //     idlFactory,
+  //   ),
+  // })
+
+  const queries = {
+    // "auto": isConnected ? connectedActorQuery : anonymousActorQuery,
+    "auto": anonymousActorQuery,
+    "anonymous": anonymousActorQuery,
+    // "connected": connectedActorQuery,
   }
-  // TODO: get error type
-  const canisterResult: CreateActorResult<T> = modes[mode]
 
-  // TODO: reuse actors when used multiple times
-  // See react-query
-  useEffect(() => {
-    (async () => {
-      const anonymousActor = await client.createAnonymousActor(
-        canisterId,
-        idlFactory,
-      )
-      setAnonymousCanister(anonymousActor)
-    })()
-    // TODO: options?
-  }, [canisterId, idlFactory, client])
+  // useEffect(() => {
+  //   // TODO: what happens if mode changes? does it re-init?
+  //   if (queries[mode].status === "success") {
+  //     onInit(queries[mode].data as T)
+  //   }
+  // }, [queries[mode]])
 
-  useEffect(() => {
-    if (!activeProvider || !isConnected) {
-      return
-    }
-    (async () => {
-      const authActor = await activeProvider.createActor(
-        canisterId,
-        // @ts-ignore
-        idlFactory,
-      )
-      setAuthCanister(authActor)
-    })()
-    // TODO: options?
-  }, [canisterId, idlFactory, activeProvider])
-
-  let actor
-  if (canisterResult?.isOk()) {
-    actor = canisterResult.value
-  }
-  let error
-  if (canisterResult?.isErr()) {
-    error = canisterResult.error
-  }
-  // TODO: ?
-  let loading = !canisterResult
-
-  return [
-    // TODO: ?
-    actor as typeof canisterNameOrDeclaration.service,
-    {
-      error,
-      loading,
-      // TODO: force idlFactory to be defined
-      idl: idlFactory!,
-      canisterId: hasCanisterName ? canisters[canisterNameOrDeclaration].canisterId : canisterId!,
-    },
-  ]
+  return queries[mode]
 }

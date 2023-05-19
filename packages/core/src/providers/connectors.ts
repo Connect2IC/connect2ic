@@ -1,5 +1,4 @@
 import { ActorSubclass } from "@dfinity/agent"
-import type { Result } from "neverthrow"
 import type { IDL } from "@dfinity/candid"
 
 type CustomError<T> = { kind: T, message?: string }
@@ -11,7 +10,7 @@ export enum CreateActorError {
   LocalActorsNotSupported = "LOCAL_ACTORS_NOT_SUPPORTED",
 }
 
-export type CreateActorResult<Service> = Result<ActorSubclass<Service>, CustomError<CreateActorError>>
+export type CreateActorResult<Service> = ActorSubclass<Service>
 
 export enum ConnectError {
   NotInitialized = "NOT_INITIALIZED",
@@ -20,24 +19,23 @@ export enum ConnectError {
   IsLocked = "IS_LOCKED",
 }
 
-export type ConnectResult = Result<boolean, CustomError<ConnectError>>
+export type ConnectResult = boolean
 
 export enum DisconnectError {
   DisconnectFailed = "DISCONNECT_FAILED",
   NotInitialized = "NOT_INITIALIZED"
 }
 
-export type DisconnectResult = Result<boolean, CustomError<DisconnectError>>
+export type DisconnectResult = boolean
 
 export enum InitError {
   NotInstalled = "NOT_INSTALLED",
   InitFailed = "INIT_FAILED",
   FetchRootKeyFailed = "FETCH_ROOT_KEY_FAILED",
-
   Locked = "LOCKED",
 }
 
-export type InitResult = Result<{ isConnected: boolean }, CustomError<InitError>>
+export type InitResult = { isConnected: boolean }
 
 export enum Methods {
   BROWSER = "BROWSER",
@@ -81,42 +79,42 @@ export enum BalanceError {
   QueryBalanceRejected = "QUERY_BALANCE_REJECTED",
 }
 
-export type BalanceResult = Result<Array<{
+export type BalanceResult = Array<{
   amount: number
   canisterId: string
   decimals: number
   image?: string
   name: string
   symbol: string
-}>, CustomError<BalanceError>>
+}>
 
 export enum TokensError {
   NotInitialized = "NOT_INITIALIZED",
   QueryBalanceFailed = "QUERY_BALANCE_FAILED",
 }
 
-export type TokensResult = Result<Array<{
+export type TokensResult = Array<{
   amount: number
   canisterId: string
   decimals: number
   image?: string
   name: string
   symbol: string
-}>, CustomError<TokensError>>
+}>
 
 export enum NFTsError {
   NotInitialized = "NOT_INITIALIZED",
   QueryBalanceFailed = "QUERY_BALANCE_FAILED",
 }
 
-export type NFTsResult = Result<Array<{
+export type NFTsResult = Array<{
   amount: number
   canisterId: string
   decimals: number
   image?: string
   name: string
   symbol: string
-}>, CustomError<NFTsError>>
+}>
 
 export enum TransferError {
   InsufficientBalance = "INSUFFICIENT_BALANCE",
@@ -128,15 +126,15 @@ export enum TransferError {
   TransferRejected = "TRANSFER_REJECTED",
 }
 
-export type TransferResult = Result<{ height?: number; transactionId?: string; }, CustomError<TransferError>>
-export type NFTTransferResult = Result<{ transactionId?: string; }, CustomError<TransferError>>
+export type TransferResult = { height?: number; transactionId?: string; }
+export type NFTTransferResult = { transactionId?: string; }
 
 export enum SignError {
   NotConnected = "NOT_CONNECTED",
   NotInitialized = "NOT_INITIALIZED"
 }
 
-export type SignResult = Result<{ height: number }, CustomError<SignError>>
+export type SignResult = { height: number }
 
 export interface IWalletConnector {
   requestTransfer: (args: {

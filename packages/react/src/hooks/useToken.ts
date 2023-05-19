@@ -39,7 +39,7 @@ export const useToken = (options: NFTOptions) => {
   //   if (!actor) {
   //     return
   //   }
-  //   return new Wrapper.default(actor, canisterId, capRouter)
+  //   return new Wrapper(actor, canisterId, capRouter)
   // }, [actor, canisterId])
   const [wrapper, setWrapper] = useState<any>()
 
@@ -48,7 +48,7 @@ export const useToken = (options: NFTOptions) => {
       return
     }
     ;(async () => {
-      const wrapperResult = new Wrapper.default(actor, canisterId)
+      const wrapperResult = new Wrapper(actor, canisterId)
       await wrapperResult.init({ capRouterId })
       setWrapper(wrapperResult)
     })()
