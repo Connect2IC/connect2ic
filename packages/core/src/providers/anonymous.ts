@@ -8,7 +8,7 @@ import dfinityLogoLight from "../assets/dfinity.svg"
 import dfinityLogoDark from "../assets/dfinity.svg"
 import { IDL } from "@dfinity/candid"
 import { ConnectError, CreateActorError, DisconnectError, InitError, PROVIDER_STATUS } from "./connectors"
-import { ECDSAKeyIdentity } from "@dfinity/identity"
+import { Ed25519KeyIdentity } from "@dfinity/identity"
 
 class Anonymous implements IConnector {
 
@@ -65,7 +65,7 @@ class Anonymous implements IConnector {
 
   async init() {
     try {
-      this.#identity = await ECDSAKeyIdentity.generate()
+      this.#identity = await Ed25519KeyIdentity.generate()
       this.#agent = new HttpAgent({ host: this.#config.host, identity: this.#identity })
       this.#principal = this.#identity.getPrincipal().toString()
     } catch (e) {

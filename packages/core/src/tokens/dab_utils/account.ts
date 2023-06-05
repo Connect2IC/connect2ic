@@ -1,6 +1,8 @@
 import { Principal } from "@dfinity/principal"
 import CryptoJS from "crypto-js"
 import crc32 from "buffer-crc32"
+// TODO: remove
+import { Buffer } from "buffer/"
 
 const ACCOUNT_DOMAIN_SEPERATOR = "\x0Aaccount-id"
 const SUB_ACCOUNT_ZERO = Buffer.alloc(32)

@@ -1,8 +1,8 @@
 import { useContext } from "react"
 import { Connect2ICContext } from "../context"
-// import { Client } from "@connect2ic/core"
+import { createClient } from "@connect2ic/core"
 
-export const useClient = () => {
+export const useClient = (): ReturnType<typeof createClient> => {
   const {
     client,
   } = useContext(Connect2ICContext)

@@ -21,9 +21,9 @@
     }
   },
   "dependencies": {
-    "@dfinity/principal": "^0.14.0",
+    "@dfinity/principal": "^0.15.6",
     "@fontsource/pt-sans": "^4.5.11",
-    "@tanstack/react-query": "^4.29.3",
+    "@tanstack/react-query": "^4.29.12",
     "@vanilla-extract/css": "^1.9.2",
     "@walletconnect/auth-client": "^1.0.1",
     "@xstate/react": "^3.0.1",

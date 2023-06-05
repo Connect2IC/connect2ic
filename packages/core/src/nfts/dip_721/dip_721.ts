@@ -35,10 +35,6 @@ export default class DIP721 implements NFTWrapper {
     this.canisterId = canisterId
   }
 
-  public async init() {
-
-  }
-
   async getUserTokens(user: Account) {
     const userTokensResult = await this.actor.getMetadataForUserDip721(user.owner)
     const tokens = userTokensResult || []

@@ -75,13 +75,16 @@ export default class DIP721v2Final implements NFTWrapper {
 
   async transfer(args: { from: Account, to: Account, tokenIndex: bigint }) {
     const transferResult = await this.actor.dip721_transfer(args.to.owner, args.tokenIndex)
-    if ("Err" in transferResult) throw new Error(`${Object.keys(transferResult.Err)[0]}: ${Object.values(transferResult.Err)[0]}`)
+    if ("Err" in transferResult) {
+      throw new Error(`${Object.keys(transferResult.Err)[0]}: ${Object.values(transferResult.Err)[0]}`)
+    }
   }
 
   async getMetadata(tokenIndex: bigint) {
     const metadataResult = await this.actor.dip721_token_metadata(BigInt(tokenIndex))
-
-    if ("Err" in metadataResult) throw new Error(`${Object.keys(metadataResult.Err)[0]}: ${Object.values(metadataResult.Err)[0]}`)
+    if ("Err" in metadataResult) {
+      throw new Error(`${Object.keys(metadataResult.Err)[0]}: ${Object.values(metadataResult.Err)[0]}`)
+    }
     const metadata = metadataResult?.Ok
     const formatedMetadata = this.formatMetadata(metadata)
     const owner = metadata?.owner?.[0]?.toText?.()

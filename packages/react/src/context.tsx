@@ -24,9 +24,7 @@ const Connect2ICContext = createContext<{
     [canisterId: string]: string
   }
   capRouterId?: string
-}>({
-  capRouterId: "rrkah-fqaaa-aaaaa-aaaaq-cai",
-} as any)
+}>({} as any)
 
 type Props = {
   client: ReturnType<typeof createClient>
@@ -43,7 +41,7 @@ const Connect2ICProvider: React.FC<PropsWithChildren<Props>> = ({
                                                                   children,
                                                                   client,
                                                                   canisters,
-                                                                  capRouterId,
+                                                                  capRouterId = "lj532-6iaaa-aaaah-qcc7a-cai",
                                                                 }) => {
   const [open, setOpen] = useState<boolean>(false)
 

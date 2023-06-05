@@ -126,8 +126,9 @@ export default class Dip20 implements TokenWrapper {
   }
 
   public async getBalance(user: Account) {
-    const decimals = await this.getDecimals()
-    // const decimals = 0
+    // TODO:
+    // const decimals = await this.getDecimals()
+    const decimals = 0
     const value = await this.actor.balanceOf(user.owner)
     // const value = 0n
     return { value, decimals }

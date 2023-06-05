@@ -247,5 +247,4 @@ const createClient = (config: Config) => {
   return self
 }
 
-
 export { CLIENT_STATUS, createClient }

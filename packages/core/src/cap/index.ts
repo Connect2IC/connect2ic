@@ -1,17 +1,17 @@
-import fetch from "cross-fetch";
+import fetch from "cross-fetch"
 import {
   Actor,
   ActorSubclass,
   HttpAgent,
   HttpAgentOptions,
-} from "@dfinity/agent";
-import { Principal } from "@dfinity/principal";
+} from "@dfinity/agent"
+import { Principal } from "@dfinity/principal"
 
-import { KyaConnector } from "./kyasshu";
-import _ROUTER_SERVICE from "./declarations/router";
-import _ROOT_SERVICE from "./declarations/root";
-import { routerFactory } from "./declarations/router.did.js";
-import { rootFactory } from "./declarations/root.did.js";
+import { KyaConnector } from "./kyasshu"
+import _ROUTER_SERVICE from "./declarations/router"
+import _ROOT_SERVICE from "./declarations/root"
+import { routerFactory } from "./declarations/router.did.js"
+import { rootFactory } from "./declarations/root.did.js"
 
 import {
   GetUserRootBucketsResponse,
@@ -20,7 +20,7 @@ import {
   GetTransactionsResponseBorrowed,
   GetIndexCanistersResponse,
   IndefiniteEvent,
-} from "./declarations";
+} from "./declarations"
 
 export type {
   Root,
@@ -42,21 +42,21 @@ export type {
   GetTokenContractRootBucketResponse,
   GetUserRootBucketsArg,
   GetUserRootBucketsResponse,
-} from "./declarations";
+} from "./declarations"
 
 import {
   CanisterInfo,
   KyaUrl,
   DFX_JSON_HISTORY_ROUTER_KEY_NAME,
-} from "./config";
-import { KyaStage } from "./kyasshu/types";
+} from "./config"
+import { KyaStage } from "./kyasshu/types"
 
-export { CanisterInfo };
+export { CanisterInfo }
 
 export const Hosts = {
   mainnet: "https://ic0.app",
   local: "http://localhost:8000",
-};
+}
 
 type IdlFactory = ({ IDL }: { IDL: any }) => any;
 
@@ -97,14 +97,14 @@ type InitRootParams = BaseInitParams &
   (CreateActorFromRootParams | CreateActorFromTokenParams);
 
 export class CapBase<T> {
-  public actor: ActorSubclass<T>;
+  public actor: ActorSubclass<T>
 
-  public cache: KyaConnector | undefined;
+  public cache: KyaConnector | undefined
 
   constructor(actor: ActorSubclass<T>, cache?: KyaConnector) {
-    this.actor = actor;
+    this.actor = actor
     if (cache) {
-      this.cache = cache;
+      this.cache = cache
     }
   }
 
@@ -116,15 +116,15 @@ export class CapBase<T> {
     const agent = new HttpAgent({
       host,
       fetch,
-    } as unknown as HttpAgentOptions);
+    } as unknown as HttpAgentOptions)
     if (process.env.NODE_ENV !== "production") {
       try {
-        agent.fetchRootKey();
+        agent.fetchRootKey()
       } catch (err) {
         console.warn(
-          "Oops! Unable to fetch root key, is the local replica running?"
-        );
-        console.error(err);
+          "Oops! Unable to fetch root key, is the local replica running?",
+        )
+        console.error(err)
       }
     }
 
@@ -132,7 +132,7 @@ export class CapBase<T> {
       return Actor.createActor(idlFactory, {
         agent,
         canisterId: args.canisterId,
-      });
+      })
     }
 
     return (async () => {
@@ -142,19 +142,19 @@ export class CapBase<T> {
           : await CapRouter.init({
             host,
             canisterId: args.routerCanisterId,
-          });
+          })
 
       const { canister } = await router.get_token_contract_root_bucket({
         canister: Principal.fromText(args.tokenId),
-      });
+      })
 
-      if (!canister?.[0]) throw Error(`Token ${args.tokenId} not in cap`);
+      if (!canister?.[0]) throw Error(`Token ${args.tokenId} not in cap`)
 
       return Actor.createActor<T>(idlFactory, {
         agent,
         canisterId: canister[0],
-      });
-    })();
+      })
+    })()
   }
 
   public static inititalise<T>({
@@ -166,9 +166,9 @@ export class CapBase<T> {
       host,
       idlFactory,
       ...args,
-    });
+    })
 
-    return actor;
+    return actor
   }
 }
 
@@ -185,16 +185,16 @@ export class CapRouter extends CapBase<_ROUTER_SERVICE> {
         host,
         canisterId,
         idlFactory: routerFactory,
-      });
+      })
 
-      const cap = new CapRouter(actor);
+      const cap = new CapRouter(actor)
 
-      return cap;
-    })();
+      return cap
+    })()
   }
 
   public async trigger_upgrade(): Promise<undefined> {
-    return this.actor.trigger_upgrade();
+    return this.actor.trigger_upgrade()
   }
 
   public async get_index_canisters({
@@ -204,7 +204,7 @@ export class CapRouter extends CapBase<_ROUTER_SERVICE> {
   }): Promise<GetIndexCanistersResponse> {
     return this.actor.get_index_canisters({
       witness,
-    });
+    })
   }
 
   public async get_token_contract_root_bucket({
@@ -217,7 +217,7 @@ export class CapRouter extends CapBase<_ROUTER_SERVICE> {
     return this.actor.get_token_contract_root_bucket({
       canister,
       witness,
-    });
+    })
   }
 
   public async get_user_root_buckets({
@@ -230,18 +230,18 @@ export class CapRouter extends CapBase<_ROUTER_SERVICE> {
     return this.actor.get_user_root_buckets({
       user,
       witness,
-    });
+    })
   }
 
   public async insert_new_users(
     contractId: Principal,
-    users: Principal[]
+    users: Principal[],
   ): Promise<undefined> {
-    return this.actor.insert_new_users(contractId, users);
+    return this.actor.insert_new_users(contractId, users)
   }
 
   public async install_bucket_code(canisterId: Principal) {
-    return this.actor.install_bucket_code(canisterId);
+    return this.actor.install_bucket_code(canisterId)
   }
 }
 
@@ -252,28 +252,28 @@ export class CapRoot extends CapBase<_ROOT_SERVICE> {
         host,
         idlFactory: rootFactory,
         ...args,
-      });
+      })
 
-      return new CapRoot(actor);
-    })();
+      return new CapRoot(actor)
+    })()
   }
 
   public async contract_id(): Promise<Principal> {
-    return this.actor.contract_id();
+    return this.actor.contract_id()
   }
 
   public async balance(): Promise<bigint> {
-    return this.actor.balance();
+    return this.actor.balance()
   }
 
   public async get_transaction(
     id: bigint,
-    witness = false
+    witness = false,
   ): Promise<GetTransactionResponse> {
     return this.actor.get_transaction({
       id,
       witness,
-    });
+    })
   }
 
   public async get_transactions({
@@ -286,7 +286,7 @@ export class CapRoot extends CapBase<_ROOT_SERVICE> {
     return this.actor.get_transactions({
       page: typeof page === "number" ? [page] : [],
       witness,
-    });
+    })
   }
 
   public async get_user_transactions({
@@ -302,7 +302,7 @@ export class CapRoot extends CapBase<_ROOT_SERVICE> {
       page: typeof page === "number" ? [page] : [],
       user,
       witness,
-    });
+    })
   }
 
   public async get_token_transactions({
@@ -318,7 +318,7 @@ export class CapRoot extends CapBase<_ROOT_SERVICE> {
       page: typeof page === "number" ? [page] : [],
       token_id,
       witness,
-    });
+    })
   }
 
   public async insert({
@@ -330,11 +330,11 @@ export class CapRoot extends CapBase<_ROOT_SERVICE> {
       operation,
       details,
       caller,
-    });
+    })
   }
 
   public async size(): Promise<bigint> {
-    return this.actor.size();
+    return this.actor.size()
   }
 }
 
@@ -344,11 +344,11 @@ export class CapCache extends CapBase<_ROOT_SERVICE> {
       host: Hosts.mainnet,
       canisterId: CanisterInfo[DFX_JSON_HISTORY_ROUTER_KEY_NAME].mainnet,
       idlFactory: rootFactory,
-    }) as ActorSubclass<_ROOT_SERVICE>;
+    }) as ActorSubclass<_ROOT_SERVICE>
 
-    const cache = new KyaConnector(KyaUrl(cacheStage));
+    const cache = new KyaConnector(KyaUrl(cacheStage))
 
-    super(actor, cache);
+    super(actor, cache)
   }
 
   public async get_all_user_transactions({
@@ -365,6 +365,6 @@ export class CapCache extends CapBase<_ROOT_SERVICE> {
           LastEvaluatedKey,
         },
       ],
-    });
+    })
   }
 }
