@@ -23,6 +23,7 @@ type Config = {
   ledgerHost?: string
   appName?: string
   delegationModes?: Array<DelegationMode>
+  derivationOrigin?: string
 }
 
 let isICX = !!window.icx

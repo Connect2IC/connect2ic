@@ -30,6 +30,7 @@ class InternetIdentity implements IConnector {
     host: string,
     providerUrl: string,
     dev: boolean,
+    derivationOrigin?: string,
   }
   #identity?: Identity
   #principal?: string
@@ -124,6 +125,7 @@ class InternetIdentity implements IConnector {
           identityProvider: this.#config.providerUrl,
           onSuccess: resolve,
           onError: reject,
+          derivationOrigin: this.#config.derivationOrigin,
         })
       })
       const identity = this.#client?.getIdentity()

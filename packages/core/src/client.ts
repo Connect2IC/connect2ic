@@ -183,14 +183,14 @@ const authStates: MachineConfig<RootContext, any, RootEvent> = {
           }
           const result = await provider.connect()
           result.match(() => {
-              callback({
-                type: "CONNECT_DONE",
-                data: {
-                  activeProvider: provider,
-                  principal: provider.principal!,
-                },
-              })
-            },
+            callback({
+              type: "CONNECT_DONE",
+              data: {
+                activeProvider: provider,
+                principal: provider.principal!,
+              },
+            })
+          },
             (e) => {
               console.error(e)
               callback({
@@ -260,6 +260,7 @@ type Config = {
   ledgerCanisterId?: string
   ledgerHost?: string
   appName?: string
+  derivationOrigin?: string;
 }
 
 type ClientOptions = {
@@ -279,6 +280,7 @@ type ClientOptions = {
     ledgerHost?: string
     appName?: string
     customDomain?: string
+    derivationOrigin?: string;
   }
 }
 
@@ -341,10 +343,10 @@ class Client {
 }
 
 const createClient = ({
-                        canisters = {},
-                        providers: p = [],
-                        globalProviderConfig = {},
-                      }: ClientOptions) => {
+  canisters = {},
+  providers: p = [],
+  globalProviderConfig = {},
+}: ClientOptions) => {
   const config = {
     dev: true,
     autoConnect: true,
