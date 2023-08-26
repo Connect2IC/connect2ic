@@ -30,6 +30,7 @@ class NFID implements IConnector {
     host: string,
     providerUrl: string,
     dev: Boolean,
+    derivationOrigin?: string,
   }
   #identity?: any
   #principal?: string
@@ -129,6 +130,7 @@ class NFID implements IConnector {
           identityProvider: this.#config.providerUrl + `/authenticate/?applicationName=${this.#config.appName}`,
           onSuccess: resolve,
           onError: reject,
+          derivationOrigin: this.#config.derivationOrigin,
         })
       })
       const identity = this.#client.getIdentity()
