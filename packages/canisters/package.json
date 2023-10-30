@@ -21,12 +21,12 @@
     "serve": "vite preview"
   },
   "dependencies": {
-    "@dfinity/agent": "0.10.4",
-    "@dfinity/auth-client": "0.10.4",
-    "@dfinity/authentication": "0.10.4",
-    "@dfinity/candid": "0.10.4",
-    "@dfinity/identity": "0.10.4",
-    "@dfinity/principal": "0.10.4"
+    "@dfinity/agent": "^0.19.3",
+    "@dfinity/auth-client": "^0.19.3",
+    "@dfinity/authentication": "^0.19.3",
+    "@dfinity/candid": "^0.19.3",
+    "@dfinity/identity": "^0.19.3",
+    "@dfinity/principal": "^0.19.3"
   },
   "devDependencies": {
     "buffer": "^6.0.3",
